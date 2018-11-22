@@ -9,7 +9,7 @@
     "clean": "shx rm -rf dist",
     "build": "npm run clean && webpack",
     "webpack:watch": "webpack --watch",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll --coverage"
   },
   "repository": {
     "type": "git",

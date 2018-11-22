@@ -1,11 +1,24 @@
+import BugData from './bug-data';
+
 /**
  *
  */
 class Bug {
-  private data: object = {};
+  private data: BugData = {
+    id: getUid(),
+    ticks: 0
+  };
 
-  public get id(): string {
-    return getUid();
+  get id(): string {
+    return this.data.id;
+  }
+
+  get ticks(): number {
+    return this.data.ticks;
+  }
+
+  tick() {
+    ++this.data.ticks;
   }
 }
 

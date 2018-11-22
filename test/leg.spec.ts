@@ -1,4 +1,4 @@
-import Leg, { DEFAULT_LENGTH } from '../src/leg';
+import Leg from '../src/leg';
 import Point from '../src/point';
 
 describe('Leg', () => {
@@ -17,6 +17,33 @@ describe('Leg', () => {
       const { x, y } = leg.foot;
       expect(x).not.toBeNaN();
       expect(y).not.toBeNaN();
+    });
+  });
+
+  describe('initialization', () => {
+    it('sets joint position', () => {
+      leg = new Leg({ joint: new Point(99, 999)});
+      expect(leg.joint.x).toEqual(99);
+      expect(leg.joint.y).toEqual(999);
+    });
+    it('sets foot position', () => {
+      leg = new Leg({ foot: new Point(99, 999) });
+      expect(leg.foot.x).toEqual(99);
+      expect(leg.foot.y).toEqual(999);
+    });
+    it('sets start position', () => {
+      leg = new Leg({ start: new Point(99, 999) });
+      expect(leg.start.x).toEqual(99);
+      expect(leg.start.y).toEqual(999);
+    });
+    it('sets target position', () => {
+      leg = new Leg({ target: new Point(99, 999) });
+      expect(leg.target.x).toEqual(99);
+      expect(leg.target.y).toEqual(999);
+    });
+    it('sets progress positions', () => {
+      leg = new Leg({ progress: 0.5 });
+      expect(leg.progress).toEqual(0.5);
     });
   });
 

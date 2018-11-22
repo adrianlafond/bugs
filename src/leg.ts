@@ -6,43 +6,41 @@ export const DEFAULT_LENGTH: number = 10;
 export default class Leg {
   private data: LegData;
 
-  constructor() {
-    this.data = {
-      joint: new Point(0, 0),
-      foot: new Point(DEFAULT_LENGTH, 0),
-      start: new Point(DEFAULT_LENGTH, 0),
-      target: new Point(),
-      progress: 0,
-    };
+  // constructor(options: LegData = this.defaults) {
+  constructor(options: LegData = {}) {
+    const {
+      joint = new Point(0, 0),
+      foot = new Point(DEFAULT_LENGTH, 0),
+      start = new Point(DEFAULT_LENGTH, 0),
+      target = new Point(),
+      progress = 0,
+    } = options;
+    this.data = { joint, foot, start, target, progress };
   }
 
   get joint() {
-    const { x, y } = this.data.joint;
-    return new Point(x, y);
+    return Point.clone(this.data.joint);
   }
 
   set joint(point: Point) {
-    this.data.joint = new Point(point.x, point.y);
+    this.data.joint = Point.clone(point);
   }
 
   get foot() {
-    const { x, y } = this.data.foot;
-    return new Point(x, y);
+    return Point.clone(this.data.foot);
   }
 
   get start() {
-    const { x, y } = this.data.start;
-    return new Point(x, y);
+    return Point.clone(this.data.start);
   }
 
   get target() {
-    const { x, y } = this.data.target;
-    return new Point(x, y);
+    return Point.clone(this.data.target);
   }
 
   set target(point: Point) {
-    this.data.target = new Point(point.x, point.y);
-    this.data.start = new Point(this.data.foot.x, this.data.foot.y);
+    this.data.target = Point.clone(point);
+    this.data.start = Point.clone(this.data.foot);
     this.data.progress = 0;
   }
 

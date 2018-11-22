@@ -4,7 +4,12 @@
   "description": "2D bug/insect/creature engine",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "start": "npm run clean && concurrently \"npm run webpack:watch\" \"npm run test:watch\"",
+    "clean": "shx rm -rf dist",
+    "build": "npm run clean && webpack",
+    "webpack:watch": "webpack --watch",
+    "test:watch": "jest --watchAll"
   },
   "repository": {
     "type": "git",
@@ -24,8 +29,13 @@
   "homepage": "https://github.com/adrianlafond/bugs#readme",
   "devDependencies": {
     "@types/jest": "^23.3.9",
+    "awesome-typescript-loader": "^5.2.1",
+    "concurrently": "^4.1.0",
     "jest": "^23.6.0",
+    "shx": "^0.3.2",
     "ts-jest": "^23.10.4",
-    "typescript": "^3.1.6"
+    "typescript": "^3.1.6",
+    "webpack": "^4.26.0",
+    "webpack-cli": "^3.1.2"
   }
 }

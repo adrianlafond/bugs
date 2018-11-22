@@ -1,22 +1,32 @@
-import SegmentData from './segment-data';
 import Point from './point';
-import Leg from './leg';
+import Leg, { LegData } from './leg';
+
+export interface SegmentModel {
+  position: Point;
+  angle: number;
+  legs: Leg[];
+}
 
 export default class Segment {
-  private data: SegmentData;
+  private model: SegmentModel;
 
   constructor() {
-    this.data = {
+    this.model = {
       position: new Point(),
       angle: 0,
+      legs: [new Leg(), new Leg()],
     };
   }
 
-  get position() {
-    return Point.clone(this.data.position);
+  get position(): Point {
+    return this.model.position.clone();
   }
 
-  get angle() {
-    return this.data.angle;
+  get angle(): number {
+    return this.model.angle;
+  }
+
+  get legs(): LegData[] {
+    return this.model.legs.map(leg => leg.data);
   }
 }

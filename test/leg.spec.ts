@@ -1,4 +1,4 @@
-import Leg from '../src/leg';
+import Leg, { MAXIMUM_LENGTH } from '../src/leg';
 import Point from '../src/point';
 
 describe('Leg', () => {
@@ -49,14 +49,16 @@ describe('Leg', () => {
 
   describe('movement', () => {
     beforeEach(() => {
-      leg = new Leg();
+      leg = new Leg({ foot: new Point(0, 0) });
     });
+
     it('sets a target point', () => {
       leg.target = new Point(99, 99);
       const { x, y } = leg.target;
       expect(leg.target.x).toEqual(x);
       expect(leg.target.y).toEqual(y);
     });
+
     it('moves the joint', () => {
       const xx: number = 99;
       const yy: number = 99;
@@ -66,31 +68,41 @@ describe('Leg', () => {
       expect(leg.joint.x).toEqual(xx);
       expect(leg.joint.y).toEqual(yy);
     });
+
     it('steps towards target by given percentage', () => {
       const { x: x1, y: y1 } = leg.foot;
-      const x2 = 20;
-      const y2 = 20;
+      const targetPx = Math.sqrt(MAXIMUM_LENGTH);
+      const x2 = targetPx;
+      const y2 = targetPx;
       const perc = 0.5;
       leg.target = new Point(x2, y2);
       leg.progress = perc;
       expect(leg.foot.x).toEqual((x1 + x2) * perc);
       expect(leg.foot.y).toEqual((y1 + y2) * perc);
     });
+
     it('resets start position when target is reset', () => {
+      const targetPx = Math.sqrt(MAXIMUM_LENGTH);
       const { x: fx, y: fy } = leg.foot;
       const { x: sx, y: sy } = leg.foot;
       expect(sx).toEqual(fx);
       expect(sy).toEqual(fy);
-      leg.target = new Point(100, 100);
+      leg.target = new Point(targetPx, targetPx);
       leg.progress = 0.5;
       expect(leg.foot.x).not.toEqual(fx);
       expect(leg.foot.y).not.toEqual(fy);
       expect(leg.start.x).toEqual(sx);
       expect(leg.start.y).toEqual(sy);
-      leg.target = new Point(-100, -100);
+      leg.target = new Point(-targetPx, -targetPx);
       expect(leg.start.x).toEqual(leg.foot.x);
       expect(leg.start.y).toEqual(leg.foot.y);
       expect(leg.progress).toEqual(0);
+    });
+
+    it('cannot set a target further than maximum length', () => {
+      leg.target = new Point(MAXIMUM_LENGTH * 2, MAXIMUM_LENGTH * 2);
+      expect(leg.target.x).toBeLessThan(MAXIMUM_LENGTH);
+      expect(leg.target.y).toBeLessThan(MAXIMUM_LENGTH);
     });
   });
 });

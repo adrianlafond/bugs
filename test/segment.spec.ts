@@ -14,5 +14,8 @@ describe('Segment', () => {
     it('has an angle that defaults to 0', () => {
       expect(segment.angle).toEqual(0);
     });
+    it('has 2 legs', () => {
+      expect(segment.legs.length).toEqual(2);
+    });
   });
 });

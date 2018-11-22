@@ -1,57 +1,85 @@
-import LegData from './leg-data';
-import Point from './point';
+import Point, { PointData } from './point';
 
-export const DEFAULT_LENGTH: number = 10;
+export const MAXIMUM_LENGTH: number = 20;
+
+export interface LegModel {
+  joint?: Point;
+  foot?: Point;
+  start?: Point;
+  target?: Point;
+  progress?: number;
+}
+
+export interface LegData {
+  joint: PointData,
+  foot: PointData,
+}
 
 export default class Leg {
-  private data: LegData;
+  private model: LegModel;
 
   // constructor(options: LegData = this.defaults) {
-  constructor(options: LegData = {}) {
+  constructor(options: LegModel = {}) {
     const {
       joint = new Point(0, 0),
-      foot = new Point(DEFAULT_LENGTH, 0),
-      start = new Point(DEFAULT_LENGTH, 0),
+      foot = new Point(MAXIMUM_LENGTH, 0),
       target = new Point(),
       progress = 0,
     } = options;
-    this.data = { joint, foot, start, target, progress };
+    const start = options.start || foot;
+    this.model = { joint, foot, start, target, progress };
+  }
+
+  get data(): LegData {
+    return {
+      joint: this.model.joint.data,
+      foot: this.model.foot.data,
+    };
   }
 
   get joint() {
-    return Point.clone(this.data.joint);
+    return this.model.joint.clone();
   }
 
   set joint(point: Point) {
-    this.data.joint = Point.clone(point);
+    this.model.joint = point.clone();
   }
 
   get foot() {
-    return Point.clone(this.data.foot);
+    return this.model.foot.clone();
   }
 
   get start() {
-    return Point.clone(this.data.start);
+    return this.model.start.clone();
   }
 
   get target() {
-    return Point.clone(this.data.target);
+    return this.model.target.clone();
   }
 
   set target(point: Point) {
-    this.data.target = Point.clone(point);
-    this.data.start = Point.clone(this.data.foot);
-    this.data.progress = 0;
+    const { foot } = this.model;
+    const distance = Point.distance(foot, point);
+    if (distance > MAXIMUM_LENGTH) {
+      const radians = Point.radians(foot, point);
+      this.model.target = new Point(
+        foot.x + Math.cos(radians) * MAXIMUM_LENGTH,
+        foot.y + Math.sin(radians) * MAXIMUM_LENGTH);
+    } else {
+      this.model.target = point.clone();
+    }
+    this.model.start = this.model.foot.clone();
+    this.model.progress = 0;
   }
 
   get progress(): number {
-    return this.data.progress;
+    return this.model.progress;
   }
 
   set progress(value: number) {
-    const { foot, start, target } = this.data;
+    const { foot, start, target } = this.model;
     foot.x = (target.x - start.x) * value + start.x;
     foot.y = (target.y - start.y) * value + start.y;
-    this.data.progress = value;
+    this.model.progress = value;
   }
 }

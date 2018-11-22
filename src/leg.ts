@@ -3,10 +3,6 @@ import Point from './point';
 
 export const DEFAULT_LENGTH: number = 10;
 
-
-/**
- *
- */
 export default class Leg {
   private data: LegData;
 

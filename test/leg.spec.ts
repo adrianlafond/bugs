@@ -18,6 +18,9 @@ describe('Leg', () => {
       expect(x).not.toBeNaN();
       expect(y).not.toBeNaN();
     });
+    it('is planted', () => {
+      expect(leg.planted).toBe(true);
+    });
   });
 
   describe('initialization', () => {
@@ -31,19 +34,36 @@ describe('Leg', () => {
       expect(leg.foot.x).toEqual(99);
       expect(leg.foot.y).toEqual(999);
     });
-    it('sets start position', () => {
-      leg = new Leg({ start: new Point(99, 999) });
-      expect(leg.start.x).toEqual(99);
-      expect(leg.start.y).toEqual(999);
-    });
-    it('sets target position', () => {
-      leg = new Leg({ target: new Point(99, 999) });
-      expect(leg.target.x).toEqual(99);
-      expect(leg.target.y).toEqual(999);
-    });
     it('sets progress positions', () => {
       leg = new Leg({ progress: 0.5 });
       expect(leg.progress).toEqual(0.5);
+    });
+    it('sets maximum length', () => {
+      leg = new Leg({ maxLength: 100 });
+      expect(leg.maxLength).toBe(100);
+    });
+    it('sets planted flag', () => {
+      leg = new Leg({ planted: false });
+      expect(leg.planted).toBe(false);
+    });
+    it('sets target position', () => {
+      leg = new Leg({
+        foot: new Point(),
+        target: new Point(3, 6),
+        maxLength: 1000
+      });
+      expect(leg.target.x).toEqual(3);
+      expect(leg.target.y).toEqual(6);
+    });
+    it('constrains target by max length', () => {
+      const MAX = 10;
+      leg = new Leg({
+        foot: new Point(),
+        target: new Point(100, 100),
+        maxLength: MAX
+      });
+      expect(leg.target.x).toBeLessThan(MAX);
+      expect(leg.target.y).toBeLessThan(MAX);
     });
   });
 
@@ -57,6 +77,27 @@ describe('Leg', () => {
       const { x, y } = leg.target;
       expect(leg.target.x).toEqual(x);
       expect(leg.target.y).toEqual(y);
+    });
+
+    it('moves by x, y, and radians', () => {
+      leg.joint = new Point(5, 15);
+      leg.moveBy(new Point(10, 10), Math.PI / 2);
+      expect(leg.joint.x).toBe(15);
+      expect(leg.joint.y).toBe(25);
+    });
+
+    it('moveBy moves foot when not planted', () => {
+      const { x: fx, y: fy } = leg.foot;
+      const mx = 7;
+      const my = 11;
+      const radians = Math.PI / 2;
+      leg.planted = false;
+      leg.joint = new Point(5, 15);
+      leg.moveBy(new Point(mx, my), radians);
+      const x2 = Math.cos(leg.radians + radians) * fx + mx;
+      const y2 = Math.sin(leg.radians + radians) * fy + my;
+      expect(leg.foot.x).toEqual(x2);
+      expect(leg.foot.y).toEqual(y2);
     });
 
     it('moves the joint', () => {
@@ -103,6 +144,22 @@ describe('Leg', () => {
       leg.target = new Point(MAXIMUM_LENGTH * 2, MAXIMUM_LENGTH * 2);
       expect(leg.target.x).toBeLessThan(MAXIMUM_LENGTH);
       expect(leg.target.y).toBeLessThan(MAXIMUM_LENGTH);
+    });
+
+    it('cannot move to progress that is < 0', () => {
+      const foot = leg.foot;
+      leg.target = new Point(100, 100);
+      leg.progress = -0.5;
+      expect(leg.foot.x).toEqual(foot.x);
+      expect(leg.foot.y).toEqual(foot.y);
+    });
+
+    it('cannot move to progress that is > 1.0', () => {
+      leg.target = new Point(100, 100);
+      const { foot, target} = leg;
+      leg.progress = 1.5;
+      expect(leg.foot.x).toEqual(target.x);
+      expect(leg.foot.y).toEqual(target.y);
     });
   });
 });

@@ -7,11 +7,13 @@ describe('Point', () => {
       expect(p.x).toBe(0);
       expect(p.y).toBe(0);
     });
+
     it('sets x, y to values passed during instantiation', () => {
       const p = new Point(4, 5);
       expect(p.x).toBe(4);
       expect(p.y).toBe(5);
     });
+
     it('clones a point with same coords', () => {
       const p1 = new Point(5, 10);
       const p2 = p1.clone();
@@ -24,6 +26,22 @@ describe('Point', () => {
       expect(p1.x).not.toEqual(p2.x);
       expect(p1.y).not.toEqual(p2.y);
       expect(p1).not.toEqual(p2);
+    });
+
+    it('adds a point', () => {
+      const p1 = new Point(2, 4);
+      const p2 = new Point(3, 5);
+      p1.add(p2);
+      expect(p1.x).toBe(5);
+      expect(p1.y).toBe(9);
+    });
+
+    it('subtracts a point', () => {
+      const p1 = new Point(2, 4);
+      const p2 = new Point(3, 7);
+      p1.subtract(p2);
+      expect(p1.x).toBe(-1);
+      expect(p1.y).toBe(-3);
     });
   });
 

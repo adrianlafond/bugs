@@ -17,6 +17,18 @@ export default class Point {
     return new Point(this.x, this.y);
   }
 
+  add(point: Point): Point {
+    this.x += point.x;
+    this.y += point.y;
+    return this;
+  }
+
+  subtract(point: Point): Point {
+    this.x -= point.x;
+    this.y -= point.y;
+    return this;
+  }
+
   static distance(p1: Point, p2: Point): number {
     return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
   }

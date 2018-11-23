@@ -65,6 +65,45 @@ describe('Leg', () => {
       expect(leg.target.x).toBeLessThan(MAX);
       expect(leg.target.y).toBeLessThan(MAX);
     });
+    it('returns relevant joint, foot, planted data', () => {
+      leg = new Leg({
+        joint: new Point(5, 10),
+        foot: new Point(14, 25),
+        planted: false,
+      });
+      expect(leg.data).toEqual({
+        joint: { x: 5, y: 10 },
+        foot: { x: 14, y: 25 },
+        planted: false,
+      });
+    });
+  });
+
+  describe('moveBy', () => {
+    beforeEach(() => {
+      leg = new Leg({
+        joint: new Point(2, 3),
+        foot: new Point(10, 5),
+      });
+    });
+
+    it('moves by x, y, and radians', () => {
+      const { radians } = leg;
+      leg.moveBy(new Point(10, 10), Math.PI / 2);
+      expect(leg.joint.x).toBe(12);
+      expect(leg.joint.y).toBe(13);
+      expect(leg.radians).toBe(radians + Math.PI / 2);
+    });
+
+    it('moveBy moves foot when not planted', () => {
+      const m = { x: 7, y: 11, radians: Math.PI / 2};
+      leg.planted = false;
+      const { x: fx, y: fy } = leg.foot;
+      const { radians } = leg;
+      leg.moveBy(new Point(m.x, m.y), m.radians);
+      expect(leg.foot.x).toEqual(Math.cos(radians + m.radians) * fx + m.x);
+      expect(leg.foot.y).toEqual(Math.sin(radians + m.radians) * fy + m.y);
+    });
   });
 
   describe('movement', () => {
@@ -77,27 +116,6 @@ describe('Leg', () => {
       const { x, y } = leg.target;
       expect(leg.target.x).toEqual(x);
       expect(leg.target.y).toEqual(y);
-    });
-
-    it('moves by x, y, and radians', () => {
-      leg.joint = new Point(5, 15);
-      leg.moveBy(new Point(10, 10), Math.PI / 2);
-      expect(leg.joint.x).toBe(15);
-      expect(leg.joint.y).toBe(25);
-    });
-
-    it('moveBy moves foot when not planted', () => {
-      const { x: fx, y: fy } = leg.foot;
-      const mx = 7;
-      const my = 11;
-      const radians = Math.PI / 2;
-      leg.planted = false;
-      leg.joint = new Point(5, 15);
-      leg.moveBy(new Point(mx, my), radians);
-      const x2 = Math.cos(leg.radians + radians) * fx + mx;
-      const y2 = Math.sin(leg.radians + radians) * fy + my;
-      expect(leg.foot.x).toEqual(x2);
-      expect(leg.foot.y).toEqual(y2);
     });
 
     it('moves the joint', () => {

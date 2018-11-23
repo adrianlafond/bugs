@@ -114,8 +114,8 @@ export default class Leg {
 
   moveBy(point: Point, radians: number) {
     this.model.joint.add(point);
+    this.model.radians += radians;
     if (!this.model.planted) {
-      this.model.radians += radians;
       this.model.foot.x = Math.cos(this.model.radians) * this.foot.x + point.x;
       this.model.foot.y = Math.sin(this.model.radians) * this.foot.y + point.y;
     }

@@ -1,4 +1,4 @@
-import Point from '../src/point';
+import Point from '../src/geom/point';
 
 describe('Point', () => {
   describe('instance', () => {

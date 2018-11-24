@@ -1,4 +1,4 @@
-import Point, { PointData } from './point';
+import Point, { PointData } from './geom/point';
 
 export const MAXIMUM_LENGTH: number = 20;
 

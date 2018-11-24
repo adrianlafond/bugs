@@ -1,5 +1,5 @@
 import Leg, { MAXIMUM_LENGTH } from '../src/leg';
-import Point from '../src/point';
+import Point from '../src/geom/point';
 
 describe('Leg', () => {
   let leg: Leg;

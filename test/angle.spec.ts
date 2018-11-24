@@ -1,7 +1,17 @@
-import Angle, { degreesToRadians, radiansToDegrees } from '../src/geom/angle';
+import Angle, {
+  degreesToRadians,
+  radiansToDegrees,
+  normalizeRadians,
+  normalizeDegrees
+} from '../src/geom/angle';
+
+function isClose(a: number, b: number): boolean {
+  return Math.abs(+a.toFixed(5)) === Math.abs(+b.toFixed(5));
+}
 
 describe('Angle', () => {
   it('normalizes degrees with 0 pointing straight up into radians', () => {
+    expect(degreesToRadians()).toEqual(Math.PI * 1.5);
     expect(degreesToRadians(0)).toEqual(Math.PI * 1.5);
     expect(degreesToRadians(45)).toEqual(Math.PI * 1.75);
     expect(degreesToRadians(90)).toEqual(0);
@@ -16,6 +26,7 @@ describe('Angle', () => {
   });
 
   it('normalizes radians into degrees with 0 pointing straight up', () => {
+    expect(radiansToDegrees()).toEqual(90);
     expect(radiansToDegrees(0)).toEqual(90);
     expect(radiansToDegrees(-Math.PI * 0.5)).toEqual(0);
     expect(radiansToDegrees(Math.PI * 0.25)).toEqual(135);
@@ -26,6 +37,20 @@ describe('Angle', () => {
     expect(radiansToDegrees(Math.PI * 1.5)).toEqual(0);
     expect(radiansToDegrees(Math.PI * 1.75)).toEqual(45);
     expect(radiansToDegrees(Math.PI * 3.5)).toEqual(0);
+  });
+
+  it('normalizes radians to between 0 and Math.PI * 2 inclusive', () => {
+    expect(normalizeRadians()).toBe(0);
+    expect(normalizeRadians(-Math.PI)).toBe(Math.PI);
+    expect(isClose(normalizeRadians(-Math.PI * 9), Math.PI)).toBe(true);
+    expect(normalizeRadians(Math.PI * 3)).toBe(Math.PI);
+    expect(isClose(normalizeRadians(Math.PI * 15), Math.PI)).toBe(true);
+  });
+
+  it('normalizes degress to between 0 and 359 inclusive', () => {
+    expect(normalizeDegrees()).toBe(0);
+    expect(normalizeDegrees(-540)).toBe(180);
+    expect(normalizeDegrees(900)).toEqual(180);
   });
 
   it('instantiates with a default angle of 0', () => {

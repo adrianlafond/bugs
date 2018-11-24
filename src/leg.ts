@@ -28,7 +28,7 @@ export default class Leg {
   constructor(options: LegOptions = {}) {
     const {
       joint = new Point(0, 0),
-      foot = new Point(MAXIMUM_LENGTH, 0),
+      foot = new Point(MAXIMUM_LENGTH / 2, 0),
       target = new Point(),
       progress = 0,
       maxLength = MAXIMUM_LENGTH,

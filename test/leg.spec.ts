@@ -79,7 +79,7 @@ describe('Leg', () => {
     });
   });
 
-  describe('moveBy', () => {
+  describe('moveJoint', () => {
     beforeEach(() => {
       leg = new Leg({
         joint: new Point(2, 3),
@@ -89,20 +89,13 @@ describe('Leg', () => {
 
     it('moves by x, y, and radians', () => {
       const { radians } = leg;
-      leg.moveBy(new Point(10, 10), Math.PI / 2);
-      expect(leg.joint.x).toBe(12);
-      expect(leg.joint.y).toBe(13);
-      expect(leg.radians).toBe(radians + Math.PI / 2);
-    });
-
-    it('moveBy moves foot when not planted', () => {
-      const m = { x: 7, y: 11, radians: Math.PI / 2};
-      leg.planted = false;
-      const { x: fx, y: fy } = leg.foot;
-      const { radians } = leg;
-      leg.moveBy(new Point(m.x, m.y), m.radians);
-      expect(leg.foot.x).toEqual(Math.cos(radians + m.radians) * fx + m.x);
-      expect(leg.foot.y).toEqual(Math.sin(radians + m.radians) * fy + m.y);
+      leg.moveJoint(new Point(10, 10), Math.PI / 2);
+      // expect(leg.joint.x).toBe(12);
+      // expect(leg.joint.y).toBe(13);
+      // expect(leg.radians).toBe(radians + Math.PI / 2);
+      expect(leg.joint.x).toBe(10);
+      expect(leg.joint.y).toBe(10);
+      expect(leg.radians).toBe(Math.PI / 2);
     });
   });
 
@@ -116,6 +109,13 @@ describe('Leg', () => {
       const { x, y } = leg.target;
       expect(leg.target.x).toEqual(x);
       expect(leg.target.y).toEqual(y);
+    });
+
+    it('sets planted', () => {
+      leg.planted = false;
+      expect(leg.planted).toBe(false);
+      leg.planted = true;
+      expect(leg.planted).toBe(true);
     });
 
     it('moves the joint', () => {

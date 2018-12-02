@@ -112,12 +112,10 @@ export default class Leg {
     return this.model.radians;
   }
 
-  moveBy(point: Point, radians: number) {
-    this.model.joint.add(point);
-    this.model.radians += radians;
-    if (!this.model.planted) {
-      this.model.foot.x = Math.cos(this.model.radians) * this.foot.x + point.x;
-      this.model.foot.y = Math.sin(this.model.radians) * this.foot.y + point.y;
-    }
+  moveJoint(point: Point, radians: number) {
+    // this.model.joint.add(point);
+    // this.model.radians += radians;
+    this.model.joint = point.clone();
+    this.model.radians = radians;
   }
 }

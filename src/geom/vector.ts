@@ -44,4 +44,8 @@ export default class Vector {
     const { x, y, angle } = this;
     return { x, y, angle };
   }
+
+  clone(): Vector {
+    return new Vector(this.point, this.angle);
+  }
 }

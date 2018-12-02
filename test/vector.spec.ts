@@ -19,4 +19,14 @@ describe('Vector', () => {
       expect(vector.angle).toEqual(45);
     });
   });
+
+  describe('util', () => {
+    it('clones itself', () => {
+      const v1 = new Vector(11, 17, 23);
+      const v2 = v1.clone();
+      expect(v1).not.toBe(v2);
+      expect(v2.point.data).toEqual({ x: 11, y: 17 });
+      expect(v2.angle).toEqual(23);
+    });
+  });
 });

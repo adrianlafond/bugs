@@ -1,24 +1,36 @@
-import BugData from './bug-data';
+import Segment, { SegmentData } from './segment';
 
-/**
- *
- */
+export interface BugModel {
+  id: string;
+  ticks: number;
+  segments: Segment[];
+}
+
 class Bug {
-  private data: BugData = {
-    id: getUid(),
-    ticks: 0
-  };
+  private model: BugModel;
+
+  constructor() {
+    this.model = {
+      id: getUid(),
+      ticks: 0,
+      segments: [new Segment()],
+    };
+  }
 
   get id(): string {
-    return this.data.id;
+    return this.model.id;
   }
 
   get ticks(): number {
-    return this.data.ticks;
+    return this.model.ticks;
+  }
+
+  get segments(): SegmentData[] {
+    return this.model.segments.map(segment => segment.data);
   }
 
   tick() {
-    ++this.data.ticks;
+    ++this.model.ticks;
   }
 }
 

@@ -1,4 +1,5 @@
 import Bug from '../src';
+import { SegmentData } from '../src/segment';
 
 describe('Bug', () => {
   let bug: Bug;
@@ -25,6 +26,21 @@ describe('Bug', () => {
     it('increments ticks on tick()', () => {
       bug.tick();
       expect(bug.ticks).toEqual(1);
+    });
+  });
+
+  describe('segment (defaults)', () => {
+    let segment: SegmentData;
+    beforeEach(() => {
+      segment = bug.segments[0];
+    })
+    it('has a segment', () => {
+      expect(segment.x).not.toEqual(NaN);
+      expect(segment.y).not.toEqual(NaN);
+      expect(segment.radians).not.toEqual(NaN);
+    });
+    it('has legs', () => {
+      expect(segment.legs.length).toBeGreaterThanOrEqual(2);
     });
   });
 });

@@ -37,6 +37,12 @@ describe('Segment', () => {
       expect(segment.legs.filter(leg => leg.foot.x < 0).length).toEqual(1);
       expect(segment.legs.filter(leg => leg.foot.x > 0).length).toEqual(1);
     });
+    it('returns a data object for rendering', () => {
+      const d = segment.data;
+      expect(d.x).not.toEqual(NaN);
+      expect(d.y).not.toEqual(NaN);
+      expect(d.radians).not.toEqual(NaN);
+    });
   });
 
   describe('initialization', () => {

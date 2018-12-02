@@ -30,6 +30,13 @@ export interface SegmentModel extends SegmentOptions {
   layout?: SegmentLayout;
 }
 
+export interface SegmentData {
+  x: number;
+  y: number;
+  radians: number;
+  legs: LegData[];
+}
+
 export default class Segment {
   private model: SegmentModel;
 
@@ -47,6 +54,14 @@ export default class Segment {
     this.step = constrainStep(step);
     this.target = target;
     this.progress = progress;
+  }
+
+  get data(): SegmentData {
+    const { x, y } = this.position;
+    const { radians, legs } = this;
+    return {
+      x, y, radians, legs
+    };
   }
 
   get position(): Point {

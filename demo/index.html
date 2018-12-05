@@ -16,6 +16,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
+<script src="../dist/bug.js"></script>
 <script>
   function createApp() {
     const app = new PIXI.Application({
@@ -30,7 +31,27 @@
     return app;
   }
 
+  function drawBug() {
+    const bugData = bug.data;
+    console.log('bug:', bugData)
+    const container = new PIXI.Container();
+    const segmentGfx = new PIXI.Graphics();
+    segmentGfx.lineStyle(1, 0x000000, 1);
+    segmentGfx.drawCircle(0, 0, 6);
+    const segmentTexture = app.renderer.generateTexture(segmentGfx);
+    const segmentSprite = new PIXI.Sprite.from(segmentTexture);
+    container.addChild(segmentSprite);
+    app.stage.addChild(container);
+    container.x = bugData.x;
+    container.y = bugData.y;
+  }
+
   const app = createApp();
+  const bug = new Bug.default({
+    x: 100,
+    y: 100
+  });
+  drawBug();
 </script>
 </body>
 </html>

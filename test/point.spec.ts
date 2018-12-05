@@ -8,6 +8,10 @@ describe('Point', () => {
       expect(p.y).toBe(0);
     });
 
+    it('outputs a string via toString()', () => {
+      expect(new Point(3, 5).toString()).toEqual(JSON.stringify({ x: 3, y: 5 }));
+    });
+
     it('sets x, y to values passed during instantiation', () => {
       const p = new Point(4, 5);
       expect(p.x).toBe(4);

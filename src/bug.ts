@@ -1,4 +1,5 @@
 import Segment, { SegmentData } from './segment';
+import Point from './geom/point';
 
 export interface BugModel {
   id: string;
@@ -6,14 +7,32 @@ export interface BugModel {
   segments: Segment[];
 }
 
+export interface BugOptions {
+  x?: number;
+  y?: number;
+}
+
+export interface BugData {
+  x: number;
+  y: number;
+  radians: number;
+  segments: SegmentData[];
+}
+
 class Bug {
   private model: BugModel;
 
-  constructor() {
+  constructor(options: BugOptions = {}) {
+    const {
+      x = 0,
+      y = 0,
+    } = options;
     this.model = {
       id: getUid(),
       ticks: 0,
-      segments: [new Segment()],
+      segments: [new Segment({
+        position: new Point(x, y)
+      })],
     };
   }
 
@@ -23,6 +42,17 @@ class Bug {
 
   get ticks(): number {
     return this.model.ticks;
+  }
+
+  get data(): BugData {
+    const segment0 = this.segments[0];
+    const { x, y, radians } = segment0;
+    return {
+      x,
+      y,
+      radians,
+      segments: this.segments,
+    };
   }
 
   get segments(): SegmentData[] {

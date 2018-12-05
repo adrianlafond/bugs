@@ -47,8 +47,16 @@ export default class Segment {
       progress = 0,
       step = 0,
       target = new Vector(),
-      legs = [new Leg(), new Leg({ foot: new Point(-MAXIMUM_LENGTH / 2, 0) })],
+      legs = [],
     } = options;
+    legs[0] = legs[0] || new Leg({
+      joint: position.clone(),
+      foot: position.clone().add(new Point(MAXIMUM_LENGTH / 2, 0)),
+    });
+    legs[1] = legs[1] || new Leg({
+      joint: position.clone(),
+      foot: position.clone().add(new Point(-MAXIMUM_LENGTH / 2, 0)),
+    });
     this.model = { position, radians, legs };
     this.writeLayout();
     this.step = constrainStep(step);

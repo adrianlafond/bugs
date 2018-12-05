@@ -48,4 +48,8 @@ export default class Vector {
   clone(): Vector {
     return new Vector(this.point, this.angle);
   }
+
+  toString(): string {
+    return JSON.stringify(this.data);
+  }
 }

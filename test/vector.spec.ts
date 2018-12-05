@@ -28,5 +28,8 @@ describe('Vector', () => {
       expect(v2.point.data).toEqual({ x: 11, y: 17 });
       expect(v2.angle).toEqual(23);
     });
+    it('outputs a string via toString()', () => {
+      expect(new Vector(3, 5, 2).toString()).toEqual(JSON.stringify({ x: 3, y: 5, angle: 2 }));
+    });
   });
 });

@@ -51,7 +51,16 @@ class Bug {
       x,
       y,
       radians,
-      segments: this.segments,
+      segments: this.segments.map(o => ({
+        x: o.x - x,
+        y: o.y - y,
+        radians: o.radians,
+        legs: o.legs.map(leg => ({
+          joint: { x: leg.joint.x - x, y: leg.joint.y - y },
+          foot: { x: leg.foot.x - x, y: leg.foot.y - y },
+          planted: leg.planted,
+        })),
+      })),
     };
   }
 

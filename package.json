@@ -9,6 +9,7 @@
     "clean": "shx rm -rf dist",
     "build": "npm run clean && webpack",
     "webpack:watch": "webpack --watch",
+    "webpack:watch:skin": "webpack --config webpack.config.skin.js --watch",
     "test:watch": "jest --watchAll --coverage"
   },
   "repository": {
@@ -29,6 +30,7 @@
   "homepage": "https://github.com/adrianlafond/bugs#readme",
   "devDependencies": {
     "@types/jest": "^23.3.9",
+    "@types/pixi.js": "^4.8.4",
     "awesome-typescript-loader": "^5.2.1",
     "concurrently": "^4.1.0",
     "jest": "^23.6.0",

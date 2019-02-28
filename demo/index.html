@@ -17,11 +17,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
 <script src="../dist/bug.js"></script>
+<script src="../dist/pixi-simple-skin.js"></script>
 <script>
-  const SEGMENT_RADIUS = 6;
-  const JOINT_RADIUS = 2;
-  const FOOT_RADIUS = 3;
-
   function createApp() {
     const app = new PIXI.Application({
       width: 320,
@@ -35,55 +32,31 @@
     return app;
   }
 
-  function drawBug() {
-    console.log('bug:', bug.data)
+  function createGuides() {
+    const rectSmall = new PIXI.Graphics();
+    rectSmall.lineStyle(0.5, 0xff0000, 1);
+    rectSmall.drawRect(0, 0, 50, 50);
+    app.stage.addChild(rectSmall);
+    const rectStart = new PIXI.Graphics();
+    rectStart.lineStyle(0.5, 0xff0000, 1);
+    rectStart.drawRect(0, 0, 100, 100);
+    app.stage.addChild(rectStart);
+    const rectEnd = new PIXI.Graphics();
+    rectEnd.lineStyle(0.5, 0xff0000, 1);
+    rectEnd.drawRect(0, 0, 200, 200);
+    app.stage.addChild(rectEnd);
+  }
+
+  function createBug() {
     gfx.container = new PIXI.Container();
-    drawSegment(gfx.container);
-    drawLegs(gfx.container);
     app.stage.addChild(gfx.container);
+    skin = new PixiSimpleSkin.default(app, gfx.container);
+    skin.create(bug.data);
   }
 
-  function drawSegment(container) {
-    const segmentGfx = new PIXI.Graphics();
-    segmentGfx.lineStyle(1, 0x000000, 1);
-    segmentGfx.drawCircle(0, 0, SEGMENT_RADIUS);
-    const segmentTexture = app.renderer.generateTexture(segmentGfx);
-    gfx.segment = new PIXI.Sprite.from(segmentTexture);
-    container.addChild(gfx.segment);
-  }
-
-  function drawLegs(container) {
-    gfx.legs = [];
-    bug.data.segments[0].legs.forEach((leg, i) => {
-      const jointGfx = new PIXI.Graphics();
-      const footGfx = new PIXI.Graphics();
-      jointGfx.lineStyle(1, 0x000000, 1);
-      jointGfx.drawCircle(0, 0, JOINT_RADIUS);
-      footGfx.lineStyle(1, 0x000000, 1);
-      footGfx.drawCircle(0, 0, FOOT_RADIUS);
-      const jointTexture = app.renderer.generateTexture(jointGfx);
-      const footTexture = app.renderer.generateTexture(footGfx);
-      gfx.legs[i] = {
-        joint: new PIXI.Sprite.from(jointTexture),
-        foot: new PIXI.Sprite.from(footTexture),
-      };
-      container.addChild(gfx.legs[i].joint);
-      container.addChild(gfx.legs[i].foot);
-    });
-  }
-
-  function updateBug() {
-    const segment = bug.data.segments[0];
-    gfx.container.x = bug.data.x;
-    gfx.container.y = bug.data.y;
-    gfx.segment.x = segment.x - SEGMENT_RADIUS;
-    gfx.segment.y = segment.y - SEGMENT_RADIUS;
-    gfx.legs.forEach((leg, i) => {
-      leg.joint.x = segment.legs[i].joint.x - JOINT_RADIUS;
-      leg.joint.y = segment.legs[i].joint.y - JOINT_RADIUS;
-      leg.foot.x = segment.legs[i].foot.x - FOOT_RADIUS;
-      leg.foot.y = segment.legs[i].foot.y - FOOT_RADIUS;
-    });
+  function tick(deltaTime) {
+    bug.tick(deltaTime);
+    skin.update(bug.data);
   }
 
   const app = createApp();
@@ -91,9 +64,19 @@
     x: 100,
     y: 100
   });
+  bug.setTarget(50, 50, 10);
+  let skin;
   const gfx = {};
-  drawBug();
-  updateBug();
+  createGuides();
+  createBug();
+
+  const ticker = new PIXI.ticker.Ticker();
+  ticker.add(tick);
+
+  function onToggleTick() {
+    ticker.started ? ticker.stop() : ticker.start();
+  }
+  document.querySelector('.bug').addEventListener('mousedown', onToggleTick);
 </script>
 </body>
 </html>

@@ -43,7 +43,7 @@ export default class Segment {
   constructor(options: SegmentOptions = {}) {
     const {
       position = new Point(),
-      radians = degreesToRadians(0),
+      radians = -Math.PI / 2,
       progress = 0,
       step = 0,
       target = new Vector(),
@@ -88,7 +88,7 @@ export default class Segment {
     const progress = Math.max(0, Math.min(1.0, value));
     this.moveSegment(progress);
     this.moveJoints();
-    this.moveFeet(progress);
+    // this.moveFeet(progress);
     this.updateProgress(progress);
   }
 
@@ -102,13 +102,15 @@ export default class Segment {
 
   private moveJoints() {
     const { layout, position, radians } = this.model;
-    const jointLayout = layout.legs[this.step].joint;
-    const jointRadians = jointLayout.radians + radians;
-    const jointPoint = new Point(
-      Math.cos(jointRadians) * jointLayout.distance + position.x,
-      Math.sin(jointRadians) * jointLayout.distance + position.y,
-    );
-    this.model.legs[this.step].moveJoint(jointPoint, jointRadians);
+    layout.legs.forEach((leg, index) => {
+      const jointLayout = layout.legs[index].joint;
+      const jointRadians = jointLayout.radians + radians;
+      const jointPoint = new Point(
+        Math.cos(jointRadians) * jointLayout.distance + position.x,
+        Math.sin(jointRadians) * jointLayout.distance + position.y,
+      );
+      this.model.legs[index].moveJoint(jointPoint, jointRadians);
+    });
   }
 
   private moveFeet(progress: number) {
@@ -118,8 +120,7 @@ export default class Segment {
   private updateProgress(progress: number) {
     const { progress: prevProgress } = this.model;
     this.model.progress = progress;
-    if ((prevProgress !== 1 && progress === 1) ||
-        (prevProgress !== 0 && progress === 0)) {
+    if (prevProgress < 1 && progress >= 1) {
       this.model.step = this.model.step === 1 ? 0 : 1;
     }
   }
@@ -145,14 +146,15 @@ export default class Segment {
 
     const { target } = this.model;
     const { position, legs } = this.model.layout;
-    const deltaAngle = target.angle - position.angle;
+    const deltaAngle = normalizeRadians(target.angle - position.angle);
     const deltaDistance = Point.distance(target.point, position.point);
+
     const leg = this.model.legs[this.step];
     const legLayout = legs[this.step];
-    const radians = deltaAngle + legLayout.foot.radians;
+    const radians = normalizeRadians(legLayout.foot.radians + deltaAngle);
     leg.target = new Point(
-      Math.cos(deltaDistance) * radians + position.point.x,
-      Math.sin(deltaDistance) * radians + position.point.y,
+      Math.cos(legLayout.foot.distance) * radians + target.point.x,
+      Math.sin(legLayout.foot.distance) * radians + target.point.y,
     );
 
     this.progress = 0;

@@ -1,5 +1,6 @@
 import Bug from '../src';
 import { SegmentData } from '../src/segment';
+import Point from '../src/geom/point';
 
 describe('Bug', () => {
   let bug: Bug;
@@ -29,18 +30,15 @@ describe('Bug', () => {
     });
   });
 
-  describe('segment (defaults)', () => {
-    let segment: SegmentData;
-    beforeEach(() => {
-      segment = bug.segments[0];
-    })
-    it('has a segment', () => {
-      expect(segment.x).not.toEqual(NaN);
-      expect(segment.y).not.toEqual(NaN);
-      expect(segment.radians).not.toEqual(NaN);
+  describe('movement', () => {
+    it('allows a target and minimum distance to the target to be set', () => {
+      bug.setTarget(150, 250, 75);
+      expect(bug.getTarget()).toEqual({ x: 150, y: 250, distance: 75 });
     });
-    it('has legs', () => {
-      expect(segment.legs.length).toBeGreaterThanOrEqual(2);
+
+    it('defaults all target values to 0', () => {
+      bug.setTarget();
+      expect(bug.getTarget()).toEqual({ x: 0, y: 0, distance: 0 });
     });
   });
 });

@@ -1,9 +1,9 @@
 export function degreesToRadians(value: number = 0): number {
-  return normalizeRadians(Math.PI * (value - 90) / 180);
+  return normalizeRadians(Math.PI * value / 180);
 }
 
 export function radiansToDegrees(value: number = 0): number {
-  return normalizeDegrees((value + Math.PI / 2) * 180 / Math.PI);
+  return normalizeDegrees(value * 180 / Math.PI);
 }
 
 export function normalizeRadians(value: number = 0): number {

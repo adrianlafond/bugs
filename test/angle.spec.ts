@@ -10,33 +10,33 @@ function isClose(a: number, b: number): boolean {
 }
 
 describe('Angle', () => {
-  it('normalizes degrees with 0 pointing straight up into radians', () => {
-    expect(degreesToRadians()).toEqual(Math.PI * 1.5);
-    expect(degreesToRadians(0)).toEqual(Math.PI * 1.5);
-    expect(degreesToRadians(45)).toEqual(Math.PI * 1.75);
-    expect(degreesToRadians(90)).toEqual(0);
-    expect(degreesToRadians(135)).toEqual(Math.PI * 0.25);
-    expect(degreesToRadians(180)).toEqual(Math.PI * 0.5);
-    expect(degreesToRadians(225)).toEqual(Math.PI * 0.75);
-    expect(degreesToRadians(270)).toEqual(Math.PI);
-    expect(degreesToRadians(315)).toEqual(Math.PI * 1.25);
-    expect(degreesToRadians(360)).toEqual(Math.PI * 1.5);
-    expect(degreesToRadians(-45)).toEqual(Math.PI * 1.25);
-    expect(degreesToRadians(405)).toEqual(Math.PI * 1.75);
+  it('converts degrees to radians', () => {
+    expect(degreesToRadians()).toEqual(0);
+    expect(degreesToRadians(0)).toEqual(0);
+    expect(degreesToRadians(45)).toEqual(Math.PI * 0.25);
+    expect(degreesToRadians(90)).toEqual(Math.PI * 0.5);
+    expect(degreesToRadians(135)).toEqual(Math.PI * 0.75);
+    expect(degreesToRadians(180)).toEqual(Math.PI * 1.0);
+    expect(degreesToRadians(225)).toEqual(Math.PI * 1.25);
+    expect(degreesToRadians(270)).toEqual(Math.PI * 1.5);
+    expect(degreesToRadians(315)).toEqual(Math.PI * 1.75);
+    expect(degreesToRadians(360)).toEqual(0);
+    expect(degreesToRadians(-45)).toEqual(Math.PI * 1.75);
+    expect(isClose(degreesToRadians(405), Math.PI * 0.25)).toBe(true);
   });
 
-  it('normalizes radians into degrees with 0 pointing straight up', () => {
-    expect(radiansToDegrees()).toEqual(90);
-    expect(radiansToDegrees(0)).toEqual(90);
-    expect(radiansToDegrees(-Math.PI * 0.5)).toEqual(0);
-    expect(radiansToDegrees(Math.PI * 0.25)).toEqual(135);
-    expect(radiansToDegrees(Math.PI * 0.5)).toEqual(180);
-    expect(radiansToDegrees(Math.PI * 0.75)).toEqual(225);
-    expect(radiansToDegrees(Math.PI)).toEqual(270);
-    expect(radiansToDegrees(Math.PI * 1.25)).toEqual(315);
-    expect(radiansToDegrees(Math.PI * 1.5)).toEqual(0);
-    expect(radiansToDegrees(Math.PI * 1.75)).toEqual(45);
-    expect(radiansToDegrees(Math.PI * 3.5)).toEqual(0);
+  it('converts radians to degrees', () => {
+    expect(radiansToDegrees()).toEqual(0);
+    expect(radiansToDegrees(0)).toEqual(0);
+    expect(radiansToDegrees(-Math.PI * 0.5)).toEqual(270);
+    expect(radiansToDegrees(Math.PI * 0.25)).toEqual(45);
+    expect(radiansToDegrees(Math.PI * 0.5)).toEqual(90);
+    expect(radiansToDegrees(Math.PI * 0.75)).toEqual(135);
+    expect(radiansToDegrees(Math.PI)).toEqual(180);
+    expect(radiansToDegrees(Math.PI * 1.25)).toEqual(225);
+    expect(radiansToDegrees(Math.PI * 1.5)).toEqual(270);
+    expect(radiansToDegrees(Math.PI * 1.75)).toEqual(315);
+    expect(radiansToDegrees(Math.PI * 3.5)).toEqual(270);
   });
 
   it('normalizes radians to between 0 and Math.PI * 2 inclusive', () => {
@@ -64,7 +64,7 @@ describe('Angle', () => {
   it('instantiates optionally with radians', () => {
     const angle = new Angle(Math.PI, true);
     expect(angle.radians).toEqual(Math.PI);
-    expect(angle.degrees).toEqual(270);
+    expect(angle.degrees).toEqual(180);
   });
   it('updates radians when degrees are set', () => {
     const angle = new Angle(25);

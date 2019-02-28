@@ -113,8 +113,6 @@ export default class Leg {
   }
 
   moveJoint(point: Point, radians: number) {
-    // this.model.joint.add(point);
-    // this.model.radians += radians;
     this.model.joint = point.clone();
     this.model.radians = radians;
   }

@@ -98,25 +98,28 @@ describe('Segment', () => {
   describe('movement', () => {
     let segment: Segment;
     beforeEach(() => {
-      segment = new Segment({ target: new Vector(10, 10, Math.PI * 1.0) });
+      segment = new Segment({
+        radians: 0,
+        target: new Vector(10, 10, Math.PI)
+      });
     });
     it('does not advance when progress is 0.0', () => {
       segment.progress = 0.0;
       expect(segment.position.x).toEqual(0);
       expect(segment.position.y).toEqual(0);
-      expect(segment.radians).toEqual(Math.PI * 1.5);
+      expect(segment.radians).toEqual(0);
     });
     it('advances halfway when progress is 0.5', () => {
       segment.progress = 0.5;
       expect(segment.position.x).toEqual(5);
       expect(segment.position.y).toEqual(5);
-      expect(segment.radians).toEqual(Math.PI * 1.25);
+      expect(segment.radians).toEqual(Math.PI * 0.5);
     });
     it('advances all the way when progress is 1.0', () => {
       segment.progress = 1.0;
       expect(segment.position.x).toEqual(10);
       expect(segment.position.y).toEqual(10);
-      expect(segment.radians).toEqual(Math.PI * 1.0);
+      expect(segment.radians).toEqual(Math.PI);
     });
     it('changes step when progress reaches 1.0', () => {
       expect(segment.progress).toEqual(0);

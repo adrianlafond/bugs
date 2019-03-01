@@ -50,7 +50,7 @@ describe('Point', () => {
   });
 
   describe('data', () => {
-    it('returns a POJO', () => {
+    it('is a POJO', () => {
       const p = new Point(3, 9);
       expect(p.data).toEqual({ x: 3, y: 9 });
     });
@@ -59,9 +59,10 @@ describe('Point', () => {
   describe('static', () => {
     describe('distance', () => {
       it('returns the distance between 2 points', () => {
-        const p1 = new Point(3, 3);
-        const p2 = new Point(9, 9);
-        expect(Point.distance(p1, p2)).toEqual(Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y)));
+        const p1 = new Point(3, 5);
+        const p2 = new Point(9, 13);
+        const distance = Math.sqrt((3 - 9) * (3 - 9) + (5 - 13) * (5 - 13));
+        expect(Point.distance(p1, p2)).toEqual(distance);
       });
     });
 

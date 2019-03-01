@@ -72,7 +72,7 @@ describe('Angle', () => {
     angle.degrees = 150;
     expect(angle.radians).toBe(degreesToRadians(150));
   });
-  it('updates degress when radians are set', () => {
+  it('updates degrees when radians are set', () => {
     const angle = new Angle(25);
     expect(angle.degrees).toEqual(25);
     angle.radians = Math.PI / 2;

@@ -94,6 +94,27 @@
   const gfx = {};
   drawBug();
   updateBug();
+  app.ticker.stop();
+  app.ticker.add(delta => {
+    console.log(delta);
+    updateBug();
+  });
+
+  function toggleTicker() {
+    if (app.ticker.started) {
+      app.ticker.stop();
+    } else {
+      app.ticker.start();
+    }
+  }
+  window.addEventListener('keydown', event => {
+    if (event.key === ' ') {
+      toggleTicker();
+    }
+  });
+  window.addEventListener('mousedown', event => {
+    toggleTicker();
+  });
 </script>
 </body>
 </html>

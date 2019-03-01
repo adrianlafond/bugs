@@ -18,6 +18,35 @@ describe('Vector', () => {
       expect(vector.point.data).toEqual({ x: 25, y: 35 });
       expect(vector.radians).toEqual(Math.PI);
     });
+    it('provides a getter for "x"', () => {
+      const vector = new Vector(new Point(25, 35));
+      expect(vector.x).toEqual(25);
+    });
+    it('provides a getter for "y"', () => {
+      const vector = new Vector(new Point(25, 35));
+      expect(vector.y).toEqual(35);
+    });
+  });
+
+  describe('setting values', () => {
+    it('allows point.x to be set', () => {
+      const vector = new Vector(new Point(25, 35));
+      expect(vector.x).toEqual(25);
+      vector.x = 45;
+      expect(vector.x).toEqual(45);
+    });
+    it('allows point.y to be set', () => {
+      const vector = new Vector(new Point(25, 35));
+      expect(vector.y).toEqual(35);
+      vector.y = 45;
+      expect(vector.y).toEqual(45);
+    });
+    it('allows point.radians to be set', () => {
+      const vector = new Vector(25, 35, 0.2);
+      expect(vector.radians).toEqual(0.2);
+      vector.radians = 1.5;
+      expect(vector.radians).toEqual(1.5);
+    });
   });
 
   describe('util', () => {

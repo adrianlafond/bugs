@@ -18,6 +18,20 @@ describe('Point', () => {
       expect(p.y).toBe(5);
     });
 
+    it('allows the value of "x" to be updated', () => {
+      const p = new Point(5);
+      expect(p.x).toEqual(5);
+      p.x = 10;
+      expect(p.x).toEqual(10);
+    });
+
+    it('allows the value of "y" to be updated', () => {
+      const p = new Point(0, 5);
+      expect(p.y).toEqual(5);
+      p.y = 10;
+      expect(p.y).toEqual(10);
+    });
+
     it('clones a point with same coords', () => {
       const p1 = new Point(5, 10);
       const p2 = p1.clone();

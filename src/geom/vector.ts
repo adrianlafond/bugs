@@ -32,12 +32,24 @@ export default class Vector {
     return this.model.point.x;
   }
 
+  set x(value: number) {
+    this.model.point.x = value;
+  }
+
   get y(): number {
     return this.model.point.y;
   }
 
+  set y(value: number) {
+    this.model.point.y = value;
+  }
+
   get radians(): number {
     return this.model.radians;
+  }
+
+  set radians(value: number) {
+    this.model.radians = value;
   }
 
   get data(): VectorData {

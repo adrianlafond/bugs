@@ -2,25 +2,25 @@ import Point from './point';
 
 export interface VectorModel {
   point?: Point;
-  angle?: number;
+  radians?: number;
 }
 
 export interface VectorData {
   x: number;
   y: number;
-  angle: number;
+  radians: number;
 }
 
 export default class Vector {
   private model: VectorModel = {};
 
-  constructor(x_point: number|Point = 0, y_point: number = 0, angle: number = 0) {
+  constructor(x_point: number | Point = 0, y_point: number = 0, radians: number = 0) {
     if (x_point instanceof Point) {
       this.model.point = x_point.clone();
-      this.model.angle = y_point;
+      this.model.radians = y_point;
     } else {
       this.model.point = new Point(x_point, y_point);
-      this.model.angle = angle;
+      this.model.radians = radians;
     }
   }
 
@@ -36,17 +36,17 @@ export default class Vector {
     return this.model.point.y;
   }
 
-  get angle(): number {
-    return this.model.angle;
+  get radians(): number {
+    return this.model.radians;
   }
 
   get data(): VectorData {
-    const { x, y, angle } = this;
-    return { x, y, angle };
+    const { x, y, radians } = this;
+    return { x, y, radians };
   }
 
   clone(): Vector {
-    return new Vector(this.point, this.angle);
+    return new Vector(this.point, this.radians);
   }
 
   toString(): string {

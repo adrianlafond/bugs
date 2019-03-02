@@ -1,5 +1,5 @@
 import Segment, { SegmentData } from './segment';
-import Point from './geom/point';
+import { Point } from '@adrianlafond/geom';
 
 export interface BugModel {
   id: string;

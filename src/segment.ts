@@ -4,7 +4,7 @@ import {
   normalizeRadians,
 } from './geom/angle';
 import Leg, { LegData, MAXIMUM_LENGTH } from './leg';
-import Vector from './geom/vector';
+import { Vector } from '@adrianlafond/geom';
 
 export interface SegmentOptions {
   position?: Point;

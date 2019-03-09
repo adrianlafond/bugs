@@ -13,7 +13,7 @@
     "watch:bug": "webpack --config webpack.config.bug.js --watch",
     "watch:skin": "webpack --config webpack.config.skin.js --watch",
     "test:watch": "jest --watchAll --coverage",
-    "serve": "live-server --open=./demo"
+    "serve": "live-server --no-browser --open=./demo"
   },
   "repository": {
     "type": "git",

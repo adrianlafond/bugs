@@ -2,14 +2,18 @@
   "name": "bugs",
   "version": "0.0.1",
   "description": "2D bug/insect/creature engine",
-  "main": "index.js",
+  "main": "./dist/bug.js",
   "scripts": {
     "test": "jest --coverage",
-    "start": "npm run clean && concurrently \"npm run webpack:watch\" \"npm run test:watch\"",
+    "start": "npm run clean && concurrently \"npm run watch:bug\" \"npm run watch:skin\" \"npm run test:watch\" \"npm run serve\"",
     "clean": "shx rm -rf dist",
-    "build": "npm run clean && webpack",
-    "webpack:watch": "webpack --watch",
-    "test:watch": "jest --watchAll --coverage"
+    "build": "npm run clean && npm run build:bug && npm run build:skin",
+    "build:bug": "webpack --config webpack.config.bug.js -p",
+    "build:skin": "webpack --config webpack.config.bug.js -p",
+    "watch:bug": "webpack --config webpack.config.bug.js --watch",
+    "watch:skin": "webpack --config webpack.config.skin.js --watch",
+    "test:watch": "jest --watchAll --coverage",
+    "serve": "live-server --open=./demo"
   },
   "repository": {
     "type": "git",
@@ -32,6 +36,7 @@
     "awesome-typescript-loader": "^5.2.1",
     "concurrently": "^4.1.0",
     "jest": "^23.6.0",
+    "live-server": "^1.2.1",
     "shx": "^0.3.2",
     "ts-jest": "^23.10.4",
     "typescript": "^3.1.6",

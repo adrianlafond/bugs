@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: './src/skin/index.ts',
   devtool: 'inline-source-map',
   mode: 'development',
   module: {
@@ -17,10 +17,10 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js']
   },
   output: {
-    filename: 'bug.js',
+    filename: 'skin.js',
     path: path.resolve(__dirname, 'dist'),
     libraryTarget: 'umd',
-    library: 'Bug',
+    library: 'Skin',
     umdNamedDefine: true
   }
 };

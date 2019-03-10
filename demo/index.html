@@ -17,6 +17,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
 <script src="../dist/bug.js"></script>
+<script src="../dist/skin.js"></script>
 <script>
   function createApp() {
     const app = new PIXI.Application({
@@ -27,12 +28,20 @@
     });
     app.renderer.backgroundColor = 0xEFEFEF;
     app.renderer.autoResize = true;
+    app.ticker.add(delta => {
+      // console.log(delta);
+      // updateBug();
+    });
     document.querySelector('.bug').appendChild(app.view);
     return app;
   }
 
   function createBug() {
-    return new Bug.default();
+    return new Bug.default({ x: 100, y: 100 });
+  }
+
+  function createSkin() {
+    return new Skin.Pixi(bug);
   }
 
   function toggleTicker() {
@@ -52,6 +61,7 @@
   });
   const app = createApp();
   const bug = createBug();
+  const skin = createSkin();
 </script>
 </body>
 </html>

@@ -5,7 +5,7 @@
   "main": "./dist/bug.js",
   "scripts": {
     "test": "jest --coverage",
-    "start": "npm run clean && concurrently \"npm run watch:bug\" \"npm run watch:skin\" \"npm run test:watch\" \"npm run serve\"",
+    "start": "npm run clean && concurrently \"npm run watch:bug\" \"npm run watch:skin\" \"npm run serve\"",
     "clean": "shx rm -rf dist",
     "build": "npm run clean && npm run build:bug && npm run build:skin",
     "build:bug": "webpack --config webpack.config.bug.js -p",

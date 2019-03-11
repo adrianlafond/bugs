@@ -13,7 +13,7 @@
     "watch:bug": "webpack --config webpack.config.bug.js --watch",
     "watch:skin": "webpack --config webpack.config.skin.js --watch",
     "test:watch": "jest --watchAll --coverage",
-    "serve": "live-server --no-browser --open=./demo"
+    "serve": "live-server --no-browser --open=./demo --watch=./dist"
   },
   "repository": {
     "type": "git",
@@ -44,6 +44,7 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "@adrianlafond/geom": "^1.0.4"
+    "@adrianlafond/geom": "^1.0.4",
+    "pixi.js": "^5.0.0-rc.2"
   }
 }

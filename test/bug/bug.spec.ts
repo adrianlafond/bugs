@@ -1,4 +1,4 @@
-import Bug from '../../src/bug/bug';
+import Bug from '../../src/bug';
 
 describe('Bug', () => {
   let bug: Bug;
@@ -13,9 +13,12 @@ describe('Bug', () => {
     it('sets default y to 0', () => {
       expect(bug.y).toEqual(0);
     });
+    it('sets default rotation to 0', () => {
+      expect(bug.rotation).toEqual(0);
+    });
   });
 
-  describe('options', () => {
+  describe('instantiation', () => {
     it('sets x from options', () => {
       bug = new Bug({ x: 5 });
       expect(bug.x).toEqual(5);
@@ -23,6 +26,28 @@ describe('Bug', () => {
     it('sets y from options', () => {
       bug = new Bug({ y: 7 });
       expect(bug.y).toEqual(7);
+    });
+    it('sets set rotation from options', () => {
+      bug = new Bug({ rotation: 0.555 });
+      expect(bug.rotation).toBe(0.555);
+    });
+  });
+
+  describe('setters', () => {
+    beforeEach(() => {
+      bug = new Bug();
+    });
+    it('allows setting x', () => {
+      bug.x = 15;
+      expect(bug.x).toEqual(15);
+    });
+    it('allows setting y', () => {
+      bug.y = 19;
+      expect(bug.y).toEqual(19);
+    });
+    it('allows setting rotation', () => {
+      bug.rotation = 1.333;
+      expect(bug.rotation).toEqual(1.333);
     });
   });
 });

@@ -7,7 +7,7 @@ const BODY_RADIUS = 8;
 class Pixi implements Skin {
   container: PIXI.Container;
   segments: PIXI.Container[];
-  nose: PIXI.Sprite;
+  legs: PIXI.Sprite[];
 
   constructor(public bug: Bug, public app: PIXI.Application) {
     this.createParts();
@@ -16,12 +16,26 @@ class Pixi implements Skin {
   }
 
   public render(delta: number = 1): Pixi {
-    // console.log('Pixi.render().delta:', delta);
     this.bug.tick(delta);
+    this.destroyLegs();
     this.segments.forEach((segment, index) => {
-      segment.x = this.bug.segments[index].x;
-      segment.y = this.bug.segments[index].y;
-      segment.rotation = this.bug.segments[index].radians;
+      const bugSegment = this.bug.segments[index];
+      segment.x = bugSegment.x;
+      segment.y = bugSegment.y;
+      segment.rotation = bugSegment.radians;
+      bugSegment.legs.forEach(leg => {
+        const gfx = new PIXI.Graphics();
+        gfx.lineStyle(1, 0x000000, 1);
+        leg.forEach((point, index) => {
+          const method = index === 0 ? 'moveTo' : 'lineTo';
+          gfx[method](point.x + BODY_RADIUS, point.y + BODY_RADIUS);
+        });
+        segment.addChild(gfx);
+
+        // gfx.drawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS);
+        // const texture = this.app.renderer.generateTexture(gfx, 1, 1);
+        // const sprite = new PIXI.Sprite(texture);
+      });
     });
     return this;
   }
@@ -32,7 +46,7 @@ class Pixi implements Skin {
   }
 
   protected createSegments() {
-    this.segments = this.bug.segments.map(segment => {
+    this.segments = this.bug.segments.map(() => {
       const container = new PIXI.Container();
       container.pivot = new PIXI.Point(BODY_RADIUS, BODY_RADIUS);
 
@@ -60,6 +74,20 @@ class Pixi implements Skin {
     gfx.endFill();
     const texture = this.app.renderer.generateTexture(gfx, 1, 1);
     return new PIXI.Sprite(texture);
+  }
+
+  protected destroyLegs() {
+    if (this.legs) {
+      this.legs.forEach(leg => {
+        leg.destroy();
+      });
+    }
+  }
+
+  protected createLegs() {
+    // Easier to just delete and recreate legs each tick?
+    // Prefered to draw a line between points rather than rotate a line to
+    // match points.
   }
 }
 

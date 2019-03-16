@@ -1,5 +1,4 @@
-import { VectorData } from '@adrianlafond/geom';
-import Segment from './segment';
+import Segment, { SegmentData } from './segment';
 export interface BugOptions {
     x?: number;
     y?: number;
@@ -15,6 +14,6 @@ declare class Bug {
     x: number;
     y: number;
     radians: number;
-    readonly segments: VectorData[];
+    readonly segments: SegmentData[];
 }
 export default Bug;

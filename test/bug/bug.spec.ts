@@ -59,6 +59,21 @@ describe('Bug', () => {
       expect(bug.segments[0].y).toEqual(0);
       expect(bug.segments[0].radians).toEqual(0);
     });
+    it('has a segment at index 0 with same x, y, radians as parent Bug instance', () => {
+      bug = new Bug({ x: 23, y: 37, radians: 0.5 });
+      expect(bug.segments[0].x).toEqual(23);
+      expect(bug.segments[0].y).toEqual(37);
+      expect(bug.segments[0].radians).toEqual(0.5);
+    });
+  });
+
+  describe('legs', () => {
+    describe('defaults', () => {
+      it('has a segment with 2 legs', () => {
+        bug = new Bug();
+        expect(bug.segments[0].legs.length).toBe(2);
+      });
+    });
   });
 
   describe('tick()', () => {

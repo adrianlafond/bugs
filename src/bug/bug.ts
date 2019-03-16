@@ -1,5 +1,5 @@
-import { Vector, VectorData } from '@adrianlafond/geom';
-import Segment from './segment';
+import { Vector } from '@adrianlafond/geom';
+import Segment, { SegmentData } from './segment';
 
 export interface BugOptions {
   x?: number;
@@ -17,7 +17,9 @@ class Bug {
   constructor(options: BugOptions = {}) {
     const { x = 0, y = 0, radians = 0 } = options;
     this.model = {
-      segments: [new Segment(new Vector(x, y, radians))],
+      segments: [new Segment({
+        vector: new Vector(x, y, radians),
+      })],
     };
   }
 
@@ -47,7 +49,7 @@ class Bug {
     this.model.segments[0].radians = value;
   }
 
-  get segments(): VectorData[] {
+  get segments(): SegmentData[] {
     return this.model.segments.map(segment => segment.data);
   }
 }

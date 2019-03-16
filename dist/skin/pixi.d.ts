@@ -5,12 +5,12 @@ declare class Pixi implements Skin {
     bug: Bug;
     app: PIXI.Application;
     container: PIXI.Container;
-    body: PIXI.Sprite;
+    segments: PIXI.Container[];
     nose: PIXI.Sprite;
     constructor(bug: Bug, app: PIXI.Application);
-    createParts(): void;
-    createBody(): void;
-    createNose(): void;
     render(delta?: number): Pixi;
+    protected createParts(): void;
+    protected createSegments(): void;
+    protected createNose(): PIXI.Sprite;
 }
 export default Pixi;

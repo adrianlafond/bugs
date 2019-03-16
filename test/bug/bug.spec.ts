@@ -13,8 +13,8 @@ describe('Bug', () => {
     it('sets default y to 0', () => {
       expect(bug.y).toEqual(0);
     });
-    it('sets default rotation to 0', () => {
-      expect(bug.rotation).toEqual(0);
+    it('sets default radians to 0', () => {
+      expect(bug.radians).toEqual(0);
     });
   });
 
@@ -28,8 +28,8 @@ describe('Bug', () => {
       expect(bug.y).toEqual(7);
     });
     it('sets set rotation from options', () => {
-      bug = new Bug({ rotation: 0.555 });
-      expect(bug.rotation).toBe(0.555);
+      bug = new Bug({ radians: 0.555 });
+      expect(bug.radians).toBe(0.555);
     });
   });
 
@@ -46,8 +46,27 @@ describe('Bug', () => {
       expect(bug.y).toEqual(19);
     });
     it('allows setting rotation', () => {
-      bug.rotation = 1.333;
-      expect(bug.rotation).toEqual(1.333);
+      bug.radians = 1.333;
+      expect(bug.radians).toEqual(1.333);
+    });
+  });
+
+  describe('segments', () => {
+    it('has a single segment at [0, 0] by default', () => {
+      bug = new Bug();
+      expect(bug.segments.length).toEqual(1);
+      expect(bug.segments[0].x).toEqual(0);
+      expect(bug.segments[0].y).toEqual(0);
+      expect(bug.segments[0].radians).toEqual(0);
+    });
+  });
+
+  describe('tick()', () => {
+    beforeEach(() => {
+      bug = new Bug();
+    });
+    it('returns reference own Bug instance', () => {
+      expect(bug.tick()).toBe(bug);
     });
   });
 });

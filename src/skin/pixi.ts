@@ -6,31 +6,50 @@ const BODY_RADIUS = 8;
 
 class Pixi implements Skin {
   container: PIXI.Container;
-  body: PIXI.Sprite;
+  segments: PIXI.Container[];
   nose: PIXI.Sprite;
 
   constructor(public bug: Bug, public app: PIXI.Application) {
     this.createParts();
     this.app.stage.addChild(this.container);
+    this.render();
   }
 
-  createParts() {
+  public render(delta: number = 1): Pixi {
+    // console.log('Pixi.render().delta:', delta);
+    this.bug.tick(delta);
+    this.segments.forEach((segment, index) => {
+      segment.x = this.bug.segments[index].x;
+      segment.y = this.bug.segments[index].y;
+      segment.rotation = this.bug.segments[index].radians;
+    });
+    return this;
+  }
+
+  protected createParts() {
     this.container = new PIXI.Container();
-    this.container.pivot = new PIXI.Point(BODY_RADIUS, BODY_RADIUS);
-    this.createBody();
-    this.createNose();
+    this.createSegments();
   }
 
-  createBody() {
-    const gfx = new PIXI.Graphics();
-    gfx.lineStyle(1, 0x000000, 1);
-    gfx.drawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS);
-    const texture = this.app.renderer.generateTexture(gfx, 1, 1);
-    this.body = new PIXI.Sprite(texture);
-    this.container.addChild(this.body);
+  protected createSegments() {
+    this.segments = this.bug.segments.map(segment => {
+      const container = new PIXI.Container();
+      container.pivot = new PIXI.Point(BODY_RADIUS, BODY_RADIUS);
+
+      const gfx = new PIXI.Graphics();
+      gfx.lineStyle(1, 0x000000, 1);
+      gfx.drawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS);
+      const texture = this.app.renderer.generateTexture(gfx, 1, 1);
+      const sprite = new PIXI.Sprite(texture);
+
+      container.addChild(sprite);
+      container.addChild(this.createNose())
+      this.container.addChild(container);
+      return container;
+    });
   }
 
-  createNose() {
+  protected createNose() {
     const gfx = new PIXI.Graphics();
     gfx.beginFill(0x000000, 1);
     gfx.drawPolygon([
@@ -40,16 +59,7 @@ class Pixi implements Skin {
     ]);
     gfx.endFill();
     const texture = this.app.renderer.generateTexture(gfx, 1, 1);
-    this.nose = new PIXI.Sprite(texture);
-    this.container.addChild(this.nose);
-  }
-
-  render(delta: number = 1): Pixi {
-    // console.log('Pixi.render().delta:', delta);
-    this.container.x = this.bug.x;
-    this.container.y = this.bug.y;
-    this.container.rotation = this.bug.rotation;
-    return this;
+    return new PIXI.Sprite(texture);
   }
 }
 

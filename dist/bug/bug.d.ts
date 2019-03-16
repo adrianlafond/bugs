@@ -1,16 +1,20 @@
+import { VectorData } from '@adrianlafond/geom';
+import Segment from './segment';
 export interface BugOptions {
     x?: number;
     y?: number;
-    rotation?: number;
+    radians?: number;
+}
+interface BugModel {
+    segments: Segment[];
 }
 declare class Bug {
-    private model;
+    protected model: BugModel;
     constructor(options?: BugOptions);
+    tick(delta?: number): Bug;
     x: number;
     y: number;
-    /**
-     * Value is in radians.
-     */
-    rotation: number;
+    radians: number;
+    readonly segments: VectorData[];
 }
 export default Bug;

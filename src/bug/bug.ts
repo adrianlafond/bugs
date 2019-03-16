@@ -1,49 +1,54 @@
+import { Vector, VectorData } from '@adrianlafond/geom';
+import Segment from './segment';
 
 export interface BugOptions {
   x?: number;
   y?: number;
-  rotation?: number;
+  radians?: number;
 }
 
 interface BugModel {
-  x: number;
-  y: number;
-  rotation: number;
+  segments: Segment[];
 }
 
 class Bug {
-  private model: BugModel = {
-    x: 0,
-    y: 0,
-    rotation: 0,
-  };
+  protected model: BugModel;
 
   constructor(options: BugOptions = {}) {
-    this.model = { ...this.model, ...options };
+    const { x = 0, y = 0, radians = 0 } = options;
+    this.model = {
+      segments: [new Segment(new Vector(x, y, radians))],
+    };
+  }
+
+  tick(delta: number = 1): Bug {
+    this.model.segments[0].radians += 0.05 * delta;
+    return this;
   }
 
   get x(): number {
-    return this.model.x;
+    return this.model.segments[0].x;
   }
   set x(value: number) {
-    this.model.x = value;
+    this.model.segments[0].x = value;
   }
 
   get y(): number {
-    return this.model.y;
+    return this.model.segments[0].y;
   }
   set y(value: number) {
-    this.model.y = value;
+    this.model.segments[0].y = value;
   }
 
-  /**
-   * Value is in radians.
-   */
-  get rotation(): number {
-    return this.model.rotation;
+  get radians(): number {
+    return this.model.segments[0].radians;
   }
-  set rotation(value: number) {
-    this.model.rotation = value;
+  set radians(value: number) {
+    this.model.segments[0].radians = value;
+  }
+
+  get segments(): VectorData[] {
+    return this.model.segments.map(segment => segment.data);
   }
 }
 

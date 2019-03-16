@@ -49,7 +49,7 @@
     return new Bug.default({
       x: 100,
       y: 100,
-      rotation: Math.random() * Math.PI * 2,
+      radians: Math.random() * Math.PI * 2,
     });
   }
 
@@ -57,11 +57,17 @@
     return new Skin.Pixi(bug, app);
   }
 
+  function createTicker() {
+    const pixiTicker = new PIXI.Ticker();
+    pixiTicker.autoStart = false;
+    return pixiTicker;
+  }
+
   function toggleTicker() {
-    if (app.ticker.started) {
-      app.ticker.stop();
+    if (ticker.started) {
+      ticker.stop();
     } else {
-      app.ticker.start();
+      ticker.start();
     }
   }
   window.addEventListener('keydown', event => {
@@ -75,8 +81,9 @@
   const app = createApp();
   const bug = createBug();
   const skin = createSkin();
+  const ticker = createTicker();
+  ticker.add(skin.render.bind(skin));
   addMarkers();
-  app.ticker.add(skin.render.bind(skin));
 </script>
 </body>
 </html>

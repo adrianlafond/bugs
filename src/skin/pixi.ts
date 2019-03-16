@@ -7,7 +7,7 @@ const BODY_RADIUS = 8;
 class Pixi implements Skin {
   container: PIXI.Container;
   segments: PIXI.Container[];
-  legs: PIXI.Sprite[];
+  legs: PIXI.Graphics[] = [];
 
   constructor(public bug: Bug, public app: PIXI.Application) {
     this.createParts();
@@ -28,13 +28,10 @@ class Pixi implements Skin {
         gfx.lineStyle(1, 0x000000, 1);
         leg.forEach((point, index) => {
           const method = index === 0 ? 'moveTo' : 'lineTo';
-          gfx[method](point.x + BODY_RADIUS, point.y + BODY_RADIUS);
+          gfx[method](point.x + BODY_RADIUS + Math.random() * 10 - 5, point.y + BODY_RADIUS);
         });
+        this.legs.push(gfx);
         segment.addChild(gfx);
-
-        // gfx.drawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS);
-        // const texture = this.app.renderer.generateTexture(gfx, 1, 1);
-        // const sprite = new PIXI.Sprite(texture);
       });
     });
     return this;
@@ -77,17 +74,11 @@ class Pixi implements Skin {
   }
 
   protected destroyLegs() {
-    if (this.legs) {
-      this.legs.forEach(leg => {
-        leg.destroy();
-      });
-    }
-  }
-
-  protected createLegs() {
-    // Easier to just delete and recreate legs each tick?
-    // Prefered to draw a line between points rather than rotate a line to
-    // match points.
+    this.legs.forEach(leg => {
+      leg.parent.removeChild(leg);
+      leg.destroy();
+    });
+    this.legs = [];
   }
 }
 

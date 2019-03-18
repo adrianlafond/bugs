@@ -28,10 +28,10 @@ class Pixi implements Skin {
         gfx.lineStyle(1, 0x000000, 1);
         leg.forEach((point, index) => {
           const method = index === 0 ? 'moveTo' : 'lineTo';
-          gfx[method](point.x + BODY_RADIUS + Math.random() * 10 - 5, point.y + BODY_RADIUS);
+          gfx[method](point.x + Math.random() * 10 - 5, point.y);
         });
         this.legs.push(gfx);
-        segment.addChild(gfx);
+        this.container.addChild(gfx);
       });
     });
     return this;

@@ -52,7 +52,12 @@ export default class Segment {
   get data(): SegmentData {
     return {
       ...this.model.vector.data,
-      legs: this.model.legs.map(leg => leg.data)
+      legs: this.model.legs.map(leg => (
+        leg.data.map(point => ({
+          x: point.x + this.x,
+          y: point.y + this.y,
+        }))
+      ))
     };
   }
 }

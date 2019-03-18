@@ -9,6 +9,8 @@ declare class Pixi implements Skin {
     legs: PIXI.Graphics[];
     constructor(bug: Bug, app: PIXI.Application);
     render(delta?: number): Pixi;
+    protected renderSegments(): void;
+    protected renderLegs(): void;
     protected createParts(): void;
     protected createSegments(): void;
     protected createNose(): PIXI.Sprite;

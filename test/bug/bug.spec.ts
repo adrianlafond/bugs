@@ -69,9 +69,9 @@ describe('Bug', () => {
 
   describe('legs', () => {
     describe('defaults', () => {
-      it('has a segment with 2 legs', () => {
+      it('has 2 legs', () => {
         bug = new Bug();
-        expect(bug.segments[0].legs.length).toBe(2);
+        expect(bug.legs.length).toBe(2);
       });
     });
   });

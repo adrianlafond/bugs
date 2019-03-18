@@ -1,4 +1,6 @@
-import Segment, { SegmentData } from './segment';
+import { PointData, VectorData } from '@adrianlafond/geom';
+import Segment from './segment';
+import Leg from './leg';
 export interface BugOptions {
     x?: number;
     y?: number;
@@ -6,6 +8,7 @@ export interface BugOptions {
 }
 interface BugModel {
     segments: Segment[];
+    legs: Leg[];
 }
 declare class Bug {
     protected model: BugModel;
@@ -14,6 +17,7 @@ declare class Bug {
     x: number;
     y: number;
     radians: number;
-    readonly segments: SegmentData[];
+    readonly segments: VectorData[];
+    readonly legs: Array<PointData[]>;
 }
 export default Bug;

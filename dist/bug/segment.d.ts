@@ -1,15 +1,9 @@
-import { PointData, Vector, VectorData } from '@adrianlafond/geom';
-import Leg from './leg';
+import { Vector, VectorData } from '@adrianlafond/geom';
 export interface SegmentModel {
     vector: Vector;
-    legs: Leg[];
-}
-export interface SegmentData extends VectorData {
-    legs: Array<PointData[]>;
 }
 export interface SegmentOptions {
     vector?: Vector;
-    legs?: Leg[];
 }
 export default class Segment {
     protected model: SegmentModel;
@@ -17,5 +11,5 @@ export default class Segment {
     x: number;
     y: number;
     radians: number;
-    readonly data: SegmentData;
+    readonly data: VectorData;
 }

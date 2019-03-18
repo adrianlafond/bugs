@@ -1,5 +1,6 @@
-import { Vector } from '@adrianlafond/geom';
-import Segment, { SegmentData } from './segment';
+import { Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
+import Segment from './segment';
+import Leg from './leg';
 
 export interface BugOptions {
   x?: number;
@@ -9,6 +10,7 @@ export interface BugOptions {
 
 interface BugModel {
   segments: Segment[];
+  legs: Leg[];
 }
 
 class Bug {
@@ -20,6 +22,10 @@ class Bug {
       segments: [new Segment({
         vector: new Vector(x, y, radians),
       })],
+      legs: [
+        new Leg({ joints: [new Point(), new Point(12, 2), new Point(18, -2)] }),
+        new Leg({ joints: [new Point(), new Point(-12, 2), new Point(-18, -2)] }),
+      ],
     };
   }
 
@@ -49,8 +55,16 @@ class Bug {
     this.model.segments[0].radians = value;
   }
 
-  get segments(): SegmentData[] {
+  get segments(): VectorData[] {
     return this.model.segments.map(segment => segment.data);
+  }
+  get legs(): Array<PointData[]> {
+    return this.model.legs.map(leg => (
+      leg.data.map(point => ({
+        x: point.x + this.x,
+        y: point.y + this.x,
+      }))
+    ));
   }
 }
 

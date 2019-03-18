@@ -18,23 +18,31 @@ class Pixi implements Skin {
   public render(delta: number = 1): Pixi {
     this.bug.tick(delta);
     this.destroyLegs();
+    this.renderSegments();
+    this.renderLegs();
+    return this;
+  }
+
+  protected renderSegments() {
     this.segments.forEach((segment, index) => {
       const bugSegment = this.bug.segments[index];
       segment.x = bugSegment.x;
       segment.y = bugSegment.y;
       segment.rotation = bugSegment.radians;
-      bugSegment.legs.forEach(leg => {
-        const gfx = new PIXI.Graphics();
-        gfx.lineStyle(1, 0x000000, 1);
-        leg.forEach((point, index) => {
-          const method = index === 0 ? 'moveTo' : 'lineTo';
-          gfx[method](point.x + BODY_RADIUS + Math.random() * 10 - 5, point.y + BODY_RADIUS);
-        });
-        this.legs.push(gfx);
-        segment.addChild(gfx);
-      });
     });
-    return this;
+  }
+
+  protected renderLegs() {
+    this.bug.legs.forEach(leg => {
+      const gfx = new PIXI.Graphics();
+      gfx.lineStyle(1, 0x000000, 1);
+      leg.forEach((point, index) => {
+        const method = index === 0 ? 'moveTo' : 'lineTo';
+        gfx[method](point.x + Math.random() * 10 - 5, point.y);
+      });
+      this.legs.push(gfx);
+      this.container.addChild(gfx);
+    });
   }
 
   protected createParts() {

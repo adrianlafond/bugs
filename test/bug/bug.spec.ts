@@ -16,6 +16,9 @@ describe('Bug', () => {
     it('sets default radians to 0', () => {
       expect(bug.radians).toEqual(0);
     });
+    it('sets default target to (0, 0)', () => {
+    expect(bug.target).toEqual({ x: 0, y: 0 });
+    });
   });
 
   describe('instantiation', () => {
@@ -30,6 +33,11 @@ describe('Bug', () => {
     it('sets set rotation from options', () => {
       bug = new Bug({ radians: 0.555 });
       expect(bug.radians).toBe(0.555);
+    });
+    it('sets target from options', () => {
+      bug = new Bug({ target: { x: 5, y: 7 } });
+      expect(bug.target.x).toEqual(5);
+      expect(bug.target.y).toEqual(7);
     });
   });
 
@@ -48,6 +56,11 @@ describe('Bug', () => {
     it('allows setting rotation', () => {
       bug.radians = 1.333;
       expect(bug.radians).toEqual(1.333);
+    });
+    it('allows setting target', () => {
+      bug.target = { x: 15, y: 19 };
+      expect(bug.target.x).toEqual(15);
+      expect(bug.target.y).toEqual(19);
     });
   });
 

@@ -32,24 +32,25 @@
     return app;
   }
 
-  function addMarkers() {
+  function addMarkers(x = 100, y = 100) {
     const line1 = new PIXI.Graphics();
     line1.lineStyle(1, 0xff0000, 1);
-    line1.moveTo(98, 100);
-    line1.lineTo(102, 100);
+    line1.moveTo(x - 2, y);
+    line1.lineTo(x + 2, y);
     app.stage.addChild(line1);
     const line2 = new PIXI.Graphics();
     line2.lineStyle(1, 0xff0000, 1);
-    line2.moveTo(100, 98);
-    line2.lineTo(100, 102);
+    line2.moveTo(x, y - 2);
+    line2.lineTo(x, y + 2);
     app.stage.addChild(line2);
   }
 
-  function createBug() {
+  function createBug(x, y) {
     return new Bug.default({
       x: 100,
       y: 100,
       radians: Math.random() * Math.PI * 2,
+      target: { x, y },
     });
   }
 
@@ -66,8 +67,17 @@
   function toggleTicker() {
     if (ticker.started) {
       ticker.stop();
+      clearInterval(targetInterval)
     } else {
       ticker.start();
+      targetInterval = setInterval(() => {
+        target = {
+          x: Math.random() * 320,
+          y: Math.random() * 320,
+        };
+        addMarkers(target.x, target.y);
+        bug.target = target;
+      }, 1000);
     }
   }
   window.addEventListener('keydown', event => {
@@ -78,12 +88,18 @@
   window.addEventListener('mousedown', event => {
     toggleTicker();
   });
+  let target = {
+    x: Math.random() * 320,
+    y: Math.random() * 320,
+  };
+  let targetInterval;
   const app = createApp();
-  const bug = createBug();
+  const bug = createBug(target.x, target.y);
   const skin = createSkin();
   const ticker = createTicker();
   ticker.add(skin.render.bind(skin));
   addMarkers();
+  addMarkers(target.x, target.y);
 </script>
 </body>
 </html>

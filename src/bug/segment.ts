@@ -52,8 +52,9 @@ export default class Segment {
     const distance = Math.min(maxDistance, Point.distance(target, vectorStart.point));
 
     const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
-    const deltaRadians = Angle.delta(vector.radians, targetRadians);
-    vector.radians += deltaRadians >= 0 ? 0.05 : -0.05;
+    const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
+      Angle.delta(vector.radians, targetRadians)));
+    vector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
 
     vector.x = vectorStart.x + Math.cos(vector.radians) * (distance * progress);
     vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);

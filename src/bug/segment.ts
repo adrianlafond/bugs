@@ -1,4 +1,4 @@
-import { Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
+import { Angle, Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
 import Leg from './leg';
 
 export interface SegmentModel {
@@ -48,18 +48,19 @@ export default class Segment {
   }
 
   tick(progress = 0) {
-    const compensateRadians = Math.PI * 0.5;
-    const { target, vector, vectorStart, maxDistance } = this.model;
-    const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x) + compensateRadians;
-    console.log(targetRadians, vectorStart.radians);
+    const { target, vector, vectorStart, maxDistance, maxRotation } = this.model;
     const distance = Math.min(maxDistance, Point.distance(target, vectorStart.point));
-    vector.radians = vectorStart.radians + (targetRadians - vectorStart.radians) * progress;
-    vector.x = vectorStart.x + Math.cos(vector.radians - compensateRadians) * (distance * progress);
-    vector.y = vectorStart.y + Math.sin(vector.radians - compensateRadians) * (distance * progress);
+
+    let targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
+    vector.radians += (targetRadians > vector.radians) ? 0.05 : -0.05;
+
+    vector.x = vectorStart.x + Math.cos(vector.radians) * (distance * progress);
+    vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);
   }
 
   step() {
     this.model.vectorStart = this.model.vector.clone();
+
   }
 
   get x(): number {

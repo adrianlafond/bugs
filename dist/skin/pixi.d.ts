@@ -11,7 +11,7 @@ declare class Pixi implements Skin {
     render(delta?: number): Pixi;
     protected createParts(): void;
     protected createSegments(): void;
-    protected createNose(): PIXI.Sprite;
+    protected createFace(): PIXI.Container;
     protected destroyLegs(): void;
 }
 export default Pixi;

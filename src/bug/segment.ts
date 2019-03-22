@@ -27,12 +27,12 @@ export default class Segment {
   protected model: SegmentModel = {
     vector: new Vector(),
     legs: [
-      [new Leg({ joints: [new Point(2, -5), new Point(16, -18)] }),
-        new Leg({ joints: [new Point(0, -5), new Point(4, -18)] }),
-        new Leg({ joints: [new Point(-2, -5), new Point(-8, -18)] })],
-      [new Leg({ joints: [new Point(2, 5), new Point(16, 18)] }),
-        new Leg({ joints: [new Point(0, 5), new Point(4, 18)] }),
-        new Leg({ joints: [new Point(-2, 5), new Point(-8, 18)] })],
+      [new Leg({ joints: [new Point(2, -5), new Point(12, -14)] }),
+        new Leg({ joints: [new Point(0, -5), new Point(0, -16)] }),
+        new Leg({ joints: [new Point(-4, -5), new Point(-8, -12)] })],
+      [new Leg({ joints: [new Point(2, 5), new Point(12, 14)] }),
+        new Leg({ joints: [new Point(0, 5), new Point(0, 16)] }),
+        new Leg({ joints: [new Point(-4, 5), new Point(-8, 12)] })],
     ],
     maxRotation: Math.PI * 0.5,
     maxDistance: 10,

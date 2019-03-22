@@ -3,14 +3,14 @@ export interface LegOptions {
     joints: Point[];
 }
 export interface LegModel extends LegOptions {
-    map: Point[];
+    map: Vector[];
     jointsStart: Point[];
 }
 export default class Leg {
     protected model: LegModel;
     constructor(options: LegOptions);
-    offset(x: number, y: number, index?: number): void;
-    offsetAll(x: number, y: number): void;
+    offset(vector: Vector, index?: number): void;
+    offsetAll(vector: Vector): void;
     tick(vector: Vector, progress: number): void;
     step(): void;
     readonly data: PointData[];

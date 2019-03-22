@@ -5,7 +5,7 @@ export interface LegOptions {
 }
 
 export interface LegModel extends LegOptions {
-  map: Point[];
+  map: Vector[];
   jointsStart: Point[];
 }
 
@@ -15,19 +15,28 @@ export default class Leg {
   constructor(options: LegOptions) {
     this.model = {
       ...options,
-      map: this.clone(options.joints),
+      map: this.clone(options.joints).map(point => new Vector(
+        point.x,
+        point.y,
+        Math.atan2(point.y, point.x),
+      )),
       jointsStart: this.clone(options.joints),
     };
   }
 
-  offset(x: number, y: number, index = 0) {
-    this.model.joints[index].x = this.model.map[index].x + x;
-    this.model.joints[index].y = this.model.map[index].y + y;
+  offset(vector: Vector, index = 0) {
+    const { joints, map } = this.model;
+    const joint = joints[index];
+    const mapJoint = map[index];
+    const distance = Point.distance(mapJoint.point, new Point(0, 0));
+    const radians = mapJoint.radians + vector.radians;
+    joint.x = vector.x + Math.cos(radians) * distance;
+    joint.y = vector.y + Math.sin(radians) * distance;
   }
 
-  offsetAll(x: number, y: number) {
+  offsetAll(vector: Vector) {
     this.model.joints.forEach((joint, index) => {
-      this.offset(x, y, index);
+      this.offset(vector, index);
     })
   }
 
@@ -35,7 +44,7 @@ export default class Leg {
     const { joints, jointsStart, map } = this.model;
     const index = joints.length - 1;
     const radians = Math.atan2(map[index].y, map[index].x) + vector.radians;
-    const radius = Point.distance(map[index], new Point());
+    const radius = Point.distance(map[index].point, new Point());
     const land = new Point(vector.x + Math.cos(radians) * radius,
       vector.y + Math.sin(radians) * radius);
 

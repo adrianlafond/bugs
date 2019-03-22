@@ -38,7 +38,7 @@ class Bug {
   }
 
   tick(delta: number = 1): Bug {
-    this.model.progress = Math.min(1, this.model.progress + 0.05);
+    this.model.progress = Math.min(1, this.model.progress + 0.1);
     const isStepComplete = this.model.progress >= 1;
     this.model.segments.forEach(segment => {
       segment.tick(this.model.progress * delta);

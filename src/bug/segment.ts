@@ -27,8 +27,12 @@ export default class Segment {
   protected model: SegmentModel = {
     vector: new Vector(),
     legs: [
-      [new Leg({ joints: [new Point(0, 0), new Point(5, -18)] })],
-      [new Leg({ joints: [new Point(0, 0), new Point(5, 18)] })],
+      [new Leg({ joints: [new Point(2, -5), new Point(16, -18)] }),
+        new Leg({ joints: [new Point(0, -5), new Point(4, -18)] }),
+        new Leg({ joints: [new Point(-2, -5), new Point(-8, -18)] })],
+      [new Leg({ joints: [new Point(2, 5), new Point(16, 18)] }),
+        new Leg({ joints: [new Point(0, 5), new Point(4, 18)] }),
+        new Leg({ joints: [new Point(-2, 5), new Point(-8, 18)] })],
     ],
     maxRotation: Math.PI * 0.5,
     maxDistance: 10,
@@ -42,7 +46,7 @@ export default class Segment {
     this.model.vectorStart = this.model.vector.clone();
     this.model.legs.forEach(side => {
       side.forEach(leg => {
-        leg.offsetAll(this.x, this.y);
+        leg.offsetAll(this.model.vector);
       });
     });
     this.step();
@@ -88,7 +92,7 @@ export default class Segment {
     const { legs, vector, vectorStart } = this.model;
     legs.forEach((side, sideIndex) => {
       side.forEach(leg => {
-        leg.offset(this.x, this.y);
+        leg.offset(vector);
       });
       if (sideIndex === this.model.step) {
         const targetVector = new Vector(

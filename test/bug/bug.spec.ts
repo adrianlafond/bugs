@@ -82,7 +82,7 @@ describe('Bug', () => {
 
   describe('legs', () => {
     describe('defaults', () => {
-      it('has a segment with 2 legs', () => {
+      it('has a segment with 2 sides of legs', () => {
         bug = new Bug();
         expect(bug.segments[0].legs.length).toBe(2);
       });

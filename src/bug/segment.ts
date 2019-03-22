@@ -3,20 +3,21 @@ import Leg from './leg';
 
 export interface SegmentModel {
   vector: Vector;
-  legs: Leg[];
+  legs: Leg[][];
   maxRotation: number;
   maxDistance: number;
   target: Point;
   vectorStart: Vector;
+  step: number;
 }
 
 export interface SegmentData extends VectorData {
-  legs: Array<PointData[]>;
+  legs: PointData[][][];
 }
 
 export interface SegmentOptions {
   vector?: Vector;
-  legs?: Leg[];
+  legs?: Leg[][];
   maxRotation?: number;
   maxDistance?: number;
   target?: Point;
@@ -26,18 +27,25 @@ export default class Segment {
   protected model: SegmentModel = {
     vector: new Vector(),
     legs: [
-      new Leg({ joints: [new Point(), new Point(12, 2), new Point(18, -2)] }),
-      new Leg({ joints: [new Point(), new Point(-12, 2), new Point(-18, -2)] }),
+      [new Leg({ joints: [new Point(0, 0), new Point(5, -18)] })],
+      [new Leg({ joints: [new Point(0, 0), new Point(5, 18)] })],
     ],
     maxRotation: Math.PI * 0.5,
     maxDistance: 10,
     target: new Point(),
     vectorStart: new Vector(),
+    step: 0,
   };
 
   constructor(options: SegmentOptions) {
     this.model = { ...this.model, ...options };
     this.model.vectorStart = this.model.vector.clone();
+    this.model.legs.forEach(side => {
+      side.forEach(leg => {
+        leg.offsetAll(this.x, this.y);
+      });
+    });
+    this.step();
   }
 
   get target(): Point {
@@ -48,8 +56,24 @@ export default class Segment {
   }
 
   tick(progress = 0) {
-    const { target, vector, vectorStart, maxDistance, maxRotation } = this.model;
+    const { target, vectorStart, maxDistance } = this.model;
     const distance = Math.min(maxDistance, Point.distance(target, vectorStart.point));
+    this.moveSegment(progress, distance);
+    this.moveLegs(progress, distance);
+  }
+
+  step() {
+    this.model.vectorStart = this.model.vector.clone();
+    this.model.step = (this.model.step + 1) % this.model.legs.length;
+    this.model.legs.forEach(side => {
+      side.forEach(leg => {
+        leg.step();
+      })
+    });
+  }
+
+  private moveSegment(progress: number, distance: number) {
+    const { target, vector, vectorStart, maxRotation } = this.model;
 
     const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
     const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
@@ -60,9 +84,22 @@ export default class Segment {
     vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);
   }
 
-  step() {
-    this.model.vectorStart = this.model.vector.clone();
-
+  private moveLegs(progress: number, distance: number) {
+    const { legs, vector, vectorStart } = this.model;
+    legs.forEach((side, sideIndex) => {
+      side.forEach(leg => {
+        leg.offset(this.x, this.y);
+      });
+      if (sideIndex === this.model.step) {
+        const targetVector = new Vector(
+          vectorStart.x + Math.cos(vector.radians) * distance,
+          vectorStart.y + Math.sin(vector.radians) * distance,
+          vector.radians);
+        side.forEach(leg => {
+          leg.tick(targetVector, progress);
+        });
+      }
+    });
   }
 
   get x(): number {
@@ -89,12 +126,9 @@ export default class Segment {
   get data(): SegmentData {
     return {
       ...this.model.vector.data,
-      legs: this.model.legs.map(leg => (
-        leg.data.map(point => ({
-          x: point.x + this.x,
-          y: point.y + this.y,
-        }))
-      ))
+      legs: this.model.legs.map((side: Leg[]) => (
+        side.map((leg: Leg) => leg.data)
+      )),
     };
   }
 }

@@ -51,7 +51,9 @@ class Pixi implements Skin {
 
       const gfx = new PIXI.Graphics();
       gfx.lineStyle(1, 0x000000, 1);
+      gfx.beginFill(0x808080);
       gfx.drawCircle(BODY_RADIUS, BODY_RADIUS, BODY_RADIUS);
+      gfx.endFill();
       const texture = this.app.renderer.generateTexture(gfx, 1, 1);
       const sprite = new PIXI.Sprite(texture);
 
@@ -67,20 +69,20 @@ class Pixi implements Skin {
     const y = BODY_RADIUS;
     const line1 = new PIXI.Graphics();
     line1.lineStyle(1, 0x000000, 1);
-    line1.moveTo(x + 2, y - 4);
-    line1.lineTo(x + 6, y - 4);
+    line1.moveTo(x + 1, y - 3);
+    line1.lineTo(x + 5, y - 3);
     const line2 = new PIXI.Graphics();
     line2.lineStyle(1, 0x000000, 1);
-    line2.moveTo(x + 4, y - 2);
-    line2.lineTo(x + 4, y - 6);
+    line2.moveTo(x + 3, y - 1);
+    line2.lineTo(x + 3, y - 5);
     const line3 = new PIXI.Graphics();
     line3.lineStyle(1, 0x000000, 1);
-    line3.moveTo(x + 2, y + 4);
-    line3.lineTo(x + 6, y + 4);
+    line3.moveTo(x + 1, y + 3);
+    line3.lineTo(x + 5, y + 3);
     const line4 = new PIXI.Graphics();
     line4.lineStyle(1, 0x000000, 1);
-    line4.moveTo(x + 4, y + 2);
-    line4.lineTo(x + 4, y + 6);
+    line4.moveTo(x + 3, y + 1);
+    line4.lineTo(x + 3, y + 5);
     const face = new PIXI.Container();
     face.addChild(line1);
     face.addChild(line2);

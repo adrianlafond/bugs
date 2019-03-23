@@ -38,10 +38,12 @@ class Bug {
   }
 
   tick(delta: number = 1): Bug {
-    this.model.progress = Math.min(1, this.model.progress + 0.1);
+    // TODO: Incorporate delta as an option? Makes for unsmooth animation even
+    // if incorporating it is more "accurate".
+    this.model.progress = Math.min(1, this.model.progress + 0.1); // * delta
     const isStepComplete = this.model.progress >= 1;
     this.model.segments.forEach(segment => {
-      segment.tick(this.model.progress * delta);
+      segment.tick(this.model.progress);
       if (isStepComplete) {
         segment.step();
       }

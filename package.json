@@ -1,5 +1,5 @@
 {
-  "name": "bugs",
+  "name": "@adrianlafond/bugs",
   "version": "0.0.1",
   "description": "2D bug/insect/creature engine",
   "main": "./dist/bug.js",

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>@adrianlafond/bugs</title>
+  <link rel="stylesheet" href="assets/index.css">
+</head>
+
+<body>
+
+  <div class="main">
+    <div class="main__inner">
+      <div class="main__content--dpr2 bug"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.0.0-rc.2/pixi.min.js"></script>
+  <script src="bugs/bug.js"></script>
+  <script src="bugs/skin.js"></script>
+  <script>
+    function createApp() {
+      const app = new PIXI.Application({
+        width: 320,
+        height: 320,
+        antialias: true,
+        resolution: 2,
+      });
+      app.renderer.backgroundColor = 0xEFEFEF;
+      app.renderer.autoDensity = true;
+      document.querySelector('.bug').appendChild(app.view);
+      return app;
+    }
+
+    function addMarkers(x = 100, y = 100) {
+      const line1 = new PIXI.Graphics();
+      line1.lineStyle(1, 0xff0000, 1);
+      line1.moveTo(x - 2, y);
+      line1.lineTo(x + 2, y);
+      app.stage.addChild(line1);
+      const line2 = new PIXI.Graphics();
+      line2.lineStyle(1, 0xff0000, 1);
+      line2.moveTo(x, y - 2);
+      line2.lineTo(x, y + 2);
+      app.stage.addChild(line2);
+    }
+
+    function createBug(x, y) {
+      return new Bug.default({
+        x: 100,
+        y: 100,
+        radians: 0,//Math.random() * Math.PI * 2,
+        target: { x, y },
+      });
+    }
+
+    function createSkin() {
+      return new Skin.Pixi(bug, app);
+    }
+
+    function createTicker() {
+      const pixiTicker = new PIXI.Ticker();
+      pixiTicker.autoStart = false;
+      return pixiTicker;
+    }
+
+    function toggleTicker() {
+      if (ticker.started) {
+        ticker.stop();
+        clearInterval(targetInterval)
+      } else {
+        ticker.start();
+        targetInterval = setInterval(() => {
+          target = {
+            x: Math.random() * 320,
+            y: Math.random() * 320,
+          };
+          addMarkers(target.x, target.y);
+          bug.target = target;
+        }, 2000);
+      }
+    }
+    window.addEventListener('keydown', event => {
+      if (event.key === ' ') {
+        toggleTicker();
+      }
+    });
+    window.addEventListener('mousedown', event => {
+      toggleTicker();
+    });
+    let target = {
+      x: Math.random() * 320,
+      y: Math.random() * 320,
+    };
+    let targetInterval;
+    const app = createApp();
+    const bug = createBug(target.x, target.y);
+    const skin = createSkin();
+    const ticker = createTicker();
+    ticker.add(skin.render.bind(skin));
+    addMarkers();
+    addMarkers(target.x, target.y);
+  </script>
+</body>
+
+</html>

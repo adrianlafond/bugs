@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js';
 import Skin from './skin';
 import Bug from '../bug';
 

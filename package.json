@@ -9,10 +9,11 @@
     "clean": "shx rm -rf dist",
     "build": "npm run clean && npm run build:bug && npm run build:skin",
     "build:bug": "webpack --config webpack.config.bug.js -p",
-    "build:skin": "webpack --config webpack.config.bug.js -p",
+    "build:skin": "webpack --config webpack.config.skin.js -p",
     "watch:bug": "webpack --config webpack.config.bug.js --watch",
     "watch:skin": "webpack --config webpack.config.skin.js --watch",
     "test:watch": "jest --watchAll --coverage",
+    "docs": "npm run build && cpx \"./dist/*.js\" ./docs/bugs --clean",
     "serve": "live-server --no-browser --open=./demo --watch=./dist"
   },
   "repository": {
@@ -33,8 +34,10 @@
   "homepage": "https://github.com/adrianlafond/bugs#readme",
   "devDependencies": {
     "@types/jest": "^23.3.9",
+    "@types/pixi.js": "^4.8.6",
     "awesome-typescript-loader": "^5.2.1",
     "concurrently": "^4.1.0",
+    "cpx": "^1.5.0",
     "jest": "^23.6.0",
     "live-server": "^1.2.1",
     "shx": "^0.3.2",
@@ -44,7 +47,6 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "@adrianlafond/geom": "^1.2.0",
-    "pixi.js": "^5.0.0-rc.2"
+    "@adrianlafond/geom": "^1.2.0"
   }
 }

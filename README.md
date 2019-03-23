@@ -1,4 +1,4 @@
 # bugs
 
 ## demo
-See the [demo](docs/).
+See the [demo](https://adrianlafond.github.io/bugs/).

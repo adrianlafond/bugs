@@ -4,8 +4,6 @@ html, body {
 }
 body {
   font-family: "Menlo", "Courier New", monospace;
-  background-color: #000;
-  color: #fff;
   margin: 0;
 }
 
@@ -27,6 +25,7 @@ body {
 .main__content {
   width: 320px;
   height: 320px;
+  border: 1px solid gray;
 }
 .main__content--dpr2 {
   transform: scale(0.5);

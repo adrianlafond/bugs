@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+/// <reference types="pixi.js" />
 import Skin from './skin';
 import Bug from '../bug';
 declare class Pixi implements Skin {

@@ -24,6 +24,15 @@ body {
 .main__inner {
   margin: 0 auto;
 }
+.main__content {
+  width: 320px;
+  height: 320px;
+}
 .main__content--dpr2 {
   transform: scale(0.5);
+  transform-origin: 0 0;
+}
+
+.main__content-controls {
+  margin-top: -320px;
 }

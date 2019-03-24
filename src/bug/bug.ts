@@ -9,6 +9,7 @@ export interface BugOptions {
     x?: number;
     y?: number;
   };
+  onTargetReached?: (target?: Point) => void;
 }
 
 interface BugModel {
@@ -17,6 +18,7 @@ interface BugModel {
   progress: number;
   step: number;
   maxSteps: number;
+  onTargetReached: (target?: Point) => void;
 }
 
 class Bug {
@@ -28,11 +30,13 @@ class Bug {
     this.model = {
       segments: [new Segment({
         vector: new Vector(x, y, radians),
+        onTargetReached: this.onTargetReached.bind(this),
       })],
       target: new Point(targetX, targetY),
       progress: 0,
       step: 0,
       maxSteps: 2,
+      onTargetReached: options.onTargetReached || (() => {}),
     };
     this.target = this.model.target;
   }
@@ -90,6 +94,10 @@ class Bug {
 
   get segments(): SegmentData[] {
     return this.model.segments.map(segment => segment.data);
+  }
+
+  private onTargetReached(target: Point) {
+    this.model.onTargetReached(target);
   }
 }
 

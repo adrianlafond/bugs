@@ -9,6 +9,7 @@ export interface SegmentModel {
   target: Point;
   vectorStart: Vector;
   step: number;
+  onTargetReached: (target?: Point) => void | null;
 }
 
 export interface SegmentData extends VectorData {
@@ -21,6 +22,7 @@ export interface SegmentOptions {
   maxRotation?: number;
   maxDistance?: number;
   target?: Point;
+  onTargetReached?: (target?: Point) => void;
 }
 
 export default class Segment {
@@ -39,6 +41,7 @@ export default class Segment {
     target: new Point(),
     vectorStart: new Vector(),
     step: 0,
+    onTargetReached: null,
   };
 
   constructor(options: SegmentOptions) {
@@ -67,17 +70,21 @@ export default class Segment {
   }
 
   step() {
-    this.model.vectorStart = this.model.vector.clone();
+    this.restartStep();
     this.model.step = (this.model.step + 1) % this.model.legs.length;
+  }
+
+  restartStep() {
+    this.model.vectorStart = this.model.vector.clone();
     this.model.legs.forEach(side => {
       side.forEach(leg => {
-        leg.step();
+        leg.restartStep();
       })
     });
   }
 
   private moveSegment(progress: number, distance: number) {
-    const { target, vector, vectorStart, maxRotation } = this.model;
+    const { target, vector, vectorStart, maxDistance, maxRotation, onTargetReached } = this.model;
 
     const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
     const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
@@ -86,6 +93,12 @@ export default class Segment {
 
     vector.x = vectorStart.x + Math.cos(vector.radians) * (distance * progress);
     vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);
+
+    if (onTargetReached) {
+      if (Point.distance(target, vector.point) <= maxDistance) {
+        onTargetReached(target);
+      }
+    }
   }
 
   private moveLegs(progress: number, distance: number) {

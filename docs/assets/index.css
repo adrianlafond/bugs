@@ -24,8 +24,6 @@ body {
 }
 .main__content {
   width: 320px;
-  height: 320px;
-  border: 1px solid gray;
 }
 .main__content--dpr2 {
   transform: scale(0.5);

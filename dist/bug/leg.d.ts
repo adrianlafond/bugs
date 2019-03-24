@@ -12,7 +12,7 @@ export default class Leg {
     offset(vector: Vector, index?: number): void;
     offsetAll(vector: Vector): void;
     tick(vector: Vector, progress: number): void;
-    step(): void;
+    restartStep(): void;
     readonly data: PointData[];
     private clone;
 }

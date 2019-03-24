@@ -57,7 +57,7 @@ export default class Leg {
       (distance * progress);
   }
 
-  step() {
+  restartStep() {
     this.model.jointsStart = this.clone();
   }
 

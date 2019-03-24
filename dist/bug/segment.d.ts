@@ -8,6 +8,7 @@ export interface SegmentModel {
     target: Point;
     vectorStart: Vector;
     step: number;
+    onTargetReached: (target?: Point) => void | null;
 }
 export interface SegmentData extends VectorData {
     legs: PointData[][][];
@@ -18,6 +19,7 @@ export interface SegmentOptions {
     maxRotation?: number;
     maxDistance?: number;
     target?: Point;
+    onTargetReached?: (target?: Point) => void;
 }
 export default class Segment {
     protected model: SegmentModel;
@@ -25,6 +27,7 @@ export default class Segment {
     target: Point;
     tick(progress?: number): void;
     step(): void;
+    restartStep(): void;
     private moveSegment;
     private moveLegs;
     x: number;

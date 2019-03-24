@@ -13,7 +13,7 @@
     "watch:bug": "webpack --config webpack.config.bug.js --watch",
     "watch:skin": "webpack --config webpack.config.skin.js --watch",
     "test:watch": "jest --watchAll --coverage",
-    "docs": "npm run build && cpx \"./dist/*.js\" ./docs/bugs --clean",
+    "docs": "npm run build && cpx demo/index.js docs/assets && cpx \"./dist/*.js\" ./docs/bugs --clean",
     "serve": "live-server --no-browser --open=./demo --watch=./dist"
   },
   "repository": {

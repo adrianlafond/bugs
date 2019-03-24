@@ -8,6 +8,7 @@ export interface BugOptions {
         x?: number;
         y?: number;
     };
+    onTargetReached?: (target?: Point) => void;
 }
 interface BugModel {
     segments: Segment[];
@@ -15,6 +16,7 @@ interface BugModel {
     progress: number;
     step: number;
     maxSteps: number;
+    onTargetReached: (target?: Point) => void;
 }
 declare class Bug {
     protected model: BugModel;
@@ -25,5 +27,6 @@ declare class Bug {
     y: number;
     radians: number;
     readonly segments: SegmentData[];
+    private onTargetReached;
 }
 export default Bug;

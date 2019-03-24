@@ -16,8 +16,6 @@ interface BugModel {
   segments: Segment[];
   target: Point;
   progress: number;
-  step: number;
-  maxSteps: number;
   onTargetReached: (target?: Point) => void;
 }
 
@@ -34,8 +32,6 @@ class Bug {
       })],
       target: new Point(targetX, targetY),
       progress: 0,
-      step: 0,
-      maxSteps: 2,
       onTargetReached: options.onTargetReached || (() => {}),
     };
     this.target = this.model.target;
@@ -54,10 +50,6 @@ class Bug {
     });
     if (isStepComplete) {
       this.model.progress = 0;
-      this.model.step += 1;
-      if (this.model.step >= this.model.maxSteps) {
-        this.model.step = 0;
-      }
     }
     return this;
   }

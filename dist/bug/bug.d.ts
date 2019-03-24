@@ -14,8 +14,6 @@ interface BugModel {
     segments: Segment[];
     target: Point;
     progress: number;
-    step: number;
-    maxSteps: number;
     onTargetReached: (target?: Point) => void;
 }
 declare class Bug {

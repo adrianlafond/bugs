@@ -62,9 +62,9 @@ function resetTarget(event = null) {
   if (event) {
     const rect = event.currentTarget.getBoundingClientRect();
     target = {
-      x: Math.min(320, Math.max(0, (event.touches ? event.touches[0].clientX :
+      x: Math.min(320, Math.max(0, (event.touches ? event.touches[0].pageX :
         event.clientX) - rect.left)),
-      y: Math.min(320, Math.max(0, (event.touches ? event.touches[0].clientY :
+      y: Math.min(320, Math.max(0, (event.touches ? event.touches[0].pageY :
         event.clientY) - rect.top)),
     };
   } else {
@@ -82,9 +82,11 @@ function onTargetReached() {
   resetTarget();
 }
 
-document.querySelector('.main__content--dpr2.bug').addEventListener('mousedown', event => {
+const inputEvent = window.ontouchstart ? 'touchstart' : 'mousedown';
+document.querySelector('.main__content--dpr2.bug').addEventListener(inputEvent, event => {
   resetTarget(event);
 });
+
 const app = createApp();
 const marker = createMarker();
 const bug = createBug();

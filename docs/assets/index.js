@@ -82,7 +82,7 @@ function onTargetReached() {
   resetTarget();
 }
 
-const inputEvent = window.ontouchstart ? 'touchstart' : 'mousedown';
+const inputEvent = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
 document.querySelector('.main__content--dpr2.bug').addEventListener(inputEvent, event => {
   resetTarget(event);
 });

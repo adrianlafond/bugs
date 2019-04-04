@@ -1,7 +1,11 @@
+const WORLD_WIDTH = 320;
+const WORLD_HEIGHT = 320;
+const CELL_SIZE = 10;
+
 function createApp() {
   const app = new PIXI.Application({
-    width: 320,
-    height: 320,
+    width: WORLD_WIDTH,
+    height: WORLD_HEIGHT,
     antialias: true,
     resolution: 2,
   });
@@ -30,11 +34,52 @@ function createMarker() {
   return marker;
 }
 
+function createGrid() {
+  const grid = [];
+  const columns = WORLD_WIDTH / CELL_SIZE;
+  const rows = WORLD_HEIGHT / CELL_SIZE;
+  for (let x = 0; x < columns; x++) {
+    grid[x] = [];
+    for (let y = 0; y < rows; y++) {
+      grid[x][y] = true;
+    }
+  }
+  customizeGrid(grid);
+  drawGrid(grid);
+  return grid;
+}
+
+function drawGrid(grid) {
+  for (let x = 0; x < grid.length; x++) {
+    for (let y = 0; y < grid[x].length; y++) {
+      if (!grid[x][y]) {
+        const square = new PIXI.Graphics();
+        square.beginFill(0xFFCC99);
+        square.drawRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        app.stage.addChild(square);
+      }
+    }
+  }
+}
+
+function customizeGrid(grid) {
+  for (let i = 0; i < 50; i++) {
+    const x = Math.floor(Math.random() * (WORLD_WIDTH / CELL_SIZE));
+    const y = Math.floor(Math.random() * (WORLD_HEIGHT / CELL_SIZE));
+    grid[x][y] = false;
+  }
+  return grid;
+}
+
 function createBug() {
   return new Bug.default({
     x: 160,
     y: 160,
     radians: Math.random() * Math.PI * 2,
+    grid: {
+      cells: grid,
+      resolution: CELL_SIZE,
+    },
     onTargetReached,
   });
 }
@@ -82,13 +127,14 @@ function onTargetReached() {
   resetTarget();
 }
 
-const inputEvent = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
+const inputEvent = 'ontouchstart' in window ? 'touchstart' : 'mousemove';
 document.querySelector('.main__content--dpr2.bug').addEventListener(inputEvent, event => {
   resetTarget(event);
 });
 
 const app = createApp();
 const marker = createMarker();
+const grid = createGrid();
 const bug = createBug();
 const skin = createSkin();
 const ticker = createTicker();

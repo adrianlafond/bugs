@@ -1,5 +1,6 @@
 import { Vector, Point, PointData } from '@adrianlafond/geom';
 import Segment, { SegmentData } from './segment';
+import Grid, { GridData } from './grid';
 
 export interface BugOptions {
   x?: number;
@@ -9,6 +10,7 @@ export interface BugOptions {
     x?: number;
     y?: number;
   };
+  grid?: GridData;
   onTargetReached?: (target?: Point) => void;
 }
 
@@ -16,6 +18,7 @@ interface BugModel {
   segments: Segment[];
   target: Point;
   progress: number;
+  grid: Grid | null;
   onTargetReached: (target?: Point) => void;
 }
 
@@ -32,6 +35,7 @@ class Bug {
       })],
       target: new Point(targetX, targetY),
       progress: 0,
+      grid: options.grid ? new Grid(options.grid) : null,
       onTargetReached: options.onTargetReached || (() => {}),
     };
     this.target = this.model.target;
@@ -43,7 +47,10 @@ class Bug {
     this.model.progress = Math.min(1, this.model.progress + 0.1); // * delta
     const isStepComplete = this.model.progress >= 1;
     this.model.segments.forEach(segment => {
-      segment.tick(this.model.progress);
+      const tickTarget = segment.defineTarget(this.model.progress);
+      const modifiedTarget = this.model.grid.aquireTarget(tickTarget);
+      segment.updateTarget(modifiedTarget);
+      segment.tick();
       if (isStepComplete) {
         segment.step();
       }
@@ -61,6 +68,14 @@ class Bug {
     this.model.target.x = value.x;
     this.model.target.y = value.y;
     this.model.segments[0].target = this.model.target;
+  }
+
+  get grid(): GridData {
+    return this.model.grid.data;
+  }
+
+  set grid(value: GridData) {
+    this.model.grid = new Grid(value);
   }
 
   get x(): number {

@@ -6,7 +6,9 @@ export interface SegmentModel {
   legs: Leg[][];
   maxRotation: number;
   maxDistance: number;
+  progress: number;
   target: Point;
+  tickTarget: Vector;
   vectorStart: Vector;
   step: number;
   onTargetReached: (target?: Point) => void | null;
@@ -39,6 +41,7 @@ export default class Segment {
     maxRotation: Math.PI * 0.5,
     maxDistance: 10,
     target: new Point(),
+    tickTarget: new Vector(),
     vectorStart: new Vector(),
     step: 0,
     onTargetReached: null,
@@ -62,11 +65,35 @@ export default class Segment {
     this.model.target = value;
   }
 
-  tick(progress = 0) {
-    const { target, vectorStart, maxDistance } = this.model;
+  defineTarget(progress = 0): Vector {
+    const { target, vector, vectorStart, maxDistance, maxRotation } = this.model;
     const distance = Math.min(maxDistance, Point.distance(target, vectorStart.point));
-    this.moveSegment(progress, distance);
-    this.moveLegs(progress, distance);
+    const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
+    const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
+      Angle.delta(vector.radians, targetRadians)));
+    const targetVector = new Vector();
+    targetVector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
+    targetVector.x = vectorStart.x + Math.cos(targetVector.radians) * (distance * progress);
+    targetVector.y = vectorStart.y + Math.sin(targetVector.radians) * (distance * progress);
+    this.model.progress = progress;
+    return targetVector;
+  }
+
+  updateTarget(target: Vector) {
+    this.model.tickTarget = target;
+  }
+
+  // tick(progress = 0) {
+  //   const { tickTarget, vectorStart, maxDistance } = this.model;
+  //   const distance = Math.min(maxDistance, Point.distance(tickTarget, vectorStart.point));
+  //   this.moveSegment(progress, distance);
+  //   this.moveLegs(progress, distance);
+  // }
+  tick() {
+    const { maxDistance, tickTarget, vector } = this.model;
+    const distance = Math.min(maxDistance, Point.distance(tickTarget.point, vector.point));
+    this.moveSegment();
+    this.moveLegs(distance);
   }
 
   step() {
@@ -83,41 +110,62 @@ export default class Segment {
     });
   }
 
-  private moveSegment(progress: number, distance: number) {
-    const { target, vector, vectorStart, maxDistance, maxRotation, onTargetReached } = this.model;
-
-    const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
-    const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
-      Angle.delta(vector.radians, targetRadians)));
-    vector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
-
-    vector.x = vectorStart.x + Math.cos(vector.radians) * (distance * progress);
-    vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);
-
-    if (onTargetReached) {
-      if (Point.distance(target, vector.point) <= maxDistance) {
-        onTargetReached(target);
-      }
-    }
+  private moveSegment() {
+    const { tickTarget, vector } = this.model;
+    vector.radians = tickTarget.radians;
+    vector.x = tickTarget.x;
+    vector.y = tickTarget.y;
   }
 
-  private moveLegs(progress: number, distance: number) {
-    const { legs, vector, vectorStart } = this.model;
+  // private moveSegment(progress: number, distance: number) {
+  //   const { target, vector, vectorStart, maxDistance, maxRotation, onTargetReached } = this.model;
+
+  //   const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
+  //   const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
+  //     Angle.delta(vector.radians, targetRadians)));
+  //   vector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
+
+  //   vector.x = vectorStart.x + Math.cos(vector.radians) * (distance * progress);
+  //   vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);
+
+  //   if (onTargetReached) {
+  //     if (Point.distance(target, vector.point) <= maxDistance) {
+  //       onTargetReached(target);
+  //     }
+  //   }
+  // }
+
+  private moveLegs() {
+    const { legs, progress, tickTarget, vector } = this.model;
     legs.forEach((side, sideIndex) => {
       side.forEach(leg => {
         leg.offset(vector);
       });
       if (sideIndex === this.model.step) {
-        const targetVector = new Vector(
-          vectorStart.x + Math.cos(vector.radians) * distance,
-          vectorStart.y + Math.sin(vector.radians) * distance,
-          vector.radians);
         side.forEach(leg => {
-          leg.tick(targetVector, progress);
+          leg.tick(tickTarget, progress);
         });
       }
     });
   }
+
+  // private moveLegs(progress: number, distance: number) {
+  //   const { legs, vector, vectorStart } = this.model;
+  //   legs.forEach((side, sideIndex) => {
+  //     side.forEach(leg => {
+  //       leg.offset(vector);
+  //     });
+  //     if (sideIndex === this.model.step) {
+  //       const targetVector = new Vector(
+  //         vectorStart.x + Math.cos(vector.radians) * distance,
+  //         vectorStart.y + Math.sin(vector.radians) * distance,
+  //         vector.radians);
+  //       side.forEach(leg => {
+  //         leg.tick(targetVector, progress);
+  //       });
+  //     }
+  //   });
+  // }
 
   get x(): number {
     return this.model.vector.x;
@@ -138,6 +186,10 @@ export default class Segment {
   }
   set radians(value: number) {
     this.model.vector.radians = value;
+  }
+
+  get maxDistance(): number {
+    return this.model.maxDistance;
   }
 
   get data(): SegmentData {

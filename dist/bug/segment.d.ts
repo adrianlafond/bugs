@@ -5,7 +5,9 @@ export interface SegmentModel {
     legs: Leg[][];
     maxRotation: number;
     maxDistance: number;
+    progress: number;
     target: Point;
+    tickTarget: Vector;
     vectorStart: Vector;
     step: number;
     onTargetReached: (target?: Point) => void | null;
@@ -25,7 +27,9 @@ export default class Segment {
     protected model: SegmentModel;
     constructor(options: SegmentOptions);
     target: Point;
-    tick(progress?: number): void;
+    defineTarget(progress?: number): Vector;
+    updateTarget(target: Vector): void;
+    tick(): void;
     step(): void;
     restartStep(): void;
     private moveSegment;
@@ -33,5 +37,6 @@ export default class Segment {
     x: number;
     y: number;
     radians: number;
+    readonly maxDistance: number;
     readonly data: SegmentData;
 }

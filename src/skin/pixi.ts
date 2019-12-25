@@ -1,9 +1,9 @@
-import Skin from './skin';
-import Bug from '../bug';
+import { Skin } from './skin';
+import { Bug } from '../bug';
 
 const BODY_RADIUS = 8;
 
-class Pixi implements Skin {
+export class Pixi implements Skin {
   container: PIXI.Container;
   segments: PIXI.Container[];
   legs: PIXI.Graphics[] = [];
@@ -98,5 +98,3 @@ class Pixi implements Skin {
     this.legs = [];
   }
 }
-
-export default Pixi;

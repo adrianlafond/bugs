@@ -1,3 +1,3 @@
-export default interface Skin {
+export interface Skin {
   render(delta: number): void;
 }

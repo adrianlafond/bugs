@@ -1,4 +1,4 @@
-import Bug from '../../src/bug';
+import { Bug } from '../../src/bug';
 
 describe('Bug', () => {
   let bug: Bug;

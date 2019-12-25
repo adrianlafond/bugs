@@ -1,5 +1,5 @@
 import { Point, PointData } from '@adrianlafond/geom';
-import Segment, { SegmentData } from './segment';
+import { Segment, SegmentData } from './segment';
 export interface BugOptions {
     x?: number;
     y?: number;
@@ -16,7 +16,7 @@ interface BugModel {
     progress: number;
     onTargetReached: (target?: Point) => void;
 }
-declare class Bug {
+export declare class Bug {
     protected model: BugModel;
     constructor(options?: BugOptions);
     tick(delta?: number): Bug;
@@ -27,4 +27,4 @@ declare class Bug {
     readonly segments: SegmentData[];
     private onTargetReached;
 }
-export default Bug;
+export {};

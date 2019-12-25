@@ -6,7 +6,7 @@ export interface LegModel extends LegOptions {
     map: Vector[];
     jointsStart: Point[];
 }
-export default class Leg {
+export declare class Leg {
     protected model: LegModel;
     constructor(options: LegOptions);
     offset(vector: Vector, index?: number): void;

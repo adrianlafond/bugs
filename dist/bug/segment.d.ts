@@ -1,5 +1,5 @@
 import { Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
-import Leg from './leg';
+import { Leg } from './leg';
 export interface SegmentModel {
     vector: Vector;
     legs: Leg[][];
@@ -21,7 +21,7 @@ export interface SegmentOptions {
     target?: Point;
     onTargetReached?: (target?: Point) => void;
 }
-export default class Segment {
+export declare class Segment {
     protected model: SegmentModel;
     constructor(options: SegmentOptions);
     target: Point;

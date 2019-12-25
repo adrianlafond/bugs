@@ -11,6 +11,11 @@ function createApp() {
   return app;
 }
 
+function createWorld() {
+  const world = new World.World();
+  return world;
+}
+
 function createMarker() {
   const marker = new PIXI.Container();
 
@@ -31,7 +36,7 @@ function createMarker() {
 }
 
 function createBug() {
-  return new Bug.default({
+  return new Bug.Bug({
     x: 160,
     y: 160,
     radians: Math.random() * Math.PI * 2,
@@ -91,6 +96,7 @@ const app = createApp();
 const marker = createMarker();
 const bug = createBug();
 const skin = createSkin();
+const world = createWorld();
 const ticker = createTicker();
 ticker.add(skin.render.bind(skin));
 resetTarget();

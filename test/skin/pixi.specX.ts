@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import Bug from '../../src/bug/bug';
-import Pixi from '../../src/skin/pixi';
+import { Bug } from '../../src/bug/bug';
+import { Pixi } from '../../src/skin/pixi';
 
 xdescribe('Pixi', () => {
   const appOpts = {

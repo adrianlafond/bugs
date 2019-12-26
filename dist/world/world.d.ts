@@ -1,5 +1,5 @@
 import { Point } from '@adrianlafond/geom';
-export declare type hitFromType = 'top' | 'right' | 'bottom' | 'left';
+export declare type hitFromType = 'top' | 'right' | 'bottom' | 'left' | 'unknown';
 export declare type obstacleHitType = {
     obstacle: Obstacle;
     from: hitFromType;

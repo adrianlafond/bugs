@@ -1,6 +1,6 @@
 import { Point } from '@adrianlafond/geom';
 
-export type hitFromType = 'top' | 'right' | 'bottom' | 'left';
+export type hitFromType = 'top' | 'right' | 'bottom' | 'left' | 'unknown';
 export type obstacleHitType = {
   obstacle: Obstacle;
   from: hitFromType;
@@ -80,16 +80,30 @@ export class World implements WorldApi {
         } else if (crossesYB) {
           from = 'bottom';
         } else {
-          // TODO: find closest obstacle side to determine correct `from`.
-          const distances = [ty - y, x2 - tx, y2 - ty, tx - x];
-          const fromValues = ['top', 'right', 'bottom', 'left'];
-          let closest = Number.MAX_VALUE;
-          distances.forEach((d, i) => {
-            if (d >= 0 && d < closest) {
-              closest = d;
-              from = fromValues[i] as hitFromType;
-            }
-          });
+          const xDis = x - cx;
+          const x2Dis = cx - x2;
+          const yDis = y - cy;
+          const y2Dis = cy - y2;
+
+          if (xDis >= 0 && yDis >= 0) {
+            from = xDis >= yDis ? 'left' : 'top';
+          } else if (x2Dis >= 0 && yDis >= 0) {
+            from = x2Dis >= yDis ? 'right' : 'top';
+          } else if (xDis >= 0 && y2Dis >= 0) {
+            from = xDis >= y2Dis ? 'left' : 'bottom';
+          } else if (x2Dis >= 0 && y2Dis >= 0) {
+            from = x2Dis >= y2Dis ? 'right' : 'bottom';
+          } else if (xDis >= 0) {
+            from = 'left';
+          } else if (x2Dis >= 0) {
+            from = 'right';
+          } else if (yDis >= 0) {
+            from = 'top';
+          } else if (y2Dis >= 0) {
+            from = 'bottom';
+          } else {
+            from = 'unknown';
+          }
         }
         return true;
       }

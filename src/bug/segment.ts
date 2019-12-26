@@ -84,18 +84,19 @@ export class Segment {
     const { maxDistance: threshold, vector, target, willHitObstacle } = this.model;
     this.model.vectorStart = vector.clone();
     this.model.stepTarget = target.clone();
-    const { stepTarget, vectorStart } = this.model;
+
     if (willHitObstacle) {
+      const { stepTarget, vectorStart } = this.model;
       const hit = willHitObstacle(vector.point, target, threshold);
       if (hit) {
         if (hit.from === 'left') {
-          stepTarget.x = hit.obstacle.x - threshold;
+          stepTarget.x = hit.obstacle.x - threshold * 2;
         } else if (hit.from === 'right') {
-          stepTarget.x = hit.obstacle.x + hit.obstacle.width + threshold;
+          stepTarget.x = hit.obstacle.x + hit.obstacle.width + threshold * 2;
         } else if (hit.from === 'top') {
-          stepTarget.y = hit.obstacle.y - threshold;
-        } else {
-          stepTarget.y = hit.obstacle.y + hit.obstacle.height + threshold;
+          stepTarget.y = hit.obstacle.y - threshold * 2;
+        } else if (hit.from === 'bottom') {
+          stepTarget.y = hit.obstacle.y + hit.obstacle.height + threshold * 2;
         }
 
         if (hit.from === 'left' || hit.from === 'right') {
@@ -122,7 +123,7 @@ export class Segment {
     const targetRadians = Math.atan2(stepTarget.y - vectorStart.y, stepTarget.x - vectorStart.x);
     const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
       Angle.delta(vector.radians, targetRadians)));
-    vector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
+    vector.radians = targetRadians;// Angle.normalize(vectorStart.radians) + deltaRadians * progress;
 
     const moveDistance = distance * progress;
     vector.x = vectorStart.x + Math.cos(vector.radians) * moveDistance;

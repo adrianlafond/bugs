@@ -102,11 +102,13 @@ export class Segment {
         if (hit.from === 'left' || hit.from === 'right') {
           const topIsClosest = stepTarget.y - hit.obstacle.y <
             hit.obstacle.y + hit.obstacle.height - stepTarget.y
-          stepTarget.y = vectorStart.y + (topIsClosest ? -threshold : threshold);
+          stepTarget.y = topIsClosest ? (hit.obstacle.y - threshold) :
+            (hit.obstacle.y + hit.obstacle.height + threshold);
         } else {
           const leftIsClosest = stepTarget.x - hit.obstacle.x <
             hit.obstacle.x + hit.obstacle.width - stepTarget.x;
-          stepTarget.x = vectorStart.x + (leftIsClosest ? -threshold : threshold);
+          stepTarget.x = leftIsClosest ? (hit.obstacle.x - threshold) :
+            (hit.obstacle.x + hit.obstacle.width + threshold);
         }
       }
     }
@@ -123,7 +125,7 @@ export class Segment {
     const targetRadians = Math.atan2(stepTarget.y - vectorStart.y, stepTarget.x - vectorStart.x);
     const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
       Angle.delta(vector.radians, targetRadians)));
-    vector.radians = targetRadians;// Angle.normalize(vectorStart.radians) + deltaRadians * progress;
+    vector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
 
     const moveDistance = distance * progress;
     vector.x = vectorStart.x + Math.cos(vector.radians) * moveDistance;

@@ -1,4 +1,4 @@
-import { Point, PointData } from '@adrianlafond/geom';
+import { Vector, Point, PointData } from '@adrianlafond/geom';
 import { Segment, SegmentData } from './segment';
 export interface BugOptions {
     x?: number;
@@ -9,12 +9,14 @@ export interface BugOptions {
         y?: number;
     };
     onTargetReached?: (target?: Point) => void;
+    accountForObstacles?: (vector: Vector, threshold: number) => Vector;
 }
 interface BugModel {
     segments: Segment[];
     target: Point;
     progress: number;
     onTargetReached: (target?: Point) => void;
+    accountForObstacles?: (vector: Vector, threshold: number) => Vector;
 }
 export declare class Bug {
     protected model: BugModel;

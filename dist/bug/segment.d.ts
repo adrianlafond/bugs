@@ -9,6 +9,7 @@ export interface SegmentModel {
     vectorStart: Vector;
     step: number;
     onTargetReached: (target?: Point) => void | null;
+    accountForObstacles: (vector: Vector, threshold: number) => Vector | null;
 }
 export interface SegmentData extends VectorData {
     legs: PointData[][][];
@@ -20,6 +21,7 @@ export interface SegmentOptions {
     maxDistance?: number;
     target?: Point;
     onTargetReached?: (target?: Point) => void;
+    accountForObstacles?: (vector: Vector, threshold: number) => Vector;
 }
 export declare class Segment {
     protected model: SegmentModel;

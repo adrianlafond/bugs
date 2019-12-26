@@ -14,7 +14,7 @@ function getUid() {
 }
 
 export class World {
-  private obstacles: Obstacle[];
+  private obstacles: Obstacle[] = [];
 
   addObstacle(obstacle: Obstacle) {
     const copy = { ...obstacle };

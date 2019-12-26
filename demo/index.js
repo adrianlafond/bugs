@@ -11,6 +11,19 @@ function createApp() {
   return app;
 }
 
+function createObstacles() {
+  const obs = [
+    [80, 80, 160, 160]
+  ];
+  obs.forEach(ob => {
+    const gfx = new PIXI.Graphics();
+    gfx.beginFill(0xCCCCCC);
+    gfx.drawRect(...ob);
+    app.stage.addChild(gfx);
+  });
+  return obs;
+}
+
 function createWorld() {
   const world = new World.World();
   return world;
@@ -37,10 +50,11 @@ function createMarker() {
 
 function createBug() {
   return new Bug.Bug({
-    x: 160,
-    y: 160,
+    x: 20,
+    y: 20,
     radians: Math.random() * Math.PI * 2,
     onTargetReached,
+    accountForObstacles: world.accountForObstacles,
   });
 }
 
@@ -93,10 +107,18 @@ document.querySelector('.main__content--dpr2.bug').addEventListener(inputEvent, 
 });
 
 const app = createApp();
+
+const obstacles = createObstacles();
+const world = createWorld();
+obstacles.forEach(obj => {
+  const [x, y, width, height] = obj;
+  world.addObstacle({ x, y, width, height });
+});
+
 const marker = createMarker();
 const bug = createBug();
 const skin = createSkin();
-const world = createWorld();
+
 const ticker = createTicker();
 ticker.add(skin.render.bind(skin));
 resetTarget();

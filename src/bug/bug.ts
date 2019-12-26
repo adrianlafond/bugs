@@ -10,6 +10,7 @@ export interface BugOptions {
     y?: number;
   };
   onTargetReached?: (target?: Point) => void;
+  accountForObstacles?: (vector: Vector, threshold: number) => Vector;
 }
 
 interface BugModel {
@@ -17,6 +18,7 @@ interface BugModel {
   target: Point;
   progress: number;
   onTargetReached: (target?: Point) => void;
+  accountForObstacles?: (vector: Vector, threshold: number) => Vector;
 }
 
 export class Bug {
@@ -29,6 +31,7 @@ export class Bug {
       segments: [new Segment({
         vector: new Vector(x, y, radians),
         onTargetReached: this.onTargetReached.bind(this),
+        accountForObstacles: options.accountForObstacles,
       })],
       target: new Point(targetX, targetY),
       progress: 0,

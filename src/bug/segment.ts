@@ -10,6 +10,7 @@ export interface SegmentModel {
   vectorStart: Vector;
   step: number;
   onTargetReached: (target?: Point) => void | null;
+  accountForObstacles: (vector: Vector, threshold: number) => Vector | null;
 }
 
 export interface SegmentData extends VectorData {
@@ -23,6 +24,7 @@ export interface SegmentOptions {
   maxDistance?: number;
   target?: Point;
   onTargetReached?: (target?: Point) => void;
+  accountForObstacles?: (vector: Vector, threshold: number) => Vector;
 }
 
 export class Segment {
@@ -42,6 +44,7 @@ export class Segment {
     vectorStart: new Vector(),
     step: 0,
     onTargetReached: null,
+    accountForObstacles: null,
   };
 
   constructor(options: SegmentOptions) {
@@ -93,6 +96,10 @@ export class Segment {
 
     vector.x = vectorStart.x + Math.cos(vector.radians) * (distance * progress);
     vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);
+
+    if (this.model.accountForObstacles) {
+      this.model.accountForObstacles(vector, this.model.maxDistance);
+    }
 
     if (onTargetReached) {
       if (Point.distance(target, vector.point) <= maxDistance) {

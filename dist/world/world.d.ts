@@ -1,4 +1,13 @@
-import { Vector } from '@adrianlafond/geom';
+import { Point } from '@adrianlafond/geom';
+export declare type hitFromType = 'top' | 'right' | 'bottom' | 'left';
+export declare type obstacleHitType = {
+    obstacle: Obstacle;
+    from: hitFromType;
+} | null;
+export declare type willHitObstacleType = (location: Point, target: Point, threshold: number) => obstacleHitType;
+export interface WorldApi {
+    willHitObstacle: willHitObstacleType;
+}
 export interface Obstacle {
     id?: string;
     x: number;
@@ -6,7 +15,7 @@ export interface Obstacle {
     width: number;
     height: number;
 }
-export declare class World {
+export declare class World implements WorldApi {
     private obstacles;
     addObstacle(obstacle: Obstacle): {
         id?: string;
@@ -16,10 +25,5 @@ export declare class World {
         height: number;
     };
     removeObstacle(id: string | Obstacle): void;
-    /**
-     * @param {Vector} vector Location and direction a bug.
-     * @param {number} threshold Pixels distance between vector and obstacle.
-     * @returns {Vector} Compenstation for obstacle, if any.
-     */
-    accountForObstacles(vector: Vector, threshold: number): Vector;
+    willHitObstacle(current: Point, target: Point, threshold: number): obstacleHitType;
 }

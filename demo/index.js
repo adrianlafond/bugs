@@ -54,7 +54,7 @@ function createBug() {
     y: 20,
     radians: Math.random() * Math.PI * 2,
     onTargetReached,
-    accountForObstacles: world.accountForObstacles,
+    willHitObstacle: world.willHitObstacle.bind(world),
   });
 }
 

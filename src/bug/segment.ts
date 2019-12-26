@@ -112,8 +112,6 @@ export class Segment {
       //       (hit.obstacle.x + hit.obstacle.width + threshold);
       //   }
       // }
-    } else {
-      this.model.stepTarget = target.clone();
     }
     this.model.legs.forEach(side => {
       side.forEach(leg => {
@@ -130,9 +128,11 @@ export class Segment {
       Angle.delta(vector.radians, targetRadians)));
     vector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
 
-    const moveDistance = distance * progress;
-    vector.x = vectorStart.x + Math.cos(vector.radians) * moveDistance;
-    vector.y = vectorStart.y + Math.sin(vector.radians) * moveDistance;
+    const radiansDelta = Math.abs(Angle.normalize(targetRadians) - vector.radians);
+    const radiansDamper = 1 - radiansDelta / (Math.PI * 2);
+    const moveDistance = distance * progress * radiansDamper;
+    vector.x = vectorStart.x + Math.cos(targetRadians) * moveDistance;
+    vector.y = vectorStart.y + Math.sin(targetRadians) * moveDistance;
 
     if (onTargetReached) {
       if (Point.distance(target, vector.point) <= maxDistance) {

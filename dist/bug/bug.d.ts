@@ -1,6 +1,6 @@
 import { Point, PointData } from '@adrianlafond/geom';
 import { Segment, SegmentData } from './segment';
-import { willHitObstacleType } from '../world';
+import { navigateWorldType } from '../world';
 export interface BugOptions {
     x?: number;
     y?: number;
@@ -10,14 +10,14 @@ export interface BugOptions {
         y?: number;
     };
     onTargetReached?: (target?: Point) => void;
-    willHitObstacle?: willHitObstacleType;
+    navigateWorld?: navigateWorldType;
 }
 interface BugModel {
     segments: Segment[];
     target: Point;
     progress: number;
     onTargetReached: (target?: Point) => void;
-    willHitObstacle?: willHitObstacleType;
+    navigateWorld?: navigateWorldType;
 }
 export declare class Bug {
     protected model: BugModel;

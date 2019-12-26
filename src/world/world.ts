@@ -7,8 +7,14 @@ export type obstacleHitType = {
 } | null;
 export type willHitObstacleType = (location: Point, stepTarget: Point, ultimateTarget: Point, threshold: number) => Point;
 
+export type navigateWorldType = (current: Point, target: Point) => Point;
 export interface WorldApi {
-  willHitObstacle: willHitObstacleType;
+  navigateWorld: navigateWorldType;
+}
+
+export interface WorldBlock {
+  point: Point;
+  filled: boolean;
 }
 
 export interface Obstacle {
@@ -19,35 +25,59 @@ export interface Obstacle {
   height: number;
 }
 
-let n = 0;
-function getUid() {
-  return `obstacle-${n++}`;
-}
-
 export class World implements WorldApi {
   private obstacles: Obstacle[] = [];
 
-  addObstacle(obstacle: Obstacle) {
-    const copy = { ...obstacle };
-    const existingIndex = this.obstacles.findIndex(item => item.id === copy.id);
-    if (existingIndex !== -1) {
-      this.obstacles.splice(existingIndex, 1, copy);
-    } else {
-      copy.id = copy.hasOwnProperty('id') ? copy.id : getUid();
-      this.obstacles.push(copy);
-    }
-    return { ...copy };
+  private grid: WorldBlock[][];
+
+  constructor(private width = 320, private height = 320, private blockSize = 20) {
+    this.createGrid();
   }
 
-  removeObstacle(id: string | Obstacle) {
-    const searchId = (typeof id === 'string') ? id : id.id;
-    const searchIndex = this.obstacles.findIndex(item => item.id === searchId);
-    if (searchIndex !== -1) {
-      this.obstacles.splice(searchIndex, 1);
+  private createGrid() {
+    this.grid = [];
+    const cols = Math.floor(this.width / this.blockSize);
+    const rows = Math.floor(this.height / this.blockSize);
+    for (let c = 0; c < cols; c++) {
+      this.grid[c] = [];
+      for (let r = 0; r < rows; r++) {
+        this.grid[c][r] = {
+          point: new Point(
+            c * this.blockSize + this.blockSize / 2,
+            r * this.blockSize + this.blockSize / 2),
+          filled: false,
+        };
+      }
     }
   }
 
-  willHitObstacle(current: Point, stepTarget: Point, ultimateTarget: Point, threshold: number): Point {
+  fillBlock(x: number, y: number) {
+    const block = this.getBlockFromXY(x, y);
+    if (block) {
+      block.filled = true;
+    }
+    return block ? block.point.clone() : null;
+  }
+
+  clearBlock(x: number, y: number) {
+    const block = this.getBlockFromXY(x, y);
+    if (block) {
+      block.filled = false;
+    }
+    return block ? block.point.clone() : null;
+  }
+
+  navigateWorld(current: Point, target: Point): Point {
+    return current;
+  }
+
+  private getBlockFromXY(x: number, y: number) {
+    const col = Math.floor((x + this.blockSize / 2) / this.width * this.grid.length);
+    const row = Math.floor((y + this.blockSize / 2) / this.height * this.grid[0].length);
+    return (this.grid[col] && this.grid[col][row]) ? this.grid[col][row] : null;
+  }
+
+  willHitObstacleY(current: Point, stepTarget: Point, ultimateTarget: Point, threshold: number): Point {
     const { x: cx, y: cy } = current;
     const { x: tx, y: ty } = stepTarget;
     let redirectedTarget = stepTarget.clone();
@@ -165,32 +195,6 @@ export class World implements WorldApi {
       from
     } : null;
   }
-
-  /**
-   * @param {Vector} vector Location of an object/bug.
-   * @param {number} threshold Pixels distance between vector and obstacle.
-   * @returns {Vector} Compenstation for obstacle, if any.
-   */
-  // accountForObstacles(start: Point, vector: Vector, threshold: number): Vector {
-  //   this.obstacles.some(obstacle => {
-  //     if (hitsObstacle(obstacle, vector.point, threshold)) {
-  //       const distance = Point.distance(start, vector.point);
-  //       if (hitsX(obstacle, start, threshold)) {
-  //         vector.y = start.y;
-  //         // const radians = vector.x > start.x ? 0 : Math.PI;
-  //         const radians = 0;
-  //         vector.x += distance; // Math.cos(radians) * distance;
-  //       } else if (hitsY(obstacle, start, threshold)) {
-  //         vector.x = start.x;
-  //         const radians = vector.y > start.y ? Math.PI * 0.5 : Math.PI * 1.5;
-  //         vector.y = start.y + Math.sin(radians) * distance;
-  //       }
-  //       return true;
-  //     }
-  //     return false;
-  //   });
-  //   return vector;
-  // }
 }
 
 function hitsX(obstacle: Obstacle, point: Point, threshold: number) {

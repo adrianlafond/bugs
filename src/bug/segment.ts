@@ -1,6 +1,6 @@
 import { Angle, Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
 import { Leg } from './leg';
-import { willHitObstacleType } from '../world';
+import { navigateWorldType } from '../world';
 
 export interface SegmentModel {
   vector: Vector;
@@ -12,7 +12,7 @@ export interface SegmentModel {
   vectorStart: Vector;
   step: number;
   onTargetReached: (target?: Point) => void | null;
-  willHitObstacle: willHitObstacleType | null;
+  navigateWorld?: navigateWorldType | null;
 }
 
 export interface SegmentData extends VectorData {
@@ -26,7 +26,7 @@ export interface SegmentOptions {
   maxDistance?: number;
   target?: Point;
   onTargetReached?: (target?: Point) => void;
-  willHitObstacle?: willHitObstacleType;
+  navigateWorld?: navigateWorldType;
 }
 
 export class Segment {
@@ -47,7 +47,7 @@ export class Segment {
     vectorStart: new Vector(),
     step: 0,
     onTargetReached: null,
-    willHitObstacle: null,
+    navigateWorld: null,
   };
 
   constructor(options: SegmentOptions) {
@@ -81,38 +81,9 @@ export class Segment {
   }
 
   restartStep() {
-    const { maxDistance: threshold, vector, target, willHitObstacle } = this.model;
+    const { vector, target, navigateWorld } = this.model;
     this.model.vectorStart = vector.clone();
-    this.model.stepTarget = target.clone();
-
-    if (willHitObstacle) {
-      this.model.stepTarget = willHitObstacle(vector.point, this.model.stepTarget, target, threshold);
-      // const { stepTarget, vectorStart } = this.model;
-      // const hit = willHitObstacle(vector.point, target, threshold);
-      // if (hit) {
-      //   if (hit.from === 'left') {
-      //     stepTarget.x = hit.obstacle.x - threshold * 2;
-      //   } else if (hit.from === 'right') {
-      //     stepTarget.x = hit.obstacle.x + hit.obstacle.width + threshold * 2;
-      //   } else if (hit.from === 'top') {
-      //     stepTarget.y = hit.obstacle.y - threshold * 2;
-      //   } else if (hit.from === 'bottom') {
-      //     stepTarget.y = hit.obstacle.y + hit.obstacle.height + threshold * 2;
-      //   }
-
-      //   if (hit.from === 'left' || hit.from === 'right') {
-      //     const topIsClosest = stepTarget.y - hit.obstacle.y <
-      //       hit.obstacle.y + hit.obstacle.height - stepTarget.y
-      //     stepTarget.y = topIsClosest ? (hit.obstacle.y - threshold) :
-      //       (hit.obstacle.y + hit.obstacle.height + threshold);
-      //   } else {
-      //     const leftIsClosest = stepTarget.x - hit.obstacle.x <
-      //       hit.obstacle.x + hit.obstacle.width - stepTarget.x;
-      //     stepTarget.x = leftIsClosest ? (hit.obstacle.x - threshold) :
-      //       (hit.obstacle.x + hit.obstacle.width + threshold);
-      //   }
-      // }
-    }
+    this.model.stepTarget = navigateWorld ? navigateWorld(vector.point, target) : target.clone();
     this.model.legs.forEach(side => {
       side.forEach(leg => {
         leg.restartStep();

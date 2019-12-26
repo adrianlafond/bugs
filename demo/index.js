@@ -12,19 +12,17 @@ function createApp() {
 }
 
 function createObstacles() {
-  const obs = [
-    [100, 60, 100, 10],
-    [100, 120, 100, 10],
-    [100, 180, 100, 10],
-    [100, 240, 100, 10],
-  ];
-  obs.forEach(ob => {
-    const gfx = new PIXI.Graphics();
-    gfx.beginFill(0xCCCCCC);
-    gfx.drawRect(...ob);
-    app.stage.addChild(gfx);
-  });
-  return obs;
+  for (let i = 0; i < 20; i++) {
+    const x = Math.floor(Math.random() * 320);
+    const y = Math.floor(Math.random() * 320);
+    const block = world.fillBlock(x, y);
+    if (block) {
+      const gfx = new PIXI.Graphics();
+      gfx.beginFill(0xCCCCCC);
+      gfx.drawRect(block.x - 10, block.y - 10, 20, 20);
+      app.stage.addChild(gfx);
+    }
+  }
 }
 
 function createWorld() {
@@ -57,7 +55,7 @@ function createBug() {
     y: 20,
     radians: Math.random() * Math.PI * 2,
     onTargetReached,
-    willHitObstacle: world.willHitObstacle.bind(world),
+    willHitObstacle: world.navigateWorld.bind(world),
   });
 }
 
@@ -111,12 +109,8 @@ document.querySelector('.main__content--dpr2.bug').addEventListener(inputEvent, 
 
 const app = createApp();
 
-const obstacles = createObstacles();
 const world = createWorld();
-obstacles.forEach(obj => {
-  const [x, y, width, height] = obj;
-  world.addObstacle({ x, y, width, height });
-});
+const obstacles = createObstacles();
 
 const marker = createMarker();
 const bug = createBug();

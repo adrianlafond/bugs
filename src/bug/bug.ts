@@ -1,6 +1,6 @@
 import { Vector, Point, PointData } from '@adrianlafond/geom';
 import { Segment, SegmentData } from './segment';
-import { willHitObstacleType } from '../world';
+import { navigateWorldType } from '../world';
 
 export interface BugOptions {
   x?: number;
@@ -11,7 +11,7 @@ export interface BugOptions {
     y?: number;
   };
   onTargetReached?: (target?: Point) => void;
-  willHitObstacle?: willHitObstacleType;
+  navigateWorld?: navigateWorldType;
 }
 
 interface BugModel {
@@ -19,7 +19,7 @@ interface BugModel {
   target: Point;
   progress: number;
   onTargetReached: (target?: Point) => void;
-  willHitObstacle?: willHitObstacleType;
+  navigateWorld?: navigateWorldType;
 }
 
 export class Bug {
@@ -32,7 +32,7 @@ export class Bug {
       segments: [new Segment({
         vector: new Vector(x, y, radians),
         onTargetReached: this.onTargetReached.bind(this),
-        willHitObstacle: options.willHitObstacle,
+        navigateWorld: options.navigateWorld,
       })],
       target: new Point(targetX, targetY),
       progress: 0,

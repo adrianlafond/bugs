@@ -1,6 +1,6 @@
 import { Angle, Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
 import { Leg } from './leg';
-import { willHitObstacleType, Obstacle } from '../world';
+import { willHitObstacleType } from '../world';
 
 export interface SegmentModel {
   vector: Vector;
@@ -86,31 +86,34 @@ export class Segment {
     this.model.stepTarget = target.clone();
 
     if (willHitObstacle) {
-      const { stepTarget, vectorStart } = this.model;
-      const hit = willHitObstacle(vector.point, target, threshold);
-      if (hit) {
-        if (hit.from === 'left') {
-          stepTarget.x = hit.obstacle.x - threshold * 2;
-        } else if (hit.from === 'right') {
-          stepTarget.x = hit.obstacle.x + hit.obstacle.width + threshold * 2;
-        } else if (hit.from === 'top') {
-          stepTarget.y = hit.obstacle.y - threshold * 2;
-        } else if (hit.from === 'bottom') {
-          stepTarget.y = hit.obstacle.y + hit.obstacle.height + threshold * 2;
-        }
+      this.model.stepTarget = willHitObstacle(vector.point, this.model.stepTarget, target, threshold);
+      // const { stepTarget, vectorStart } = this.model;
+      // const hit = willHitObstacle(vector.point, target, threshold);
+      // if (hit) {
+      //   if (hit.from === 'left') {
+      //     stepTarget.x = hit.obstacle.x - threshold * 2;
+      //   } else if (hit.from === 'right') {
+      //     stepTarget.x = hit.obstacle.x + hit.obstacle.width + threshold * 2;
+      //   } else if (hit.from === 'top') {
+      //     stepTarget.y = hit.obstacle.y - threshold * 2;
+      //   } else if (hit.from === 'bottom') {
+      //     stepTarget.y = hit.obstacle.y + hit.obstacle.height + threshold * 2;
+      //   }
 
-        if (hit.from === 'left' || hit.from === 'right') {
-          const topIsClosest = stepTarget.y - hit.obstacle.y <
-            hit.obstacle.y + hit.obstacle.height - stepTarget.y
-          stepTarget.y = topIsClosest ? (hit.obstacle.y - threshold) :
-            (hit.obstacle.y + hit.obstacle.height + threshold);
-        } else {
-          const leftIsClosest = stepTarget.x - hit.obstacle.x <
-            hit.obstacle.x + hit.obstacle.width - stepTarget.x;
-          stepTarget.x = leftIsClosest ? (hit.obstacle.x - threshold) :
-            (hit.obstacle.x + hit.obstacle.width + threshold);
-        }
-      }
+      //   if (hit.from === 'left' || hit.from === 'right') {
+      //     const topIsClosest = stepTarget.y - hit.obstacle.y <
+      //       hit.obstacle.y + hit.obstacle.height - stepTarget.y
+      //     stepTarget.y = topIsClosest ? (hit.obstacle.y - threshold) :
+      //       (hit.obstacle.y + hit.obstacle.height + threshold);
+      //   } else {
+      //     const leftIsClosest = stepTarget.x - hit.obstacle.x <
+      //       hit.obstacle.x + hit.obstacle.width - stepTarget.x;
+      //     stepTarget.x = leftIsClosest ? (hit.obstacle.x - threshold) :
+      //       (hit.obstacle.x + hit.obstacle.width + threshold);
+      //   }
+      // }
+    } else {
+      this.model.stepTarget = target.clone();
     }
     this.model.legs.forEach(side => {
       side.forEach(leg => {

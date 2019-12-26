@@ -5,7 +5,7 @@ export type obstacleHitType = {
   obstacle: Obstacle;
   from: hitFromType;
 } | null;
-export type willHitObstacleType = (location: Point, target: Point, threshold: number) => obstacleHitType;
+export type willHitObstacleType = (location: Point, stepTarget: Point, ultimateTarget: Point, threshold: number) => Point;
 
 export interface WorldApi {
   willHitObstacle: willHitObstacleType;
@@ -47,7 +47,58 @@ export class World implements WorldApi {
     }
   }
 
-  willHitObstacle(current: Point, target: Point, threshold: number): obstacleHitType {
+  willHitObstacle(current: Point, stepTarget: Point, ultimateTarget: Point, threshold: number): Point {
+    const { x: cx, y: cy } = current;
+    const { x: tx, y: ty } = stepTarget;
+    let redirectedTarget = stepTarget.clone();
+
+    this.obstacles.some(obstacle => {
+      const x1 = obstacle.x - threshold;
+      const y1 = obstacle.y - threshold;
+      const x2 = obstacle.x + obstacle.width + threshold;
+      const y2 = obstacle.y + obstacle.height + threshold;
+
+      const thruX = (cx < x2 && tx > x1) || (cx > x1 && tx < x2);
+      const thruY = (cy < y2 && ty > y1) || (cy > y1 && ty < y2);
+
+      if (thruX && thruY) {
+        const corners = [
+          new Point(x1, y1),
+          new Point(x2, y1),
+          new Point(x2, y2),
+          new Point(x1, y2),
+        ];
+
+        // Find closest corner:
+        let closestDistance = Number.MAX_VALUE;
+        let closestCorner: Point;
+        corners.forEach(testPoint => {
+          const testDistance = Point.distance(current, testPoint);
+          if (testDistance < closestDistance) {
+            closestDistance = testDistance;
+            closestCorner = testPoint;
+          }
+        });
+
+        // Then find target corner:
+        closestDistance = Number.MAX_VALUE;
+        corners.forEach(testPoint => {
+          if (testPoint.x === closestCorner.x || testPoint.y === closestCorner.y) {
+            const testDistance = Point.distance(ultimateTarget, testPoint);
+            if (testDistance < closestDistance) {
+              closestDistance = testDistance;
+              redirectedTarget = testPoint;
+            }
+          }
+        });
+        return true;
+      }
+    });
+
+    return redirectedTarget;
+  }
+
+  willHitObstacleX(current: Point, target: Point, threshold: number): obstacleHitType {
     const { x: cx, y: cy } = current;
     const radians = Math.atan2(target.y - cy, target.x - cx);
     const tx = cx + Math.cos(radians) * threshold;

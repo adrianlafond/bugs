@@ -4,7 +4,7 @@ export declare type obstacleHitType = {
     obstacle: Obstacle;
     from: hitFromType;
 } | null;
-export declare type willHitObstacleType = (location: Point, target: Point, threshold: number) => obstacleHitType;
+export declare type willHitObstacleType = (location: Point, stepTarget: Point, ultimateTarget: Point, threshold: number) => Point;
 export interface WorldApi {
     willHitObstacle: willHitObstacleType;
 }
@@ -25,5 +25,6 @@ export declare class World implements WorldApi {
         height: number;
     };
     removeObstacle(id: string | Obstacle): void;
-    willHitObstacle(current: Point, target: Point, threshold: number): obstacleHitType;
+    willHitObstacle(current: Point, stepTarget: Point, ultimateTarget: Point, threshold: number): Point;
+    willHitObstacleX(current: Point, target: Point, threshold: number): obstacleHitType;
 }

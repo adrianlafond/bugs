@@ -13,11 +13,10 @@ function createApp() {
 
 function createObstacles() {
   const obs = [
-    [100, 50, 100, 5],
-    [100, 100, 100, 5],
-    [100, 150, 100, 5],
-    [100, 200, 100, 5],
-    [100, 250, 100, 5],
+    [100, 60, 100, 10],
+    [100, 120, 100, 10],
+    [100, 180, 100, 10],
+    [100, 240, 100, 10],
   ];
   obs.forEach(ob => {
     const gfx = new PIXI.Graphics();

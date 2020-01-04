@@ -68,12 +68,18 @@ export class World implements WorldApi {
   }
 
   navigateWorld(current: Point, target: Point): Point {
-    return current;
+    const targetBlock = this.getBlockFromXY(target.x, target.y);
+    if (targetBlock) {
+      console.log(targetBlock.point.toString(), targetBlock.filled);
+    }
+    return target;
   }
 
   private getBlockFromXY(x: number, y: number) {
-    const col = Math.floor((x + this.blockSize / 2) / this.width * this.grid.length);
-    const row = Math.floor((y + this.blockSize / 2) / this.height * this.grid[0].length);
+    const colNum = this.grid.length;
+    const rowNum = this.grid[0].length;
+    const col = Math.max(0, Math.min(colNum - 1, Math.floor(x / this.width * colNum)));
+    const row = Math.max(0, Math.min(rowNum - 1, Math.floor(y / this.height * rowNum)));
     return (this.grid[col] && this.grid[col][row]) ? this.grid[col][row] : null;
   }
 

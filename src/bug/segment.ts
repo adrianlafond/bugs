@@ -92,7 +92,15 @@ export class Segment {
   }
 
   private moveSegment(progress: number, distance: number) {
-    const { stepTarget, target, vector, vectorStart, maxDistance, maxRotation, onTargetReached } = this.model;
+    const {
+      stepTarget,
+      target,
+      vector,
+      vectorStart,
+      maxDistance,
+      maxRotation,
+      onTargetReached,
+    } = this.model;
 
     const targetRadians = Math.atan2(stepTarget.y - vectorStart.y, stepTarget.x - vectorStart.x);
     const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,

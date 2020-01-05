@@ -11,6 +11,8 @@ export interface WorldApi {
 }
 export interface WorldBlock {
     point: Point;
+    column: number;
+    row: number;
     filled: boolean;
 }
 export interface Obstacle {
@@ -32,6 +34,10 @@ export declare class World implements WorldApi {
     clearBlock(x: number, y: number): Point;
     navigateWorld(current: Point, target: Point): Point;
     private getBlockFromXY;
+    private getPotentialBlocks;
+    private maxGridLengths;
+    private maxColumns;
+    private maxRows;
     willHitObstacleY(current: Point, stepTarget: Point, ultimateTarget: Point, threshold: number): Point;
     willHitObstacleX(current: Point, target: Point, threshold: number): obstacleHitType;
 }

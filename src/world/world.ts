@@ -14,6 +14,8 @@ export interface WorldApi {
 
 export interface WorldBlock {
   point: Point;
+  column: number;
+  row: number;
   filled: boolean;
 }
 
@@ -45,6 +47,8 @@ export class World implements WorldApi {
           point: new Point(
             c * this.blockSize + this.blockSize / 2,
             r * this.blockSize + this.blockSize / 2),
+          column: c,
+          row: r,
           filled: false,
         };
       }
@@ -68,19 +72,62 @@ export class World implements WorldApi {
   }
 
   navigateWorld(current: Point, target: Point): Point {
-    const targetBlock = this.getBlockFromXY(target.x, target.y);
-    if (targetBlock) {
-      console.log(targetBlock.point.toString(), targetBlock.filled);
+    const currentBlock = this.getBlockFromXY(current.x, current.y);
+    if (currentBlock) {
+      const radians = Point.radians(current, target);
+      const potentialBlocks = this.getPotentialBlocks(currentBlock);
+      let targetBlock = this.getBlockFromXY(
+        current.x + Math.cos(radians) * this.blockSize,
+        current.y + Math.sin(radians) * this.blockSize,
+      );
+      if ((targetBlock && targetBlock.filled) || !targetBlock) {
+        while (potentialBlocks.length) {
+          let index = Math.floor(Math.random() * potentialBlocks.length);
+          targetBlock = potentialBlocks[index];
+          if (targetBlock && !targetBlock.filled) {
+            break;
+          }
+          potentialBlocks.splice(index, 1);
+        }
+      }
+      if (targetBlock) {
+        return targetBlock.point;
+      }
     }
     return target;
   }
 
   private getBlockFromXY(x: number, y: number) {
-    const colNum = this.grid.length;
-    const rowNum = this.grid[0].length;
-    const col = Math.max(0, Math.min(colNum - 1, Math.floor(x / this.width * colNum)));
-    const row = Math.max(0, Math.min(rowNum - 1, Math.floor(y / this.height * rowNum)));
+    const { columns, rows } = this.maxGridLengths();
+    const col = Math.max(0, Math.min(columns - 1, Math.floor(x / this.width * columns)));
+    const row = Math.max(0, Math.min(rows - 1, Math.floor(y / this.height * rows)));
     return (this.grid[col] && this.grid[col][row]) ? this.grid[col][row] : null;
+  }
+
+  private getPotentialBlocks(block: WorldBlock) {
+    const { columns, rows } = this.maxGridLengths();;
+    return [
+      // block.column > 0 && block.row > 0 ? this.grid[block.column - 1][block.row - 1] : null,
+      block.row > 0 ? this.grid[block.column][block.row - 1] : null,
+      // block.column < columns - 1 && block.row > 0 ? this.grid[block.column + 1][block.row - 1] : null,
+      block.column < columns - 1 ? this.grid[block.column + 1][block.row] : null,
+      // block.column < columns - 1 && block.row < rows - 1 ? this.grid[block.column + 1][block.row + 1] : null,
+      block.row < rows - 1 ? this.grid[block.column][block.row + 1]: null,
+      // block.column > 0 && block.row < rows - 1 ? this.grid[block.column - 1][block.row + 1] : null,
+      block.column > 0 ? this.grid[block.column - 1][block.row] : null
+    ];
+  }
+
+  private maxGridLengths() {
+    return { columns: this.maxColumns(), rows: this.maxRows() };
+  }
+
+  private maxColumns() {
+    return this.grid.length;
+  }
+
+  private maxRows() {
+    return this.grid[0].length;
   }
 
   willHitObstacleY(current: Point, stepTarget: Point, ultimateTarget: Point, threshold: number): Point {

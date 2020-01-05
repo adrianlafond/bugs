@@ -3,7 +3,7 @@ html, body {
   font-size: 12px;
 }
 body {
-  font-family: "Menlo", "Courier New", monospace;
+  font-family: "Lucida Console", Monaco, monospace;
   background-color: #000;
   color: #fff;
   margin: 0;

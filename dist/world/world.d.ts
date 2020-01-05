@@ -33,8 +33,9 @@ export declare class World implements WorldApi {
     fillBlock(x: number, y: number): Point;
     clearBlock(x: number, y: number): Point;
     navigateWorld(current: Point, target: Point): Point;
+    private isTargetBlockUnsafe;
+    private getNextBestBlock;
     private getBlockFromXY;
-    private getPotentialBlocks;
     private maxGridLengths;
     private maxColumns;
     private maxRows;

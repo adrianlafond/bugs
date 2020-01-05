@@ -75,26 +75,77 @@ export class World implements WorldApi {
     const currentBlock = this.getBlockFromXY(current.x, current.y);
     if (currentBlock) {
       const radians = Point.radians(current, target);
-      const potentialBlocks = this.getPotentialBlocks(currentBlock);
+      const radius = Math.sqrt((this.blockSize + this.blockSize) * (this.blockSize + this.blockSize));
       let targetBlock = this.getBlockFromXY(
-        current.x + Math.cos(radians) * this.blockSize,
-        current.y + Math.sin(radians) * this.blockSize,
+        current.x + Math.cos(radians) * radius,
+        current.y + Math.sin(radians) * radius,
       );
-      if ((targetBlock && targetBlock.filled) || !targetBlock) {
-        while (potentialBlocks.length) {
-          let index = Math.floor(Math.random() * potentialBlocks.length);
-          targetBlock = potentialBlocks[index];
-          if (targetBlock && !targetBlock.filled) {
-            break;
-          }
-          potentialBlocks.splice(index, 1);
-        }
+      if (this.isTargetBlockUnsafe(targetBlock)) {
+        targetBlock = this.getNextBestBlock(currentBlock, targetBlock.column, targetBlock.row);
       }
-      if (targetBlock) {
-        return targetBlock.point;
-      }
+      console.log(`${currentBlock.column},${currentBlock.row} / ${(targetBlock || currentBlock).column},${(targetBlock || currentBlock).row}`);
+      return (targetBlock || currentBlock).point;
     }
     return target;
+  }
+
+  // Ensures target block exists, is not filled.
+  private isTargetBlockUnsafe(targetBlock: WorldBlock): boolean {
+    return targetBlock && !targetBlock.filled;
+  }
+
+  // targetColumn and targetRow describe a block that is filled and therefor
+  // the next best target must be found.
+  private getNextBestBlock(
+    currentBlock: WorldBlock,
+    targetColumn: number,
+    targetRow: number,
+    tries = 0): WorldBlock | null {
+    if (tries >= 8) {
+      return null;
+    }
+    const { columns, rows } = this.maxGridLengths();
+    let testColumn: number;
+    let testRow: number;
+
+    if (currentBlock.column > targetColumn && currentBlock.row > targetRow) {
+      // TL -> T
+      testColumn = targetColumn + 1;
+      testRow = targetRow;
+    } else if (currentBlock.column === targetColumn && currentBlock.row > targetRow) {
+      // T -> TR
+      testColumn = targetColumn + 1;
+      testRow = targetRow;
+    } else if (currentBlock.column < targetColumn && currentBlock.row > targetRow) {
+      // TR -> R
+      testColumn = targetColumn;
+      testRow = targetRow + 1;
+    } else if (currentBlock.column < targetColumn && currentBlock.row === targetRow) {
+      // R -> BR
+      testColumn = targetColumn;
+      testRow = targetRow + 1;
+    } else if (currentBlock.column < targetColumn && currentBlock.row < targetRow) {
+      // BR -> B
+      testColumn = targetColumn - 1;
+      testRow = targetRow;
+    } else if (currentBlock.column === targetColumn && currentBlock.row < targetRow) {
+      // B -> BL
+      testColumn = targetColumn - 1;
+      testRow = targetRow;
+    } else if (currentBlock.column > targetColumn && currentBlock.row < targetRow) {
+      // BL -> L
+      testColumn = targetColumn;
+      testRow = targetRow - 1;
+    } else if (currentBlock.column > targetColumn && currentBlock.row === targetRow) {
+      // L -> TL
+      testColumn = targetColumn;
+      testRow = targetRow - 1;
+    }
+
+    const isOnGrid = testColumn >= 0 && testColumn < columns && testRow >= 0 && testRow < rows;
+    const testBlock = isOnGrid ? this.grid[testColumn][testRow] : null;
+    return (testBlock && testBlock.filled || !testBlock) ?
+      this.getNextBestBlock(currentBlock, testColumn, testRow, ++tries) : testBlock;
   }
 
   private getBlockFromXY(x: number, y: number) {
@@ -102,20 +153,6 @@ export class World implements WorldApi {
     const col = Math.max(0, Math.min(columns - 1, Math.floor(x / this.width * columns)));
     const row = Math.max(0, Math.min(rows - 1, Math.floor(y / this.height * rows)));
     return (this.grid[col] && this.grid[col][row]) ? this.grid[col][row] : null;
-  }
-
-  private getPotentialBlocks(block: WorldBlock) {
-    const { columns, rows } = this.maxGridLengths();;
-    return [
-      // block.column > 0 && block.row > 0 ? this.grid[block.column - 1][block.row - 1] : null,
-      block.row > 0 ? this.grid[block.column][block.row - 1] : null,
-      // block.column < columns - 1 && block.row > 0 ? this.grid[block.column + 1][block.row - 1] : null,
-      block.column < columns - 1 ? this.grid[block.column + 1][block.row] : null,
-      // block.column < columns - 1 && block.row < rows - 1 ? this.grid[block.column + 1][block.row + 1] : null,
-      block.row < rows - 1 ? this.grid[block.column][block.row + 1]: null,
-      // block.column > 0 && block.row < rows - 1 ? this.grid[block.column - 1][block.row + 1] : null,
-      block.column > 0 ? this.grid[block.column - 1][block.row] : null
-    ];
   }
 
   private maxGridLengths() {
@@ -248,20 +285,4 @@ export class World implements WorldApi {
       from
     } : null;
   }
-}
-
-function hitsX(obstacle: Obstacle, point: Point, threshold: number) {
-  const { x, width: w } = obstacle;
-  const { x: px } = point;
-  return px + threshold >= x && px - threshold <= x + w;
-}
-
-function hitsY(obstacle: Obstacle, point: Point, threshold: number) {
-  const { y, height: h } = obstacle;
-  const { y: py } = point;
-  return py + threshold >= y && py - threshold <= y + h;
-}
-
-function hitsObstacle(obstacle: Obstacle, point: Point, threshold: number) {
-  return hitsX(obstacle, point, threshold) && hitsY(obstacle, point, threshold);
 }

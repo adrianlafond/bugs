@@ -1,12 +1,5 @@
 import { Point } from '@adrianlafond/geom';
 
-export type hitFromType = 'top' | 'right' | 'bottom' | 'left' | 'unknown';
-export type obstacleHitType = {
-  obstacle: Obstacle;
-  from: hitFromType;
-} | null;
-export type willHitObstacleType = (location: Point, stepTarget: Point, ultimateTarget: Point, threshold: number) => Point;
-
 export type navigateWorldType = (current: Point, target: Point) => Point;
 export interface WorldApi {
   navigateWorld: navigateWorldType;
@@ -19,17 +12,24 @@ export interface WorldBlock {
   filled: boolean;
 }
 
-export interface Obstacle {
-  id?: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+type Direction = 'TL' | 'T' | 'TR' | 'R' | 'BR' | 'B' | 'BL' | 'L';
+
+const go: { [key in Direction]: Direction[] } = {
+  TL: ['TL', 'T', 'L', 'TR', 'BL', 'R', 'B', 'BR'],
+  T: ['T', 'TR', 'TL', 'R', 'L', 'BR', 'BL', 'B'],
+  TR: ['TR', 'R', 'T', 'BR', 'TL', 'B', 'L', 'BL'],
+  R: ['R', 'BR', 'TR', 'B', 'T', 'BL', 'TL', 'L'],
+  BR: ['BR', 'B', 'R', 'BL', 'TL', 'L', 'T', 'TL'],
+  B: ['B', 'BL', 'BR', 'L', 'R', 'TL', 'TR', 'T'],
+  BL: ['BL', 'L', 'B', 'TL', 'BR', 'T', 'R', 'TR'],
+  L: ['L', 'TL', 'BL', 'T', 'B', 'TR', 'BR', 'R']
+};
+
+function isDiagonal(direction: Direction): boolean {
+  return direction === 'TL' || direction === 'TR' || direction === 'BR' || direction === 'BL';
 }
 
 export class World implements WorldApi {
-  private obstacles: Obstacle[] = [];
-
   private grid: WorldBlock[][];
 
   constructor(private width = 320, private height = 320, private blockSize = 20) {
@@ -80,72 +80,106 @@ export class World implements WorldApi {
         current.x + Math.cos(radians) * radius,
         current.y + Math.sin(radians) * radius,
       );
-      if (this.isTargetBlockUnsafe(targetBlock)) {
-        targetBlock = this.getNextBestBlock(currentBlock, targetBlock.column, targetBlock.row);
+      if (targetBlock) {
+        targetBlock = this.getBestBlock(currentBlock, targetBlock);
       }
-      console.log(`${currentBlock.column},${currentBlock.row} / ${(targetBlock || currentBlock).column},${(targetBlock || currentBlock).row}`);
       return (targetBlock || currentBlock).point;
     }
     return target;
   }
 
-  // Ensures target block exists, is not filled.
-  private isTargetBlockUnsafe(targetBlock: WorldBlock): boolean {
-    return targetBlock && !targetBlock.filled;
+  private getBestBlock(currentBlock: WorldBlock, targetBlock: WorldBlock): WorldBlock {
+    const { column: cx, row: cy } = currentBlock;
+    const { column: tx, row: ty } = targetBlock;
+    if (cx > tx && cy > ty) {
+      return this.getOpenBlock(currentBlock, go.TL);
+    } else if (cx === tx && cy > ty) {
+      return this.getOpenBlock(currentBlock, go.T);
+    } else if (cx < tx && cy > ty) {
+      return this.getOpenBlock(currentBlock, go.TR);
+    } else if (cx < tx && cy === ty) {
+      return this.getOpenBlock(currentBlock, go.R);
+    } else if (cx < tx && cy < ty) {
+      return this.getOpenBlock(currentBlock, go.BR);
+    } else if (cx === tx && cy < ty) {
+      return this.getOpenBlock(currentBlock, go.B);
+    } else if (cx > tx && cy < ty) {
+      return this.getOpenBlock(currentBlock, go.BL);
+    } else if (cx > tx && cy === ty) {
+      return this.getOpenBlock(currentBlock, go.L);
+    }
+    return currentBlock;
   }
 
-  // targetColumn and targetRow describe a block that is filled and therefor
-  // the next best target must be found.
-  private getNextBestBlock(
-    currentBlock: WorldBlock,
-    targetColumn: number,
-    targetRow: number,
-    tries = 0): WorldBlock | null {
-    if (tries >= 8) {
-      return null;
+  private getOpenBlock(currentBlock: WorldBlock, directions: Direction[]): WorldBlock {
+    for (const dir of directions) {
+      const block = this.getBlockForDirection(currentBlock, dir);
+      if (block && !block.filled) {
+        if (isDiagonal(dir)) {
+          let b1: WorldBlock | null;
+          let b2: WorldBlock | null;
+          switch (dir) {
+            case 'TL':
+              b1 = this.getBlockForDirection(currentBlock, 'T');
+              b2 = this.getBlockForDirection(currentBlock, 'L');
+              break;
+            case 'TR':
+              b1 = this.getBlockForDirection(currentBlock, 'R');
+              b2 = this.getBlockForDirection(currentBlock, 'T');
+              break;
+            case 'BR':
+              b1 = this.getBlockForDirection(currentBlock, 'B');
+              b2 = this.getBlockForDirection(currentBlock, 'R');
+              break;
+            case 'BL':
+              b1 = this.getBlockForDirection(currentBlock, 'L');
+              b2 = this.getBlockForDirection(currentBlock, 'B');
+              break;
+            default:
+              break;
+          }
+          const b1Ok = b1 && !b1.filled;
+          const b2Ok = b2 && !b2.filled;
+          if (b1Ok && b2Ok) {
+            return block;
+          } else if (b1Ok && !b2Ok) {
+            return b1;
+          } else if (!b1Ok && b2Ok) {
+            return b2;
+          }
+        } else {
+          return block;
+        }
+      }
     }
+    return currentBlock;
+  }
+
+  private getBlockForDirection(currentBlock: WorldBlock, direction: Direction): WorldBlock | null {
+    const { column: cx, row: cy } = currentBlock;
     const { columns, rows } = this.maxGridLengths();
-    let testColumn: number;
-    let testRow: number;
-
-    if (currentBlock.column > targetColumn && currentBlock.row > targetRow) {
-      // TL -> T
-      testColumn = targetColumn + 1;
-      testRow = targetRow;
-    } else if (currentBlock.column === targetColumn && currentBlock.row > targetRow) {
-      // T -> TR
-      testColumn = targetColumn + 1;
-      testRow = targetRow;
-    } else if (currentBlock.column < targetColumn && currentBlock.row > targetRow) {
-      // TR -> R
-      testColumn = targetColumn;
-      testRow = targetRow + 1;
-    } else if (currentBlock.column < targetColumn && currentBlock.row === targetRow) {
-      // R -> BR
-      testColumn = targetColumn;
-      testRow = targetRow + 1;
-    } else if (currentBlock.column < targetColumn && currentBlock.row < targetRow) {
-      // BR -> B
-      testColumn = targetColumn - 1;
-      testRow = targetRow;
-    } else if (currentBlock.column === targetColumn && currentBlock.row < targetRow) {
-      // B -> BL
-      testColumn = targetColumn - 1;
-      testRow = targetRow;
-    } else if (currentBlock.column > targetColumn && currentBlock.row < targetRow) {
-      // BL -> L
-      testColumn = targetColumn;
-      testRow = targetRow - 1;
-    } else if (currentBlock.column > targetColumn && currentBlock.row === targetRow) {
-      // L -> TL
-      testColumn = targetColumn;
-      testRow = targetRow - 1;
+    const maxColumn = columns - 1;
+    const maxRow = rows - 1;
+    switch (direction) {
+      case 'TL':
+        return cx > 0 && cy > 0 ? this.grid[cx - 1][cy - 1] : null;
+      case 'T':
+        return cy > 0 ? this.grid[cx][cy - 1] : null;
+      case 'TR':
+        return cx < maxColumn && cy > 0 ? this.grid[cx + 1][cy - 1] : null;
+      case 'R':
+        return cx < maxColumn ? this.grid[cx + 1][cy] : null;
+      case 'BR':
+        return cx < maxColumn && cy < maxRow ? this.grid[cx + 1][cy + 1] : null;
+      case 'B':
+        return cy < maxRow ? this.grid[cx][cy + 1] : null;
+      case 'BL':
+        return cx > 0 && cy < maxRow ? this.grid[cx - 1][cy + 1] : null;
+      case 'L':
+        return cx > 0 ? this.grid[cx - 1][cy] : null;
+      default:
+        return null;
     }
-
-    const isOnGrid = testColumn >= 0 && testColumn < columns && testRow >= 0 && testRow < rows;
-    const testBlock = isOnGrid ? this.grid[testColumn][testRow] : null;
-    return (testBlock && testBlock.filled || !testBlock) ?
-      this.getNextBestBlock(currentBlock, testColumn, testRow, ++tries) : testBlock;
   }
 
   private getBlockFromXY(x: number, y: number) {
@@ -165,124 +199,5 @@ export class World implements WorldApi {
 
   private maxRows() {
     return this.grid[0].length;
-  }
-
-  willHitObstacleY(current: Point, stepTarget: Point, ultimateTarget: Point, threshold: number): Point {
-    const { x: cx, y: cy } = current;
-    const { x: tx, y: ty } = stepTarget;
-    let redirectedTarget = stepTarget.clone();
-
-    this.obstacles.some(obstacle => {
-      const x1 = obstacle.x - threshold;
-      const y1 = obstacle.y - threshold;
-      const x2 = obstacle.x + obstacle.width + threshold;
-      const y2 = obstacle.y + obstacle.height + threshold;
-
-      const thruX = (cx < x2 && tx > x1) || (cx > x1 && tx < x2);
-      const thruY = (cy < y2 && ty > y1) || (cy > y1 && ty < y2);
-
-      if (thruX && thruY) {
-        const corners = [
-          new Point(x1, y1),
-          new Point(x2, y1),
-          new Point(x2, y2),
-          new Point(x1, y2),
-        ];
-
-        // Find closest corner:
-        let closestDistance = Number.MAX_VALUE;
-        let closestCorner: Point;
-        corners.forEach(testPoint => {
-          const testDistance = Point.distance(current, testPoint);
-          if (testDistance < closestDistance) {
-            closestDistance = testDistance;
-            closestCorner = testPoint;
-          }
-        });
-
-        // Then find target corner:
-        closestDistance = Number.MAX_VALUE;
-        corners.forEach(testPoint => {
-          if (testPoint.x === closestCorner.x || testPoint.y === closestCorner.y) {
-            const testDistance = Point.distance(ultimateTarget, testPoint);
-            if (testDistance < closestDistance) {
-              closestDistance = testDistance;
-              redirectedTarget = testPoint;
-            }
-          }
-        });
-        return true;
-      }
-    });
-
-    return redirectedTarget;
-  }
-
-  willHitObstacleX(current: Point, target: Point, threshold: number): obstacleHitType {
-    const { x: cx, y: cy } = current;
-    const radians = Math.atan2(target.y - cy, target.x - cx);
-    const tx = cx + Math.cos(radians) * threshold;
-    const ty = cy + Math.sin(radians) * threshold;
-
-    let from: hitFromType = 'top';
-    const obstacle = this.obstacles.find(testObstacle => {
-      const { x, y, width, height } = testObstacle;
-      const x2 = x + width;
-      const y2 = y + height;
-
-      const crossesXL = cx < tx && cx + threshold < x && tx - threshold >= x;
-      const crossesXR = cx > tx && cx - threshold > x2 && tx + threshold <= x2;
-      const isOnX = tx + threshold >= x && tx - threshold <= x2;
-
-      const crossesYT = cy < ty && cy + threshold < y && ty - threshold >= y;
-      const crossesYB = cy > ty && cy - threshold > y2 && ty + threshold <= y2;
-      const isOnY = ty + threshold >= y && ty - threshold <= y2;
-
-      const hitsX = crossesXL || crossesXR || isOnX;
-      const hitsY = crossesYT || crossesYB || isOnY;
-
-      if (hitsX && hitsY) {
-        if (crossesXL) {
-          from = 'left';
-        } else if (crossesXR) {
-          from = 'right';
-        } else if (crossesYT) {
-          from = 'top';
-        } else if (crossesYB) {
-          from = 'bottom';
-        } else {
-          const xDis = x - cx;
-          const x2Dis = cx - x2;
-          const yDis = y - cy;
-          const y2Dis = cy - y2;
-
-          if (xDis >= 0 && yDis >= 0) {
-            from = xDis >= yDis ? 'left' : 'top';
-          } else if (x2Dis >= 0 && yDis >= 0) {
-            from = x2Dis >= yDis ? 'right' : 'top';
-          } else if (xDis >= 0 && y2Dis >= 0) {
-            from = xDis >= y2Dis ? 'left' : 'bottom';
-          } else if (x2Dis >= 0 && y2Dis >= 0) {
-            from = x2Dis >= y2Dis ? 'right' : 'bottom';
-          } else if (xDis >= 0) {
-            from = 'left';
-          } else if (x2Dis >= 0) {
-            from = 'right';
-          } else if (yDis >= 0) {
-            from = 'top';
-          } else if (y2Dis >= 0) {
-            from = 'bottom';
-          } else {
-            from = 'unknown';
-          }
-        }
-        return true;
-      }
-    });
-
-    return obstacle ? {
-      obstacle: { ...obstacle },
-      from
-    } : null;
   }
 }

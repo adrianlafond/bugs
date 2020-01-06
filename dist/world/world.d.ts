@@ -1,5 +1,5 @@
 import { Point } from '@adrianlafond/geom';
-export declare type navigateWorldType = (current: Point, target: Point) => Point;
+export declare type navigateWorldType = (current: Point, target: Point, prevTarget: Point) => Point;
 export interface WorldApi {
     navigateWorld: navigateWorldType;
 }
@@ -18,7 +18,7 @@ export declare class World implements WorldApi {
     private createGrid;
     fillBlock(x: number, y: number): Point;
     clearBlock(x: number, y: number): Point;
-    navigateWorld(current: Point, target: Point): Point;
+    navigateWorld(current: Point, target: Point, prevTarget: Point): Point;
     private getBestBlock;
     private getOpenBlock;
     private getBlockForDirection;

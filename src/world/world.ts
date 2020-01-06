@@ -1,6 +1,6 @@
 import { Point } from '@adrianlafond/geom';
 
-export type navigateWorldType = (current: Point, target: Point) => Point;
+export type navigateWorldType = (current: Point, target: Point, prevTarget: Point) => Point;
 export interface WorldApi {
   navigateWorld: navigateWorldType;
 }
@@ -27,6 +27,10 @@ const go: { [key in Direction]: Direction[] } = {
 
 function isDiagonal(direction: Direction): boolean {
   return direction === 'TL' || direction === 'TR' || direction === 'BR' || direction === 'BL';
+}
+
+function blockIsNotPrev(block: WorldBlock, prevTarget: Point) {
+  return block.point.x !== prevTarget.x || block.point.y !== prevTarget.y;
 }
 
 export class World implements WorldApi {
@@ -71,7 +75,7 @@ export class World implements WorldApi {
     return block ? block.point.clone() : null;
   }
 
-  navigateWorld(current: Point, target: Point): Point {
+  navigateWorld(current: Point, target: Point, prevTarget: Point): Point {
     const currentBlock = this.getBlockFromXY(current.x, current.y);
     if (currentBlock) {
       const radians = Point.radians(current, target);
@@ -81,37 +85,37 @@ export class World implements WorldApi {
         current.y + Math.sin(radians) * radius,
       );
       if (targetBlock) {
-        targetBlock = this.getBestBlock(currentBlock, targetBlock);
+        targetBlock = this.getBestBlock(currentBlock, targetBlock, prevTarget);
       }
       return (targetBlock || currentBlock).point;
     }
     return target;
   }
 
-  private getBestBlock(currentBlock: WorldBlock, targetBlock: WorldBlock): WorldBlock {
+  private getBestBlock(currentBlock: WorldBlock, targetBlock: WorldBlock, prevTarget: Point): WorldBlock {
     const { column: cx, row: cy } = currentBlock;
     const { column: tx, row: ty } = targetBlock;
     if (cx > tx && cy > ty) {
-      return this.getOpenBlock(currentBlock, go.TL);
+      return this.getOpenBlock(currentBlock, go.TL, prevTarget);
     } else if (cx === tx && cy > ty) {
-      return this.getOpenBlock(currentBlock, go.T);
+      return this.getOpenBlock(currentBlock, go.T, prevTarget);
     } else if (cx < tx && cy > ty) {
-      return this.getOpenBlock(currentBlock, go.TR);
+      return this.getOpenBlock(currentBlock, go.TR, prevTarget);
     } else if (cx < tx && cy === ty) {
-      return this.getOpenBlock(currentBlock, go.R);
+      return this.getOpenBlock(currentBlock, go.R, prevTarget);
     } else if (cx < tx && cy < ty) {
-      return this.getOpenBlock(currentBlock, go.BR);
+      return this.getOpenBlock(currentBlock, go.BR, prevTarget);
     } else if (cx === tx && cy < ty) {
-      return this.getOpenBlock(currentBlock, go.B);
+      return this.getOpenBlock(currentBlock, go.B, prevTarget);
     } else if (cx > tx && cy < ty) {
-      return this.getOpenBlock(currentBlock, go.BL);
+      return this.getOpenBlock(currentBlock, go.BL, prevTarget);
     } else if (cx > tx && cy === ty) {
-      return this.getOpenBlock(currentBlock, go.L);
+      return this.getOpenBlock(currentBlock, go.L, prevTarget);
     }
     return currentBlock;
   }
 
-  private getOpenBlock(currentBlock: WorldBlock, directions: Direction[]): WorldBlock {
+  private getOpenBlock(currentBlock: WorldBlock, directions: Direction[], prevTarget: Point): WorldBlock {
     for (const dir of directions) {
       const block = this.getBlockForDirection(currentBlock, dir);
       if (block && !block.filled) {
@@ -140,15 +144,17 @@ export class World implements WorldApi {
           }
           const b1Ok = b1 && !b1.filled;
           const b2Ok = b2 && !b2.filled;
-          if (b1Ok && b2Ok) {
+          if (b1Ok && b2Ok && blockIsNotPrev(block, prevTarget)) {
             return block;
-          } else if (b1Ok && !b2Ok) {
+          } else if (b1Ok && !b2Ok && blockIsNotPrev(b1, prevTarget)) {
             return b1;
-          } else if (!b1Ok && b2Ok) {
+          } else if (!b1Ok && b2Ok && blockIsNotPrev(b2, prevTarget)) {
             return b2;
           }
         } else {
-          return block;
+          if (blockIsNotPrev(block, prevTarget)) {
+            return block;
+          }
         }
       }
     }

@@ -9,7 +9,6 @@ export interface SegmentModel {
   maxDistance: number;
   target: Point;
   stepTarget: Point;
-  previousStepTarget: Point;
   vectorStart: Vector;
   step: number;
   onTargetReached: (target?: Point) => void | null;
@@ -45,7 +44,6 @@ export class Segment {
     maxDistance: 10,
     target: new Point(),
     stepTarget: new Point(),
-    previousStepTarget: new Point(),
     vectorStart: new Vector(),
     step: 0,
     onTargetReached: null,
@@ -83,13 +81,9 @@ export class Segment {
   }
 
   restartStep() {
-    const { vector, target, navigateWorld, previousStepTarget } = this.model;
+    const { vector, target, navigateWorld } = this.model;
     this.model.vectorStart = vector.clone();
-    this.model.stepTarget = navigateWorld ? navigateWorld(vector.point, target, previousStepTarget) : target.clone();
-    const { stepTarget } = this.model;
-    if (previousStepTarget.x !== stepTarget.x && previousStepTarget.y !== stepTarget.y) {
-      this.model.previousStepTarget = stepTarget;
-    }
+    this.model.stepTarget = navigateWorld ? navigateWorld(vector.point, target) : target.clone();
     this.model.legs.forEach(side => {
       side.forEach(leg => {
         leg.restartStep();

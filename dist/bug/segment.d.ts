@@ -8,7 +8,6 @@ export interface SegmentModel {
     maxDistance: number;
     target: Point;
     stepTarget: Point;
-    previousStepTarget: Point;
     vectorStart: Vector;
     step: number;
     onTargetReached: (target?: Point) => void | null;

@@ -41,7 +41,7 @@ export class Bug {
     this.target = this.model.target;
   }
 
-  tick(delta: number = 1): Bug {
+  tick(_delta: number = 1): Bug {
     // TODO: Incorporate delta as an option? Makes for unsmooth animation even
     // if incorporating it is more "accurate".
     this.model.progress = Math.min(1, this.model.progress + 0.1); // * delta

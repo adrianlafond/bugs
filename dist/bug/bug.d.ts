@@ -22,7 +22,7 @@ interface BugModel {
 export declare class Bug {
     protected model: BugModel;
     constructor(options?: BugOptions);
-    tick(delta?: number): Bug;
+    tick(_delta?: number): Bug;
     target: PointData;
     x: number;
     y: number;

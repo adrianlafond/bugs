@@ -18,6 +18,7 @@ export declare class World implements WorldApi {
     private createGrid;
     fillBlock(x: number, y: number): Point;
     clearBlock(x: number, y: number): Point;
+    clear(): void;
     navigateWorld(current: Point, target: Point): Point;
     private getBestBlock;
     private getOpenBlock;

@@ -71,6 +71,14 @@ export class World implements WorldApi {
     return block ? block.point.clone() : null;
   }
 
+  clear() {
+    this.grid.forEach(col => {
+      col.forEach(row => {
+        row.filled = false;
+      });
+    })
+  }
+
   navigateWorld(current: Point, target: Point): Point {
     const currentBlock = this.getBlockFromXY(current.x, current.y);
     if (currentBlock) {

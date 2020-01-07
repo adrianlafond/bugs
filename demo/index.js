@@ -1,7 +1,10 @@
+const WORLD_WIDTH = 320;
+const WORLD_HEIGHT = 320;
+
 function createApp() {
   const app = new PIXI.Application({
-    width: 320,
-    height: 320,
+    width: WORLD_WIDTH,
+    height: WORLD_HEIGHT,
     antialias: true,
     resolution: 2,
   });
@@ -36,15 +39,15 @@ function createMarker() {
 
 function createBug() {
   return new Bug.Bug({
-    x: 20,
-    y: 20,
+    x: Math.random() * WORLD_WIDTH,
+    y: Math.random() * WORLD_HEIGHT,
     radians: Math.random() * Math.PI * 2,
     onTargetReached,
-    navigateWorld: world.navigateWorld.bind(world),
+    world,
   });
 }
 
-function createSkin() {
+function createSkin(bug) {
   return new Skin.Pixi(bug, app);
 }
 
@@ -67,20 +70,20 @@ function resetTarget(event = null) {
   if (event) {
     const rect = event.currentTarget.getBoundingClientRect();
     target = {
-      x: Math.min(320, Math.max(0, (event.touches ? event.touches[0].pageX :
+      x: Math.min(WORLD_WIDTH, Math.max(0, (event.touches ? event.touches[0].pageX :
         event.clientX) - rect.left)),
-      y: Math.min(320, Math.max(0, (event.touches ? event.touches[0].pageY :
+      y: Math.min(WORLD_HEIGHT, Math.max(0, (event.touches ? event.touches[0].pageY :
         event.clientY) - rect.top)),
     };
   } else {
     target = {
-      x: Math.random() * 320,
-      y: Math.random() * 320,
+      x: Math.random() * WORLD_WIDTH,
+      y: Math.random() * WORLD_HEIGHT,
     };
   }
   marker.x = target.x;
   marker.y = target.y;
-  bug.target = target;
+  bugs.forEach(bug => bug.target = target);
 }
 
 function onTargetReached() {
@@ -93,14 +96,17 @@ document.querySelector('.main__content--dpr2.bug').addEventListener(inputEvent, 
 });
 
 const app = createApp();
-
 const world = createWorld();
-
 const marker = createMarker();
-const bug = createBug();
-const skin = createSkin();
-
 const ticker = createTicker();
-ticker.add(skin.render.bind(skin));
+
+const bugs = [];
+const skins = [];
+for (let i = 0; i < 10; i++) {
+  bugs[i] = createBug();
+  skins[i] = createSkin(bugs[i]);
+  ticker.add(skins[i].render.bind(skins[i]));
+}
+
 resetTarget();
 toggleTicker();

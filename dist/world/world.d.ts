@@ -1,7 +1,10 @@
 import { Point } from '@adrianlafond/geom';
 export declare type navigateWorldType = (current: Point, target: Point) => Point;
 export interface WorldApi {
-    navigateWorld: navigateWorldType;
+    fillBlock: (x: number, y: number) => Point | null;
+    clearBlock: (x: number, y: number) => Point | null;
+    clear: () => void;
+    navigateWorld: (current: Point, target: Point) => Point;
 }
 export interface WorldBlock {
     point: Point;

@@ -1,6 +1,6 @@
 import { Angle, Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
 import { Leg } from './leg';
-import { navigateWorldType } from '../world';
+import { WorldApi, World } from '../world';
 
 export interface SegmentModel {
   vector: Vector;
@@ -12,7 +12,7 @@ export interface SegmentModel {
   vectorStart: Vector;
   step: number;
   onTargetReached: (target?: Point) => void | null;
-  navigateWorld?: navigateWorldType | null;
+  world?: WorldApi | null;
 }
 
 export interface SegmentData extends VectorData {
@@ -26,7 +26,7 @@ export interface SegmentOptions {
   maxDistance?: number;
   target?: Point;
   onTargetReached?: (target?: Point) => void;
-  navigateWorld?: navigateWorldType;
+  world?: WorldApi;
 }
 
 export class Segment {
@@ -47,7 +47,7 @@ export class Segment {
     vectorStart: new Vector(),
     step: 0,
     onTargetReached: null,
-    navigateWorld: null,
+    world: null,
   };
 
   constructor(options: SegmentOptions) {
@@ -81,9 +81,12 @@ export class Segment {
   }
 
   restartStep() {
-    const { vector, target, navigateWorld } = this.model;
+    const { vector, target, world } = this.model;
     this.model.vectorStart = vector.clone();
-    this.model.stepTarget = navigateWorld ? navigateWorld(vector.point, target) : target.clone();
+    if (world) {
+      world.fillBlock(vector.point.x, vector.point.y);
+    }
+    this.model.stepTarget = world ? world.navigateWorld(vector.point, target) : target.clone();
     this.model.legs.forEach(side => {
       side.forEach(leg => {
         leg.restartStep();
@@ -100,6 +103,7 @@ export class Segment {
       maxDistance,
       maxRotation,
       onTargetReached,
+      world
     } = this.model;
 
     const targetRadians = Math.atan2(stepTarget.y - vectorStart.y, stepTarget.x - vectorStart.x);
@@ -114,6 +118,9 @@ export class Segment {
     vector.y = vectorStart.y + Math.sin(targetRadians) * moveDistance;
 
     if (onTargetReached) {
+      if (world) {
+        world.clearBlock(vectorStart.point.x, vectorStart.point.y);
+      }
       if (Point.distance(target, vector.point) <= maxDistance) {
         onTargetReached(target);
       }

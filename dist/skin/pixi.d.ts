@@ -1,7 +1,7 @@
 /// <reference types="pixi.js" />
-import Skin from './skin';
-import Bug from '../bug';
-declare class Pixi implements Skin {
+import { Skin } from './skin';
+import { Bug } from '../bug';
+export declare class Pixi implements Skin {
     bug: Bug;
     app: PIXI.Application;
     container: PIXI.Container;
@@ -14,4 +14,3 @@ declare class Pixi implements Skin {
     protected createFace(): PIXI.Container;
     protected destroyLegs(): void;
 }
-export default Pixi;

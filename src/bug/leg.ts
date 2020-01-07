@@ -9,7 +9,7 @@ export interface LegModel extends LegOptions {
   jointsStart: Point[];
 }
 
-export default class Leg {
+export class Leg {
   protected model: LegModel;
 
   constructor(options: LegOptions) {

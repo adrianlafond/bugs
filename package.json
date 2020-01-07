@@ -5,13 +5,15 @@
   "main": "./dist/bug.js",
   "scripts": {
     "test": "jest --coverage",
-    "start": "npm run clean && concurrently \"npm run watch:bug\" \"npm run watch:skin\" \"npm run serve\"",
+    "start": "npm run clean && concurrently \"npm run watch:bug\" \"npm run watch:skin\" \"npm run watch:world\" \"npm run serve\"",
     "clean": "shx rm -rf dist",
-    "build": "npm run clean && npm run build:bug && npm run build:skin",
+    "build": "npm run clean && npm run build:bug && npm run build:skin && npm run build:world",
     "build:bug": "webpack --config webpack.config.bug.js -p",
     "build:skin": "webpack --config webpack.config.skin.js -p",
+    "build:world": "webpack --config webpack.config.world.js -p",
     "watch:bug": "webpack --config webpack.config.bug.js --watch",
     "watch:skin": "webpack --config webpack.config.skin.js --watch",
+    "watch:world": "webpack --config webpack.config.world.js --watch",
     "test:watch": "jest --watchAll --coverage",
     "docs": "npm run build && cpx demo/index.js docs/assets && cpx \"./dist/*.js\" ./docs/bugs --clean",
     "serve": "live-server --no-browser --open=./demo --watch=./dist"

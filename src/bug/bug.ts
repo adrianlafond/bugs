@@ -1,5 +1,6 @@
 import { Vector, Point, PointData } from '@adrianlafond/geom';
-import Segment, { SegmentData } from './segment';
+import { Segment, SegmentData } from './segment';
+import { navigateWorldType } from '../world';
 
 export interface BugOptions {
   x?: number;
@@ -10,6 +11,7 @@ export interface BugOptions {
     y?: number;
   };
   onTargetReached?: (target?: Point) => void;
+  navigateWorld?: navigateWorldType;
 }
 
 interface BugModel {
@@ -17,9 +19,10 @@ interface BugModel {
   target: Point;
   progress: number;
   onTargetReached: (target?: Point) => void;
+  navigateWorld?: navigateWorldType;
 }
 
-class Bug {
+export class Bug {
   protected model: BugModel;
 
   constructor(options: BugOptions = {}) {
@@ -29,6 +32,7 @@ class Bug {
       segments: [new Segment({
         vector: new Vector(x, y, radians),
         onTargetReached: this.onTargetReached.bind(this),
+        navigateWorld: options.navigateWorld,
       })],
       target: new Point(targetX, targetY),
       progress: 0,
@@ -37,7 +41,7 @@ class Bug {
     this.target = this.model.target;
   }
 
-  tick(delta: number = 1): Bug {
+  tick(_delta: number = 1): Bug {
     // TODO: Incorporate delta as an option? Makes for unsmooth animation even
     // if incorporating it is more "accurate".
     this.model.progress = Math.min(1, this.model.progress + 0.1); // * delta
@@ -92,5 +96,3 @@ class Bug {
     this.model.onTargetReached(target);
   }
 }
-
-export default Bug;

@@ -1,5 +1,6 @@
 import { Angle, Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
-import Leg from './leg';
+import { Leg } from './leg';
+import { navigateWorldType } from '../world';
 
 export interface SegmentModel {
   vector: Vector;
@@ -7,9 +8,11 @@ export interface SegmentModel {
   maxRotation: number;
   maxDistance: number;
   target: Point;
+  stepTarget: Point;
   vectorStart: Vector;
   step: number;
   onTargetReached: (target?: Point) => void | null;
+  navigateWorld?: navigateWorldType | null;
 }
 
 export interface SegmentData extends VectorData {
@@ -23,9 +26,10 @@ export interface SegmentOptions {
   maxDistance?: number;
   target?: Point;
   onTargetReached?: (target?: Point) => void;
+  navigateWorld?: navigateWorldType;
 }
 
-export default class Segment {
+export class Segment {
   protected model: SegmentModel = {
     vector: new Vector(),
     legs: [
@@ -39,9 +43,11 @@ export default class Segment {
     maxRotation: Math.PI * 0.5,
     maxDistance: 10,
     target: new Point(),
+    stepTarget: new Point(),
     vectorStart: new Vector(),
     step: 0,
     onTargetReached: null,
+    navigateWorld: null,
   };
 
   constructor(options: SegmentOptions) {
@@ -75,7 +81,9 @@ export default class Segment {
   }
 
   restartStep() {
-    this.model.vectorStart = this.model.vector.clone();
+    const { vector, target, navigateWorld } = this.model;
+    this.model.vectorStart = vector.clone();
+    this.model.stepTarget = navigateWorld ? navigateWorld(vector.point, target) : target.clone();
     this.model.legs.forEach(side => {
       side.forEach(leg => {
         leg.restartStep();
@@ -84,15 +92,26 @@ export default class Segment {
   }
 
   private moveSegment(progress: number, distance: number) {
-    const { target, vector, vectorStart, maxDistance, maxRotation, onTargetReached } = this.model;
+    const {
+      stepTarget,
+      target,
+      vector,
+      vectorStart,
+      maxDistance,
+      maxRotation,
+      onTargetReached,
+    } = this.model;
 
-    const targetRadians = Math.atan2(target.y - vectorStart.y, target.x - vectorStart.x);
+    const targetRadians = Math.atan2(stepTarget.y - vectorStart.y, stepTarget.x - vectorStart.x);
     const deltaRadians = Math.max(-maxRotation, Math.min(maxRotation,
       Angle.delta(vector.radians, targetRadians)));
     vector.radians = Angle.normalize(vectorStart.radians) + deltaRadians * progress;
 
-    vector.x = vectorStart.x + Math.cos(vector.radians) * (distance * progress);
-    vector.y = vectorStart.y + Math.sin(vector.radians) * (distance * progress);
+    const radiansDelta = Math.abs(Angle.normalize(targetRadians) - vector.radians);
+    const radiansDamper = 1 - radiansDelta / (Math.PI * 2);
+    const moveDistance = distance * progress * radiansDamper;
+    vector.x = vectorStart.x + Math.cos(targetRadians) * moveDistance;
+    vector.y = vectorStart.y + Math.sin(targetRadians) * moveDistance;
 
     if (onTargetReached) {
       if (Point.distance(target, vector.point) <= maxDistance) {

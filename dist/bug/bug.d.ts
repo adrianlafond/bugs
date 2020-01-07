@@ -1,5 +1,6 @@
 import { Point, PointData } from '@adrianlafond/geom';
-import Segment, { SegmentData } from './segment';
+import { Segment, SegmentData } from './segment';
+import { navigateWorldType } from '../world';
 export interface BugOptions {
     x?: number;
     y?: number;
@@ -9,17 +10,19 @@ export interface BugOptions {
         y?: number;
     };
     onTargetReached?: (target?: Point) => void;
+    navigateWorld?: navigateWorldType;
 }
 interface BugModel {
     segments: Segment[];
     target: Point;
     progress: number;
     onTargetReached: (target?: Point) => void;
+    navigateWorld?: navigateWorldType;
 }
-declare class Bug {
+export declare class Bug {
     protected model: BugModel;
     constructor(options?: BugOptions);
-    tick(delta?: number): Bug;
+    tick(_delta?: number): Bug;
     target: PointData;
     x: number;
     y: number;
@@ -27,4 +30,4 @@ declare class Bug {
     readonly segments: SegmentData[];
     private onTargetReached;
 }
-export default Bug;
+export {};

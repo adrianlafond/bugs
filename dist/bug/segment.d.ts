@@ -1,14 +1,17 @@
 import { Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
-import Leg from './leg';
+import { Leg } from './leg';
+import { navigateWorldType } from '../world';
 export interface SegmentModel {
     vector: Vector;
     legs: Leg[][];
     maxRotation: number;
     maxDistance: number;
     target: Point;
+    stepTarget: Point;
     vectorStart: Vector;
     step: number;
     onTargetReached: (target?: Point) => void | null;
+    navigateWorld?: navigateWorldType | null;
 }
 export interface SegmentData extends VectorData {
     legs: PointData[][][];
@@ -20,8 +23,9 @@ export interface SegmentOptions {
     maxDistance?: number;
     target?: Point;
     onTargetReached?: (target?: Point) => void;
+    navigateWorld?: navigateWorldType;
 }
-export default class Segment {
+export declare class Segment {
     protected model: SegmentModel;
     constructor(options: SegmentOptions);
     target: Point;

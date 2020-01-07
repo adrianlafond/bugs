@@ -1,2 +1,1 @@
-import Bug from './bug';
-export default Bug;
+export { Bug } from './bug';

@@ -1,2 +1,1 @@
-import Pixi from './pixi';
-export { Pixi };
+export { Pixi } from './pixi';

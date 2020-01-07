@@ -12,14 +12,14 @@ function createApp() {
 }
 
 function createObstacles() {
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 24; i++) {
     const x = Math.floor(Math.random() * 320);
     const y = Math.floor(Math.random() * 320);
     const block = world.fillBlock(x, y);
     if (block) {
       const gfx = new PIXI.Graphics();
       gfx.beginFill(0xCCCCCC);
-      gfx.drawRect(block.x - 10, block.y - 10, 20, 20);
+      gfx.drawCircle(block.x, block.y, 10);
       app.stage.addChild(gfx);
     }
   }

@@ -1,9 +1,10 @@
 import { Point } from '@adrianlafond/geom';
 
+export type idType = string | number;
 export type navigateWorldType = (current: Point, target: Point) => Point;
 export interface WorldApi {
-  fillBlock: (x: number, y: number) => Point | null;
-  clearBlock: (x: number, y: number) => Point | null;
+  fillBlock: (x: number, y: number, id: idType) => Point | null;
+  clearBlock: (x: number, y: number, id: idType) => Point | null;
   clear: () => void;
   navigateWorld: (current: Point, target: Point) => Point;
 }
@@ -12,7 +13,7 @@ export interface WorldBlock {
   point: Point;
   column: number;
   row: number;
-  filled: boolean;
+  occupants: Set<idType>;
 }
 
 type Direction = 'TL' | 'T' | 'TR' | 'R' | 'BR' | 'B' | 'BL' | 'L';
@@ -30,6 +31,14 @@ const go: { [key in Direction]: Direction[] } = {
 
 function isDiagonal(direction: Direction): boolean {
   return direction === 'TL' || direction === 'TR' || direction === 'BR' || direction === 'BL';
+}
+
+function isFilled(block: WorldBlock) {
+  return block.occupants.size > 0;
+}
+
+function isEmpty(block: WorldBlock) {
+  return !isFilled(block);
 }
 
 export class World implements WorldApi {
@@ -52,24 +61,24 @@ export class World implements WorldApi {
             r * this.blockSize + this.blockSize / 2),
           column: c,
           row: r,
-          filled: false,
+          occupants: new Set(),
         };
       }
     }
   }
 
-  fillBlock(x: number, y: number) {
+  fillBlock(x: number, y: number, id: string | number) {
     const block = this.getBlockFromXY(x, y);
     if (block) {
-      block.filled = true;
+      block.occupants.add(id);
     }
     return block ? block.point.clone() : null;
   }
 
-  clearBlock(x: number, y: number) {
+  clearBlock(x: number, y: number, id: string | number) {
     const block = this.getBlockFromXY(x, y);
     if (block) {
-      block.filled = false;
+      block.occupants.delete(id);
     }
     return block ? block.point.clone() : null;
   }
@@ -77,7 +86,7 @@ export class World implements WorldApi {
   clear() {
     this.grid.forEach(col => {
       col.forEach(row => {
-        row.filled = false;
+        row.occupants.clear();
       });
     })
   }
@@ -125,7 +134,7 @@ export class World implements WorldApi {
   private getOpenBlock(currentBlock: WorldBlock, directions: Direction[]): WorldBlock {
     for (const dir of directions) {
       const block = this.getBlockForDirection(currentBlock, dir);
-      if (block && !block.filled) {
+      if (block && isEmpty(block)) {
         if (isDiagonal(dir)) {
           let b1: WorldBlock | null;
           let b2: WorldBlock | null;
@@ -149,8 +158,8 @@ export class World implements WorldApi {
             default:
               break;
           }
-          const b1Ok = b1 && !b1.filled;
-          const b2Ok = b2 && !b2.filled;
+          const b1Ok = b1 && isEmpty(b1);
+          const b2Ok = b2 && isEmpty(b2);
           if (b1Ok && b2Ok) {
             return block;
           } else if (b1Ok && !b2Ok) {

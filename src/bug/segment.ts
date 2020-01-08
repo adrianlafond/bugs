@@ -1,8 +1,9 @@
 import { Angle, Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
 import { Leg } from './leg';
-import { WorldApi, World } from '../world';
+import { WorldApi, idType } from '../world';
 
 export interface SegmentModel {
+  uid: idType;
   vector: Vector;
   legs: Leg[][];
   maxRotation: number;
@@ -29,8 +30,14 @@ export interface SegmentOptions {
   world?: WorldApi;
 }
 
+let n = 0;
+function getUid() {
+  return `bug-segment-${n++}`;
+}
+
 export class Segment {
   protected model: SegmentModel = {
+    uid: getUid(),
     vector: new Vector(),
     legs: [
       [new Leg({ joints: [new Point(2, -5), new Point(12, -14)] }),
@@ -81,10 +88,10 @@ export class Segment {
   }
 
   restartStep() {
-    const { vector, target, world } = this.model;
+    const { uid, vector, target, world } = this.model;
     this.model.vectorStart = vector.clone();
     if (world) {
-      world.fillBlock(vector.point.x, vector.point.y);
+      world.fillBlock(vector.point.x, vector.point.y, uid);
     }
     this.model.stepTarget = world ? world.navigateWorld(vector.point, target) : target.clone();
     this.model.legs.forEach(side => {
@@ -96,6 +103,7 @@ export class Segment {
 
   private moveSegment(progress: number, distance: number) {
     const {
+      uid,
       stepTarget,
       target,
       vector,
@@ -119,7 +127,7 @@ export class Segment {
 
     if (onTargetReached) {
       if (world) {
-        world.clearBlock(vectorStart.point.x, vectorStart.point.y);
+        world.clearBlock(vectorStart.point.x, vectorStart.point.y, uid);
       }
       if (Point.distance(target, vector.point) <= maxDistance) {
         onTargetReached(target);

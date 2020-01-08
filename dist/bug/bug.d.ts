@@ -13,6 +13,7 @@ export interface BugOptions {
     world?: WorldApi;
 }
 interface BugModel {
+    uid: string;
     segments: Segment[];
     target: Point;
     progress: number;
@@ -23,6 +24,7 @@ export declare class Bug {
     protected model: BugModel;
     constructor(options?: BugOptions);
     tick(_delta?: number): Bug;
+    readonly uid: string;
     target: PointData;
     x: number;
     y: number;

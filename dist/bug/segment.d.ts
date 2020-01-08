@@ -1,7 +1,8 @@
 import { Point, PointData, Vector, VectorData } from '@adrianlafond/geom';
 import { Leg } from './leg';
-import { WorldApi } from '../world';
+import { WorldApi, idType } from '../world';
 export interface SegmentModel {
+    uid: idType;
     vector: Vector;
     legs: Leg[][];
     maxRotation: number;

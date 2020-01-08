@@ -15,11 +15,17 @@ export interface BugOptions {
 }
 
 interface BugModel {
+  uid: string;
   segments: Segment[];
   target: Point;
   progress: number;
   onTargetReached: (target?: Point) => void;
   world?: WorldApi;
+}
+
+let n = 0;
+function getUid() {
+  return `bug-${n++}`;
 }
 
 export class Bug {
@@ -29,6 +35,7 @@ export class Bug {
     const { x = 0, y = 0, radians = 0 } = options;
     const { x: targetX = 0, y: targetY = 0 } = options.target || {};
     this.model = {
+      uid: getUid(),
       segments: [new Segment({
         vector: new Vector(x, y, radians),
         onTargetReached: this.onTargetReached.bind(this),
@@ -56,6 +63,10 @@ export class Bug {
       this.model.progress = 0;
     }
     return this;
+  }
+
+  get uid() {
+    return this.model.uid;
   }
 
   get target(): PointData {

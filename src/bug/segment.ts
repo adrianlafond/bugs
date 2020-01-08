@@ -93,7 +93,13 @@ export class Segment {
     if (world) {
       world.fillBlock(vector.point.x, vector.point.y, uid);
     }
+    if (world) {
+      world.clearBlock(this.model.stepTarget.x, this.model.stepTarget.y, uid);
+    }
     this.model.stepTarget = world ? world.navigateWorld(vector.point, target) : target.clone();
+    if (world) {
+      world.fillBlock(this.model.stepTarget.x, this.model.stepTarget.y, uid);
+    }
     this.model.legs.forEach(side => {
       side.forEach(leg => {
         leg.restartStep();

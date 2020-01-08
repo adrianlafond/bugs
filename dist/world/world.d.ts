@@ -1,13 +1,17 @@
 import { Point } from '@adrianlafond/geom';
+export declare type idType = string | number;
 export declare type navigateWorldType = (current: Point, target: Point) => Point;
 export interface WorldApi {
-    navigateWorld: navigateWorldType;
+    fillBlock: (x: number, y: number, id: idType) => Point | null;
+    clearBlock: (x: number, y: number, id: idType) => Point | null;
+    clear: () => void;
+    navigateWorld: (current: Point, target: Point) => Point;
 }
 export interface WorldBlock {
     point: Point;
     column: number;
     row: number;
-    filled: boolean;
+    occupants: Set<idType>;
 }
 export declare class World implements WorldApi {
     private width;
@@ -16,8 +20,9 @@ export declare class World implements WorldApi {
     private grid;
     constructor(width?: number, height?: number, blockSize?: number);
     private createGrid;
-    fillBlock(x: number, y: number): Point;
-    clearBlock(x: number, y: number): Point;
+    fillBlock(x: number, y: number, id: string | number): Point;
+    clearBlock(x: number, y: number, id: string | number): Point;
+    clear(): void;
     navigateWorld(current: Point, target: Point): Point;
     private getBestBlock;
     private getOpenBlock;

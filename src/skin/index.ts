@@ -1,1 +1,0 @@
-export { Pixi } from './pixi';

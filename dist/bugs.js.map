@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/bug/leg/leg.ts", "../src/index.ts"],
+  "sourcesContent": ["export class Leg {\n  //\n}\n", "import { Leg } from './bug/leg'\nexport * from './bug';\n\nconst leg = new Leg()\nconsole.log(leg);"],
+  "mappings": ";;;AAAO,MAAM,MAAN,MAAU;AAAA;AAAA,EAEjB;;;ACCA,MAAM,MAAM,IAAI,IAAI;AACpB,UAAQ,IAAI,GAAG;",
+  "names": []
+}

@@ -1,23 +1,12 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node",
+    "target": "ES2015",
     "module": "commonjs",
-    "outDir": "./dist/",
-    "sourceMap": false,
-    "declaration": true,
-    "noImplicitAny": true,
-    "target": "es5",
-    "lib": ["es2015", "dom"],
-    "types": [
-      "jest",
-      "pixi.js"
-    ]
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ],
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Recommended"
 }

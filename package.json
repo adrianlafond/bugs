@@ -40,7 +40,8 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@adrianlafond/geom": "^1.2.0"
+    "@adrianlafond/geom": "^1.2.0",
+    "pixi.js": "^7.2.4"
   },
   "ts-standard": {
     "ignore": [

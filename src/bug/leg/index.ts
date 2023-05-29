@@ -1,1 +1,1 @@
-export * from './leg';
+export * from './leg'

@@ -1,5 +1,3 @@
-import { Leg } from './bug/leg'
-export * from './bug';
+import { start } from './demo'
 
-const leg = new Leg()
-console.log(leg);
+start()

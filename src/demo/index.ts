@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
-import { startLegDemo } from './leg'
+import * as grid from './grid'
+import { startLegDemo } from './leg-demo'
 
 let instance: DemoApp
 
@@ -23,6 +24,7 @@ class DemoApp {
   }
 
   start (demo: DemoType = 'leg'): void {
+    grid.render(this.app)
     switch (demo) {
       case 'leg':
         startLegDemo(this.app.stage)

@@ -3991,14 +3991,14 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/core/lib/geometry/Attribute.mjs
   var Attribute = class {
-    constructor(buffer, size = 0, normalized = false, type = TYPES.FLOAT, stride, start2, instance3, divisor = 1) {
+    constructor(buffer, size = 0, normalized = false, type = TYPES.FLOAT, stride, start2, instance4, divisor = 1) {
       this.buffer = buffer;
       this.size = size;
       this.normalized = normalized;
       this.type = type;
       this.stride = stride;
       this.start = start2;
-      this.instance = instance3;
+      this.instance = instance4;
       this.divisor = divisor;
     }
     destroy() {
@@ -4067,7 +4067,7 @@ Deprecated since v${version}`);
       this.disposeRunner = new Runner("disposeGeometry");
       this.refCount = 0;
     }
-    addAttribute(id, buffer, size = 0, normalized = false, type, stride, start2, instance3 = false) {
+    addAttribute(id, buffer, size = 0, normalized = false, type, stride, start2, instance4 = false) {
       if (!buffer) {
         throw new Error("You must pass a buffer when creating an attribute");
       }
@@ -4089,8 +4089,8 @@ Deprecated since v${version}`);
         this.buffers.push(buffer);
         bufferIndex = this.buffers.length - 1;
       }
-      this.attributes[id] = new Attribute(bufferIndex, size, normalized, type, stride, start2, instance3);
-      this.instanced = this.instanced || instance3;
+      this.attributes[id] = new Attribute(bufferIndex, size, normalized, type, stride, start2, instance4);
+      this.instanced = this.instanced || instance4;
       return this;
     }
     getAttribute(id) {
@@ -24047,8 +24047,47 @@ ${e2}`);
   HTMLText.defaultMaxHeight = 2024;
   HTMLText.defaultAutoResolution = true;
 
-  // src/demo/leg/index.ts
+  // src/demo/grid.ts
   var instance;
+  var LINE_COLOR = 12312063;
+  var Grid = class {
+    constructor(app) {
+      this.app = app;
+    }
+    udpateStage(app) {
+      this.app = app;
+    }
+    render(px) {
+      const background = new Graphics();
+      background.beginFill(16777215);
+      background.drawRect(0, 0, this.app.view.width, this.app.view.height);
+      this.app.stage.addChild(background);
+      let n2 = px;
+      while (n2 < this.app.view.height) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(0, n2, this.app.view.width, 1);
+        this.app.stage.addChild(line);
+        n2 += px;
+      }
+      n2 = px;
+      while (n2 < this.app.view.width) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(n2, 0, 1, this.app.view.height);
+        this.app.stage.addChild(line);
+        n2 += px;
+      }
+    }
+  };
+  function render(app, px = 20) {
+    instance = instance != null ? instance : new Grid(app);
+    instance.udpateStage(app);
+    instance.render(px);
+  }
+
+  // src/demo/leg-demo.ts
+  var instance2;
   var LegDemo = class {
     constructor(stage) {
       this.stage = stage;
@@ -24061,12 +24100,12 @@ ${e2}`);
     }
   };
   function startLegDemo(stage) {
-    instance = instance != null ? instance : new LegDemo(stage);
-    instance.drawTestGraphic();
+    instance2 = instance2 != null ? instance2 : new LegDemo(stage);
+    instance2.drawTestGraphic();
   }
 
   // src/demo/index.ts
-  var instance2;
+  var instance3;
   var DemoApp = class {
     constructor(containerElement) {
       const defaultContainer = document.querySelector("main#canvas");
@@ -24078,6 +24117,7 @@ ${e2}`);
       this.containerElement.replaceChildren(this.app.view);
     }
     start(demo = "leg") {
+      render(this.app);
       switch (demo) {
         case "leg":
           startLegDemo(this.app.stage);
@@ -24086,8 +24126,8 @@ ${e2}`);
     }
   };
   function start() {
-    instance2 = instance2 != null ? instance2 : new DemoApp();
-    instance2.start();
+    instance3 = instance3 != null ? instance3 : new DemoApp();
+    instance3.start();
   }
 
   // src/index.ts

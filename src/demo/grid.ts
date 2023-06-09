@@ -1,17 +1,17 @@
 import * as PIXI from 'pixi.js'
 
-let instance: Grid;
+let instance: Grid
 
 const LINE_COLOR = 0xbbddff
 
 class Grid {
-  constructor(private app: PIXI.Application) {}
+  constructor (private app: PIXI.Application) {}
 
-  udpateStage(app: PIXI.Application) {
-    this.app = app;
+  udpateApp (app: PIXI.Application): void {
+    this.app = app
   }
 
-  render(px: number) {
+  render (px: number): void {
     const background = new PIXI.Graphics()
     background.beginFill(0xffffff)
     background.drawRect(0, 0, this.app.view.width, this.app.view.height)
@@ -37,8 +37,8 @@ class Grid {
   }
 }
 
-export function render(app: PIXI.Application, px = 20) {
+export function render (app: PIXI.Application, px = 20): void {
   instance = instance ?? new Grid(app)
-  instance.udpateStage(app)
+  instance.udpateApp(app)
   instance.render(px)
 }

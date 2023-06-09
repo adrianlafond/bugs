@@ -1536,6 +1536,135 @@
     }
   });
 
+  // node_modules/@adrianlafond/geom/dist/geom.js
+  var require_geom = __commonJS({
+    "node_modules/@adrianlafond/geom/dist/geom.js"(exports, module) {
+      !function(t2, e2) {
+        "object" == typeof exports && "object" == typeof module ? module.exports = e2() : "function" == typeof define && define.amd ? define("Geom", [], e2) : "object" == typeof exports ? exports.Geom = e2() : t2.Geom = e2();
+      }(window, function() {
+        return function(t2) {
+          var e2 = {};
+          function n2(r2) {
+            if (e2[r2])
+              return e2[r2].exports;
+            var o2 = e2[r2] = { i: r2, l: false, exports: {} };
+            return t2[r2].call(o2.exports, o2, o2.exports, n2), o2.l = true, o2.exports;
+          }
+          return n2.m = t2, n2.c = e2, n2.d = function(t3, e3, r2) {
+            n2.o(t3, e3) || Object.defineProperty(t3, e3, { enumerable: true, get: r2 });
+          }, n2.r = function(t3) {
+            "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(t3, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(t3, "__esModule", { value: true });
+          }, n2.t = function(t3, e3) {
+            if (1 & e3 && (t3 = n2(t3)), 8 & e3)
+              return t3;
+            if (4 & e3 && "object" == typeof t3 && t3 && t3.__esModule)
+              return t3;
+            var r2 = /* @__PURE__ */ Object.create(null);
+            if (n2.r(r2), Object.defineProperty(r2, "default", { enumerable: true, value: t3 }), 2 & e3 && "string" != typeof t3)
+              for (var o2 in t3)
+                n2.d(r2, o2, function(e4) {
+                  return t3[e4];
+                }.bind(null, o2));
+            return r2;
+          }, n2.n = function(t3) {
+            var e3 = t3 && t3.__esModule ? function() {
+              return t3.default;
+            } : function() {
+              return t3;
+            };
+            return n2.d(e3, "a", e3), e3;
+          }, n2.o = function(t3, e3) {
+            return Object.prototype.hasOwnProperty.call(t3, e3);
+          }, n2.p = "", n2(n2.s = 1);
+        }([function(t2, e2, n2) {
+          "use strict";
+          Object.defineProperty(e2, "__esModule", { value: true });
+          var r2 = function() {
+            function t3(t4, e3) {
+              void 0 === t4 && (t4 = 0), void 0 === e3 && (e3 = 0), this.x = t4, this.y = e3;
+            }
+            return Object.defineProperty(t3.prototype, "data", { get: function() {
+              return { x: this.x, y: this.y };
+            }, enumerable: true, configurable: true }), t3.prototype.clone = function() {
+              return new t3(this.x, this.y);
+            }, t3.prototype.add = function(t4) {
+              return this.x += t4.x, this.y += t4.y, this;
+            }, t3.prototype.subtract = function(t4) {
+              return this.x -= t4.x, this.y -= t4.y, this;
+            }, t3.prototype.toString = function() {
+              return JSON.stringify(this.data);
+            }, t3.distance = function(t4, e3) {
+              return Math.sqrt((t4.x - e3.x) * (t4.x - e3.x) + (t4.y - e3.y) * (t4.y - e3.y));
+            }, t3.radians = function(t4, e3) {
+              return Math.atan2(e3.y - t4.y, e3.x - t4.x);
+            }, t3;
+          }();
+          e2.default = r2;
+        }, function(t2, e2, n2) {
+          "use strict";
+          Object.defineProperty(e2, "__esModule", { value: true });
+          var r2 = n2(2);
+          e2.Angle = r2.default;
+          var o2 = n2(0);
+          e2.Point = o2.default;
+          var i2 = n2(3);
+          e2.Vector = i2.default;
+        }, function(t2, e2, n2) {
+          "use strict";
+          Object.defineProperty(e2, "__esModule", { value: true });
+          var r2 = function() {
+            function t3() {
+            }
+            return t3.toRadians = function(t4) {
+              return t4 * Math.PI / 180;
+            }, t3.toDegrees = function(t4) {
+              return 180 * t4 / Math.PI;
+            }, t3.interpolate = function(e3, n3, r3) {
+              return t3.normalize(e3 + t3.delta(e3, n3) * r3);
+            }, t3.delta = function(e3, n3) {
+              var r3 = t3.normalize(e3), o2 = t3.normalize(n3), i2 = o2 - r3;
+              return Math.abs(i2) > Math.PI && (i2 = o2 - 2 * Math.PI - r3), i2;
+            }, t3.normalize = function(t4) {
+              var e3 = t4 % (2 * Math.PI);
+              return e3 < 0 && (e3 += 2 * Math.PI), e3;
+            }, t3;
+          }();
+          e2.default = r2;
+        }, function(t2, e2, n2) {
+          "use strict";
+          Object.defineProperty(e2, "__esModule", { value: true });
+          var r2 = n2(0), o2 = function() {
+            function t3(t4, e3, n3) {
+              void 0 === t4 && (t4 = 0), void 0 === e3 && (e3 = 0), void 0 === n3 && (n3 = 0), this.model = {}, t4 instanceof r2.default ? (this.model.point = t4.clone(), this.model.radians = e3) : (this.model.point = new r2.default(t4, e3), this.model.radians = n3);
+            }
+            return Object.defineProperty(t3.prototype, "point", { get: function() {
+              return this.model.point.clone();
+            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "x", { get: function() {
+              return this.model.point.x;
+            }, set: function(t4) {
+              this.model.point.x = t4;
+            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "y", { get: function() {
+              return this.model.point.y;
+            }, set: function(t4) {
+              this.model.point.y = t4;
+            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "radians", { get: function() {
+              return this.model.radians;
+            }, set: function(t4) {
+              this.model.radians = t4;
+            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "data", { get: function() {
+              return { x: this.x, y: this.y, radians: this.radians };
+            }, enumerable: true, configurable: true }), t3.prototype.clone = function() {
+              return new t3(this.point, this.radians);
+            }, t3.prototype.toString = function() {
+              return JSON.stringify(this.data);
+            }, t3;
+          }();
+          e2.default = o2;
+        }]);
+      });
+    }
+  });
+
   // node_modules/@pixi/constants/lib/index.mjs
   var ENV = /* @__PURE__ */ ((ENV2) => {
     ENV2[ENV2["WEBGL_LEGACY"] = 0] = "WEBGL_LEGACY";
@@ -3991,14 +4120,14 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/core/lib/geometry/Attribute.mjs
   var Attribute = class {
-    constructor(buffer, size = 0, normalized = false, type = TYPES.FLOAT, stride, start2, instance4, divisor = 1) {
+    constructor(buffer, size = 0, normalized = false, type = TYPES.FLOAT, stride, start2, instance3, divisor = 1) {
       this.buffer = buffer;
       this.size = size;
       this.normalized = normalized;
       this.type = type;
       this.stride = stride;
       this.start = start2;
-      this.instance = instance4;
+      this.instance = instance3;
       this.divisor = divisor;
     }
     destroy() {
@@ -4067,7 +4196,7 @@ Deprecated since v${version}`);
       this.disposeRunner = new Runner("disposeGeometry");
       this.refCount = 0;
     }
-    addAttribute(id, buffer, size = 0, normalized = false, type, stride, start2, instance4 = false) {
+    addAttribute(id, buffer, size = 0, normalized = false, type, stride, start2, instance3 = false) {
       if (!buffer) {
         throw new Error("You must pass a buffer when creating an attribute");
       }
@@ -4089,8 +4218,8 @@ Deprecated since v${version}`);
         this.buffers.push(buffer);
         bufferIndex = this.buffers.length - 1;
       }
-      this.attributes[id] = new Attribute(bufferIndex, size, normalized, type, stride, start2, instance4);
-      this.instanced = this.instanced || instance4;
+      this.attributes[id] = new Attribute(bufferIndex, size, normalized, type, stride, start2, instance3);
+      this.instanced = this.instanced || instance3;
       return this;
     }
     getAttribute(id) {
@@ -24054,7 +24183,7 @@ ${e2}`);
     constructor(app) {
       this.app = app;
     }
-    udpateStage(app) {
+    udpateApp(app) {
       this.app = app;
     }
     render(px) {
@@ -24082,30 +24211,63 @@ ${e2}`);
   };
   function render(app, px = 20) {
     instance = instance != null ? instance : new Grid(app);
-    instance.udpateStage(app);
+    instance.udpateApp(app);
     instance.render(px);
   }
 
   // src/demo/leg-demo.ts
-  var instance2;
   var LegDemo = class {
-    constructor(stage) {
+    constructor(stage, leg) {
       this.stage = stage;
+      this.leg = leg;
     }
-    drawTestGraphic() {
+    render() {
       const gfx = new Graphics();
-      gfx.beginFill(16711680);
-      gfx.drawRect(130, 130, 100, 100);
+      const leg = this.leg.render();
+      console.log(leg);
+      gfx.lineStyle({ width: 1, color: 0 });
+      gfx.moveTo(leg.start.x, leg.start.x);
+      gfx.lineTo(leg.end.x, leg.end.y);
       this.stage.addChild(gfx);
     }
   };
-  function startLegDemo(stage) {
-    instance2 = instance2 != null ? instance2 : new LegDemo(stage);
-    instance2.drawTestGraphic();
-  }
+
+  // src/bug/leg/leg.ts
+  var import_geom = __toESM(require_geom());
+  var Leg = class {
+    constructor() {
+      this.data = {
+        length: 36,
+        start: new import_geom.Point(),
+        end: new import_geom.Point(36, 0)
+      };
+    }
+    get position() {
+      return this.data.start.data;
+    }
+    set position(value) {
+      const delta = {
+        x: value.x - this.data.start.x,
+        y: value.y - this.data.start.y
+      };
+      this.data.start.x = value.x;
+      this.data.start.y = value.y;
+      this.data.end.x += delta.x;
+      this.data.end.y += delta.y;
+    }
+    render() {
+      return {
+        start: this.data.start.data,
+        end: this.data.end.data
+      };
+    }
+    toString() {
+      return "Leg";
+    }
+  };
 
   // src/demo/index.ts
-  var instance3;
+  var instance2;
   var DemoApp = class {
     constructor(containerElement) {
       const defaultContainer = document.querySelector("main#canvas");
@@ -24120,14 +24282,17 @@ ${e2}`);
       render(this.app);
       switch (demo) {
         case "leg":
-          startLegDemo(this.app.stage);
+          const leg = new Leg();
+          const legDemo = new LegDemo(this.app.stage, leg);
+          leg.position = { x: 100, y: 100 };
+          legDemo.render();
           break;
       }
     }
   };
   function start() {
-    instance3 = instance3 != null ? instance3 : new DemoApp();
-    instance3.start();
+    instance2 = instance2 != null ? instance2 : new DemoApp();
+    instance2.start();
   }
 
   // src/index.ts

@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import * as grid from './grid'
-import { startLegDemo } from './leg-demo'
+import { LegDemo } from './leg-demo'
+import { Leg } from '../bug'
 
 let instance: DemoApp
 
@@ -27,7 +28,10 @@ class DemoApp {
     grid.render(this.app)
     switch (demo) {
       case 'leg':
-        startLegDemo(this.app.stage)
+        const leg = new Leg()
+        const legDemo = new LegDemo(this.app.stage, leg)
+        leg.position = { x: 100, y: 100}
+        legDemo.render()
         break
     }
   }

@@ -1,19 +1,16 @@
 import * as PIXI from 'pixi.js'
+import { Leg } from '../bug';
 
-let instance: LegDemo
+export class LegDemo {
+  constructor (private stage: PIXI.Container, private leg: Leg) {}
 
-class LegDemo {
-  constructor (private readonly stage: PIXI.Container) {}
-
-  drawTestGraphic (): void {
+  render() {
     const gfx = new PIXI.Graphics()
-    gfx.beginFill(0xff0000)
-    gfx.drawRect(130, 130, 100, 100)
+    const leg = this.leg.render()
+    console.log(leg);
+    gfx.lineStyle({ width: 1, color: 0x000000 })
+    gfx.moveTo(leg.start.x, leg.start.x)
+    gfx.lineTo(leg.end.x, leg.end.y)
     this.stage.addChild(gfx)
   }
-}
-
-export function startLegDemo (stage: PIXI.Container): void {
-  instance = instance ?? new LegDemo(stage)
-  instance.drawTestGraphic()
 }

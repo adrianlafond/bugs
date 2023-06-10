@@ -13,8 +13,6 @@ export class Leg {
     end: new Point(36, 0)
   }
 
-  constructor () {}
-
   get position (): { x: number, y: number } {
     return this.data.start.data
   }
@@ -22,7 +20,7 @@ export class Leg {
   set position (value: { x: number, y: number }) {
     const delta = {
       x: value.x - this.data.start.x,
-      y: value.y - this.data.start.y,
+      y: value.y - this.data.start.y
     }
     this.data.start.x = value.x
     this.data.start.y = value.y
@@ -30,7 +28,12 @@ export class Leg {
     this.data.end.y += delta.y
   }
 
-  render (): { start: PointData, end: PointData } {
+  render (delta = 0): { start: PointData, end: PointData } {
+    const resetX = this.data.start.x + 36
+    this.data.end.x += delta
+    if (this.data.end.x > resetX + 36) {
+      this.data.end.x = resetX
+    }
     return {
       start: this.data.start.data,
       end: this.data.end.data

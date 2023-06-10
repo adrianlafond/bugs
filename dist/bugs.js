@@ -24220,15 +24220,18 @@ ${e2}`);
     constructor(stage, leg) {
       this.stage = stage;
       this.leg = leg;
+      this.gfx = new Graphics();
+      this.initGfx();
     }
-    render() {
-      const gfx = new Graphics();
-      const leg = this.leg.render();
-      console.log(leg);
-      gfx.lineStyle({ width: 1, color: 0 });
-      gfx.moveTo(leg.start.x, leg.start.x);
-      gfx.lineTo(leg.end.x, leg.end.y);
-      this.stage.addChild(gfx);
+    initGfx() {
+      this.stage.addChild(this.gfx);
+    }
+    render(delta = 0) {
+      const leg = this.leg.render(delta);
+      this.gfx.clear();
+      this.gfx.lineStyle({ width: 1, color: 0 });
+      this.gfx.moveTo(leg.start.x, leg.start.x);
+      this.gfx.lineTo(leg.end.x, leg.end.y);
     }
   };
 
@@ -24255,7 +24258,12 @@ ${e2}`);
       this.data.end.x += delta.x;
       this.data.end.y += delta.y;
     }
-    render() {
+    render(delta = 0) {
+      const resetX = this.data.start.x + 36;
+      this.data.end.x += delta;
+      if (this.data.end.x > resetX + 36) {
+        this.data.end.x = resetX;
+      }
       return {
         start: this.data.start.data,
         end: this.data.end.data
@@ -24270,6 +24278,11 @@ ${e2}`);
   var instance2;
   var DemoApp = class {
     constructor(containerElement) {
+      this.playing = false;
+      this.togglePlaying = () => {
+        this.playing = !this.playing;
+        this.playing ? this.app.start() : this.app.stop();
+      };
       const defaultContainer = document.querySelector("main#canvas");
       this.containerElement = containerElement != null ? containerElement : defaultContainer != null ? defaultContainer : document.createElement("main");
       this.app = new Application({ width: 360, height: 360 });
@@ -24279,15 +24292,23 @@ ${e2}`);
       this.containerElement.replaceChildren(this.app.view);
     }
     start(demo = "leg") {
+      const demoGfx = [];
       render(this.app);
       switch (demo) {
-        case "leg":
+        case "leg": {
           const leg = new Leg();
           const legDemo = new LegDemo(this.app.stage, leg);
           leg.position = { x: 100, y: 100 };
           legDemo.render();
+          demoGfx.push(legDemo);
           break;
+        }
       }
+      this.app.ticker.add((delta) => {
+        demoGfx.forEach((gfx) => gfx.render(delta));
+      });
+      this.playing = true;
+      this.containerElement.addEventListener("mousedown", this.togglePlaying);
     }
   };
   function start() {

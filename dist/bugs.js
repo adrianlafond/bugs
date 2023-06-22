@@ -4,8 +4,22 @@
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a2, b2) => {
+    for (var prop in b2 ||= {})
+      if (__hasOwnProp.call(b2, prop))
+        __defNormalProp(a2, prop, b2[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b2)) {
+        if (__propIsEnum.call(b2, prop))
+          __defNormalProp(a2, prop, b2[prop]);
+      }
+    return a2;
+  };
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
@@ -24216,61 +24230,152 @@ ${e2}`);
   }
 
   // src/demo/leg-demo.ts
-  var LegDemo = class {
-    constructor(stage, leg) {
-      this.stage = stage;
-      this.leg = leg;
-      this.gfx = new Graphics();
-      this.initGfx();
-    }
-    initGfx() {
-      this.stage.addChild(this.gfx);
-    }
-    render(delta = 0) {
-      const leg = this.leg.render(delta);
-      this.gfx.clear();
-      this.gfx.lineStyle({ width: 1, color: 0 });
-      this.gfx.moveTo(leg.start.x, leg.start.x);
-      this.gfx.lineTo(leg.end.x, leg.end.y);
-    }
-  };
+  var import_geom2 = __toESM(require_geom());
 
   // src/bug/leg/leg.ts
   var import_geom = __toESM(require_geom());
   var Leg = class {
-    constructor() {
+    constructor(initData) {
       this.data = {
-        length: 36,
-        start: new import_geom.Point(),
-        end: new import_geom.Point(36, 0)
+        length: 48,
+        socket: new import_geom.Vector(100, 100, 0),
+        claw: new import_geom.Point(124, 100),
+        side: "right",
+        step: {
+          start: new import_geom.Point(0, 0),
+          end: new import_geom.Point(0, 0),
+          delta: new import_geom.Point(0, 0)
+        }
       };
+      this.data = __spreadValues(__spreadValues({}, this.data), initData);
     }
-    get position() {
-      return this.data.start.data;
+    updateSocketPosition(value) {
+      const delta = this.data.socket.point.subtract(value);
+      this.data.socket.x = value.x;
+      this.data.socket.y = value.y;
+      return delta;
     }
-    set position(value) {
-      const delta = {
-        x: value.x - this.data.start.x,
-        y: value.y - this.data.start.y
-      };
-      this.data.start.x = value.x;
-      this.data.start.y = value.y;
-      this.data.end.x += delta.x;
-      this.data.end.y += delta.y;
+    calculateLegLength(targetRadians) {
+      const diffRadians = import_geom.Angle.normalize(targetRadians - this.data.socket.radians);
+      const deltaRadians = diffRadians % Math.PI;
+      const halfMaxLength = this.data.length * 0.5;
+      return Math.min(this.data.length, halfMaxLength + halfMaxLength * deltaRadians / (Math.PI * 0.25));
     }
-    render(delta = 0) {
-      const resetX = this.data.start.x + 36;
-      this.data.end.x += delta;
-      if (this.data.end.x > resetX + 36) {
-        this.data.end.x = resetX;
-      }
+    /**
+     * Calculates target position for next step and record starting position in
+     * order render progress.
+     * @param target is an angle from a relative socket that enables a target
+     * end position for the claw to be calculated.
+     */
+    calculateStep(target) {
+      this.data.step.start = this.data.claw.clone();
+      const renderLength = this.calculateLegLength(target.radians);
+      this.data.step.end.x = this.data.socket.x + Math.cos(target.radians) * renderLength;
+      this.data.step.end.y = this.data.socket.y + Math.sin(target.radians) * renderLength;
+      this.data.step.delta = this.data.step.end.subtract(this.data.step.start);
+    }
+    /**
+     * NOTES:
+     * - delta is the current tick
+     * - (delta + accumulated delta) / stepTime = % of current step taken
+     * - starting claw position
+     * - target claw position
+     * - offset from move in socket position
+     * - stepping (boolean)
+     */
+    render({
+      stepProgress = 0,
+      socket = new import_geom.Vector(0, 0, 0)
+    }) {
+      const socketDelta = this.updateSocketPosition(socket.point);
+      this.data.claw.x = this.data.step.start.x + this.data.step.delta.x * stepProgress + socketDelta.x;
+      this.data.claw.y = this.data.step.start.y + this.data.step.delta.y * stepProgress + socketDelta.y;
       return {
-        start: this.data.start.data,
-        end: this.data.end.data
+        socket: this.data.socket.data,
+        claw: this.data.claw.data
       };
     }
     toString() {
-      return "Leg";
+      return JSON.stringify(this.data);
+    }
+  };
+
+  // src/demo/leg-demo.ts
+  var LegDemo = class {
+    constructor(stage) {
+      this.stage = stage;
+      this.gfx = new Graphics();
+      this.legs = [];
+      this.stepMS = 0;
+      this.direction = "forward";
+      this.initLegs();
+      this.initGfx();
+    }
+    initLegs() {
+      this.legs[0] = new Leg();
+      this.legs[1] = new Leg({
+        socket: new import_geom2.Vector(100, 140, Math.PI * 0.5),
+        claw: new import_geom2.Point(100, 164)
+      });
+      this.legs[2] = new Leg({
+        socket: new import_geom2.Vector(60, 140, Math.PI),
+        claw: new import_geom2.Point(36, 140)
+      });
+      this.legs[3] = new Leg({
+        socket: new import_geom2.Vector(60, 100, Math.PI * 1.5),
+        claw: new import_geom2.Point(60, 124)
+      });
+    }
+    initGfx() {
+      this.stage.addChild(this.gfx);
+      this.legs[0].calculateStep(new import_geom2.Vector(100, 100, Math.PI * 1.75));
+      this.legs[1].calculateStep(new import_geom2.Vector(100, 140, Math.PI * 0.25));
+      this.legs[2].calculateStep(new import_geom2.Vector(60, 140, Math.PI * 0.75));
+      this.legs[3].calculateStep(new import_geom2.Vector(60, 100, Math.PI * 1.75));
+    }
+    render(deltaMS = 0) {
+      this.gfx.clear();
+      this.gfx.lineStyle({ width: 1, color: 0 });
+      this.stepMS += deltaMS;
+      const stepProgress = Math.min(1, this.stepMS / 250);
+      if (stepProgress >= 1) {
+        this.stepMS = 0;
+        this.direction = this.direction === "forward" ? "backward" : "forward";
+      }
+      for (let i2 = 0; i2 < 4; i2++) {
+        let socketVector = new import_geom2.Vector();
+        if (i2 === 0) {
+          socketVector = new import_geom2.Vector(100, 100, 0);
+        } else if (i2 === 1) {
+          socketVector = new import_geom2.Vector(100, 140, Math.PI * 0.5);
+        } else if (i2 === 2) {
+          socketVector = new import_geom2.Vector(60, 140, Math.PI);
+        } else if (i2 === 3) {
+          socketVector = new import_geom2.Vector(60, 100, Math.PI * 1.5);
+        }
+        const leg = this.legs[i2].render({
+          stepProgress,
+          socket: socketVector
+        });
+        this.gfx.moveTo(leg.socket.x, leg.socket.y);
+        this.gfx.lineTo(leg.claw.x, leg.claw.y);
+        this.gfx.drawCircle(leg.claw.x, leg.claw.y, 2);
+        if (this.stepMS === 0) {
+          if (i2 == 0) {
+            const targetRadians = this.direction === "forward" ? Math.PI * 1.75 : Math.PI * 0.25;
+            this.legs[0].calculateStep(new import_geom2.Vector(100, 100, targetRadians));
+          } else if (i2 === 1) {
+            const targetRadians = this.direction === "forward" ? Math.PI * 0.25 : Math.PI * 0.75;
+            this.legs[1].calculateStep(new import_geom2.Vector(100, 140, targetRadians));
+          } else if (i2 === 2) {
+            const targetRadians = this.direction === "forward" ? Math.PI * 1.25 : Math.PI * 0.75;
+            this.legs[2].calculateStep(new import_geom2.Vector(60, 140, targetRadians));
+          } else if (i2 === 3) {
+            const targetRadians = this.direction === "forward" ? Math.PI * 1.75 : Math.PI * 1.25;
+            this.legs[3].calculateStep(new import_geom2.Vector(60, 100, targetRadians));
+          }
+        }
+      }
     }
   };
 
@@ -24296,16 +24401,14 @@ ${e2}`);
       render(this.app);
       switch (demo) {
         case "leg": {
-          const leg = new Leg();
-          const legDemo = new LegDemo(this.app.stage, leg);
-          leg.position = { x: 100, y: 100 };
+          const legDemo = new LegDemo(this.app.stage);
           legDemo.render();
           demoGfx.push(legDemo);
           break;
         }
       }
-      this.app.ticker.add((delta) => {
-        demoGfx.forEach((gfx) => gfx.render(delta));
+      this.app.ticker.add(() => {
+        demoGfx.forEach((gfx) => gfx.render(this.app.ticker.deltaMS));
       });
       this.playing = true;
       this.containerElement.addEventListener("mousedown", this.togglePlaying);

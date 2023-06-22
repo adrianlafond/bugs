@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js'
 import * as grid from './grid'
 import { LegDemo } from './leg-demo'
-import { Leg } from '../bug'
 
 let instance: DemoApp
 
@@ -35,17 +34,15 @@ class DemoApp {
     grid.render(this.app)
     switch (demo) {
       case 'leg': {
-        const leg = new Leg()
-        const legDemo = new LegDemo(this.app.stage, leg)
-        leg.position = { x: 100, y: 100 }
+        const legDemo = new LegDemo(this.app.stage)
         legDemo.render()
         demoGfx.push(legDemo)
         break
       }
     }
 
-    this.app.ticker.add(delta => {
-      demoGfx.forEach(gfx => gfx.render(delta))
+    this.app.ticker.add(() => {
+      demoGfx.forEach(gfx => gfx.render(this.app.ticker.deltaMS))
     })
 
     this.playing = true

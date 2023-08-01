@@ -24259,24 +24259,24 @@ ${e2}`);
       this.head = new import_geom2.Vector(100, 100);
       this.legs = {
         left: [new Leg([
-          new import_geom2.Point(-10, 0),
-          new import_geom2.Point(-30, -10)
+          new import_geom2.Point(-3, 5),
+          new import_geom2.Point(-20, -10)
         ]), new Leg([
-          new import_geom2.Point(-10, 10),
-          new import_geom2.Point(-30, 10)
+          new import_geom2.Point(-3, 10),
+          new import_geom2.Point(-20, 10)
         ]), new Leg([
-          new import_geom2.Point(-10, 20),
-          new import_geom2.Point(-30, 30)
+          new import_geom2.Point(-3, 15),
+          new import_geom2.Point(-20, 30)
         ])],
         right: [new Leg([
-          new import_geom2.Point(10, 0),
-          new import_geom2.Point(30, -10)
+          new import_geom2.Point(3, 5),
+          new import_geom2.Point(20, -10)
         ]), new Leg([
-          new import_geom2.Point(10, 10),
-          new import_geom2.Point(30, 10)
+          new import_geom2.Point(3, 10),
+          new import_geom2.Point(20, 10)
         ]), new Leg([
-          new import_geom2.Point(10, 20),
-          new import_geom2.Point(30, 30)
+          new import_geom2.Point(3, 15),
+          new import_geom2.Point(20, 30)
         ])]
       };
       this.target = new import_geom2.Vector();

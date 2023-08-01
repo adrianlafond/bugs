@@ -22,24 +22,24 @@ export class Bug {
   private head = new Vector(100, 100)
   private legs: Legs = {
     left: [new Leg([
-      new Point(-10, 0),
-      new Point(-30, -10),
+      new Point(-3, 5),
+      new Point(-20, -10),
     ]), new Leg([
-      new Point(-10, 10),
-      new Point(-30, 10),
+      new Point(-3, 10),
+      new Point(-20, 10),
     ]), new Leg([
-      new Point(-10, 20),
-      new Point(-30, 30),
+      new Point(-3, 15),
+      new Point(-20, 30),
     ])],
     right: [new Leg([
-      new Point(10, 0),
-      new Point(30, -10),
+      new Point(3, 5),
+      new Point(20, -10),
     ]), new Leg([
-      new Point(10, 10),
-      new Point(30, 10),
+      new Point(3, 10),
+      new Point(20, 10),
     ]), new Leg([
-      new Point(10, 20),
-      new Point(30, 30),
+      new Point(3, 15),
+      new Point(20, 30),
     ])],
   }
   private target = new Vector()

@@ -1,4 +1,4 @@
-import { Leg } from './leg'
+import { Leg } from './leg-x'
 
 describe('Leg', () => {
   it('instantiates a Leg', () => {

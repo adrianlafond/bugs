@@ -1,10 +1,11 @@
 import * as PIXI from 'pixi.js'
 import * as grid from './grid'
-import { LegDemo } from './leg-demo'
+// import { LegDemo } from './leg-demo'
+import { BugDemo } from './bug-demo'
 
 let instance: DemoApp
 
-export type DemoType = 'leg'
+export type DemoType = 'bug' | 'leg'
 
 class DemoApp {
   private readonly containerElement: HTMLElement
@@ -29,14 +30,20 @@ class DemoApp {
     this.playing ? this.app.start() : this.app.stop()
   }
 
-  start (demo: DemoType = 'leg'): void {
+  start (demo: DemoType = 'bug'): void {
     const demoGfx: Array<{ render: (delta?: number) => void }> = []
     grid.render(this.app)
     switch (demo) {
-      case 'leg': {
-        const legDemo = new LegDemo(this.app.stage)
-        legDemo.render()
-        demoGfx.push(legDemo)
+      // case 'leg': {
+      //   const legDemo = new LegDemo(this.app.stage)
+      //   legDemo.render()
+      //   demoGfx.push(legDemo)
+      //   break
+      // }
+      case 'bug': {
+        const bugDemo = new BugDemo(this.app)
+        bugDemo.render()
+        demoGfx.push(bugDemo)
         break
       }
     }

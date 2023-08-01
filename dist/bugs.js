@@ -4,22 +4,8 @@
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a2, b2) => {
-    for (var prop in b2 ||= {})
-      if (__hasOwnProp.call(b2, prop))
-        __defNormalProp(a2, prop, b2[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b2)) {
-        if (__propIsEnum.call(b2, prop))
-          __defNormalProp(a2, prop, b2[prop]);
-      }
-    return a2;
-  };
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
@@ -24229,153 +24215,246 @@ ${e2}`);
     instance.render(px);
   }
 
-  // src/demo/leg-demo.ts
+  // src/bug/bug.ts
   var import_geom2 = __toESM(require_geom());
 
   // src/bug/leg/leg.ts
   var import_geom = __toESM(require_geom());
   var Leg = class {
-    constructor(initData) {
-      this.data = {
-        length: 48,
-        socket: new import_geom.Vector(100, 100, 0),
-        claw: new import_geom.Point(124, 100),
-        side: "right",
-        step: {
-          start: new import_geom.Point(0, 0),
-          end: new import_geom.Point(0, 0),
-          delta: new import_geom.Point(0, 0)
-        }
-      };
-      this.data = __spreadValues(__spreadValues({}, this.data), initData);
+    constructor(model, live) {
+      this.joints = [];
+      model.forEach((point, index) => {
+        this.joints[index] = {
+          model: point,
+          live: (live == null ? void 0 : live[index]) || new import_geom.Vector(point.clone())
+        };
+      });
     }
-    updateSocketPosition(value) {
-      const delta = this.data.socket.point.subtract(value);
-      this.data.socket.x = value.x;
-      this.data.socket.y = value.y;
-      return delta;
+    getModel(index) {
+      return this.joints[index].model;
     }
-    calculateLegLength(targetRadians) {
-      const diffRadians = import_geom.Angle.normalize(targetRadians - this.data.socket.radians);
-      const deltaRadians = diffRadians % Math.PI;
-      const halfMaxLength = this.data.length * 0.5;
-      return Math.min(this.data.length, halfMaxLength + halfMaxLength * deltaRadians / (Math.PI * 0.25));
+    updateLive(index, vector) {
+      this.getLive(index).x = vector.x;
+      this.getLive(index).y = vector.y;
+      this.getLive(index).radians = vector.radians;
     }
-    /**
-     * Calculates target position for next step and record starting position in
-     * order render progress.
-     * @param target is an angle from a relative socket that enables a target
-     * end position for the claw to be calculated.
-     */
-    calculateStep(target) {
-      this.data.step.start = this.data.claw.clone();
-      const renderLength = this.calculateLegLength(target.radians);
-      this.data.step.end.x = this.data.socket.x + Math.cos(target.radians) * renderLength;
-      this.data.step.end.y = this.data.socket.y + Math.sin(target.radians) * renderLength;
-      this.data.step.delta = this.data.step.end.subtract(this.data.step.start);
+    getLive(index) {
+      return this.joints[index].live;
     }
-    /**
-     * NOTES:
-     * - delta is the current tick
-     * - (delta + accumulated delta) / stepTime = % of current step taken
-     * - starting claw position
-     * - target claw position
-     * - offset from move in socket position
-     * - stepping (boolean)
-     */
-    render({
-      stepProgress = 0,
-      socket = new import_geom.Vector(0, 0, 0)
-    }) {
-      const socketDelta = this.updateSocketPosition(socket.point);
-      this.data.claw.x = this.data.step.start.x + this.data.step.delta.x * stepProgress + socketDelta.x;
-      this.data.claw.y = this.data.step.start.y + this.data.step.delta.y * stepProgress + socketDelta.y;
-      return {
-        socket: this.data.socket.data,
-        claw: this.data.claw.data
-      };
-    }
-    toString() {
-      return JSON.stringify(this.data);
+    clone() {
+      return new Leg(
+        this.joints.map((joint) => joint.model.clone()),
+        this.joints.map((joint) => joint.live.clone())
+      );
     }
   };
 
-  // src/demo/leg-demo.ts
-  var LegDemo = class {
-    constructor(stage) {
-      this.stage = stage;
-      this.gfx = new Graphics();
-      this.legs = [];
-      this.stepMS = 0;
-      this.direction = "forward";
-      this.initLegs();
-      this.initGfx();
+  // src/bug/bug.ts
+  var Bug = class {
+    constructor() {
+      this.activeSide = "left";
+      this.stepProgress = 0;
+      this.stepMs = 0;
+      this.maxStepMs = 500;
+      this.head = new import_geom2.Vector(100, 100);
+      this.legs = {
+        left: [new Leg([
+          new import_geom2.Point(-10, 0),
+          new import_geom2.Point(-30, -10)
+        ]), new Leg([
+          new import_geom2.Point(-10, 10),
+          new import_geom2.Point(-30, 10)
+        ]), new Leg([
+          new import_geom2.Point(-10, 20),
+          new import_geom2.Point(-30, 30)
+        ])],
+        right: [new Leg([
+          new import_geom2.Point(10, 0),
+          new import_geom2.Point(30, -10)
+        ]), new Leg([
+          new import_geom2.Point(10, 10),
+          new import_geom2.Point(30, 10)
+        ]), new Leg([
+          new import_geom2.Point(10, 20),
+          new import_geom2.Point(30, 30)
+        ])]
+      };
+      this.target = new import_geom2.Vector();
+      this.current = {
+        head: this.head,
+        legs: this.legs,
+        target: this.target.point
+      };
+      this.updateLeg = (leg, currentLeg, index) => {
+        const joint = leg.getModel(index);
+        const radius = import_geom2.Point.distance(this.head.point, this.head.point.subtract(joint));
+        const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians;
+        const radians = this.interpolateRadians(
+          currentLeg.getLive(index).radians,
+          targetRadians,
+          Math.min(1, this.stepProgress)
+        );
+        const updatedSocket = new import_geom2.Point(
+          Math.cos(radians) * radius + this.head.x,
+          Math.sin(radians) * radius + this.head.y
+        );
+        leg.updateLive(index, new import_geom2.Vector(updatedSocket, radians));
+      };
     }
-    initLegs() {
-      this.legs[0] = new Leg();
-      this.legs[1] = new Leg({
-        socket: new import_geom2.Vector(100, 140, Math.PI * 0.5),
-        claw: new import_geom2.Point(100, 164)
-      });
-      this.legs[2] = new Leg({
-        socket: new import_geom2.Vector(60, 140, Math.PI),
-        claw: new import_geom2.Point(36, 140)
-      });
-      this.legs[3] = new Leg({
-        socket: new import_geom2.Vector(60, 100, Math.PI * 1.5),
-        claw: new import_geom2.Point(60, 124)
-      });
+    /**
+     * Commands the bug to move. Takes one arg, the number of milliseconds that
+     * have passed since the last movement, so that progress can be calculated.
+     */
+    tick(deltaMs = 0) {
+      this.stepProgress = this.stepMs / this.maxStepMs;
+      this.updateHead();
+      this.updateLegs();
+      this.updateStepProgress(deltaMs);
+      return {
+        head: this.head,
+        legs: this.legs,
+        target: this.target.point
+      };
     }
-    initGfx() {
-      this.stage.addChild(this.gfx);
-      this.legs[0].calculateStep(new import_geom2.Vector(100, 100, Math.PI * 1.75));
-      this.legs[1].calculateStep(new import_geom2.Vector(100, 140, Math.PI * 0.25));
-      this.legs[2].calculateStep(new import_geom2.Vector(60, 140, Math.PI * 0.75));
-      this.legs[3].calculateStep(new import_geom2.Vector(60, 100, Math.PI * 1.75));
+    /**
+     * Allows the target Point that the bug walks towards to be updated.
+     */
+    updateTarget(value) {
+      this.target.x = value.x;
+      this.target.y = value.y;
     }
-    render(deltaMS = 0) {
-      this.gfx.clear();
-      this.gfx.lineStyle({ width: 1, color: 0 });
-      this.stepMS += deltaMS;
-      const stepProgress = Math.min(1, this.stepMS / 250);
-      if (stepProgress >= 1) {
-        this.stepMS = 0;
-        this.direction = this.direction === "forward" ? "backward" : "forward";
+    /**
+     * Adds elapsed milliseconds to the already elapsed milliseconds of the
+     * current step so that current step progress can be calculated. When the
+     * current step progress exceeds the max step progress, then the step progress
+     * is reset, the active stepping side is toggled, and the current bug state is
+     * copied for use in calculations.
+     */
+    updateStepProgress(deltaMs) {
+      this.stepMs = Math.min(this.maxStepMs, this.stepMs + deltaMs);
+      if (this.stepMs >= this.maxStepMs) {
+        this.stepMs = 0;
+        this.activeSide = this.activeSide === "left" ? "right" : "left";
+        this.current.head = this.head.clone();
+        this.current.legs = {
+          left: this.legs.left.map((item) => item.clone()),
+          right: this.legs.right.map((item) => item.clone())
+        };
       }
-      for (let i2 = 0; i2 < 4; i2++) {
-        let socketVector = new import_geom2.Vector();
-        if (i2 === 0) {
-          socketVector = new import_geom2.Vector(100, 100, 0);
-        } else if (i2 === 1) {
-          socketVector = new import_geom2.Vector(100, 140, Math.PI * 0.5);
-        } else if (i2 === 2) {
-          socketVector = new import_geom2.Vector(60, 140, Math.PI);
-        } else if (i2 === 3) {
-          socketVector = new import_geom2.Vector(60, 100, Math.PI * 1.5);
-        }
-        const leg = this.legs[i2].render({
-          stepProgress,
-          socket: socketVector
-        });
-        this.gfx.moveTo(leg.socket.x, leg.socket.y);
-        this.gfx.lineTo(leg.claw.x, leg.claw.y);
-        this.gfx.drawCircle(leg.claw.x, leg.claw.y, 2);
-        if (this.stepMS === 0) {
-          if (i2 == 0) {
-            const targetRadians = this.direction === "forward" ? Math.PI * 1.75 : Math.PI * 0.25;
-            this.legs[0].calculateStep(new import_geom2.Vector(100, 100, targetRadians));
-          } else if (i2 === 1) {
-            const targetRadians = this.direction === "forward" ? Math.PI * 0.25 : Math.PI * 0.75;
-            this.legs[1].calculateStep(new import_geom2.Vector(100, 140, targetRadians));
-          } else if (i2 === 2) {
-            const targetRadians = this.direction === "forward" ? Math.PI * 1.25 : Math.PI * 0.75;
-            this.legs[2].calculateStep(new import_geom2.Vector(60, 140, targetRadians));
-          } else if (i2 === 3) {
-            const targetRadians = this.direction === "forward" ? Math.PI * 1.75 : Math.PI * 1.25;
-            this.legs[3].calculateStep(new import_geom2.Vector(60, 100, targetRadians));
+    }
+    updateHead() {
+      this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5;
+      const delta = import_geom2.Angle.delta(this.target.radians, this.current.head.radians);
+      const maxTurnRadians = Math.PI * 0.25;
+      if (delta > maxTurnRadians) {
+        this.target.radians = import_geom2.Angle.normalize(this.current.head.radians - maxTurnRadians);
+      } else if (delta < -maxTurnRadians) {
+        this.target.radians = import_geom2.Angle.normalize(this.current.head.radians + maxTurnRadians);
+      }
+      this.head.radians = this.interpolateRadians(
+        this.current.head.radians,
+        this.target.radians,
+        Math.min(1, this.stepProgress)
+      );
+    }
+    updateLegs() {
+      ["left", "right"].forEach((side) => {
+        this.legs[side].forEach((leg, legIndex) => {
+          this.updateLeg(leg, this.current.legs[side][legIndex], 0);
+          if (side === this.activeSide) {
+            this.updateLeg(leg, this.current.legs[side][legIndex], 1);
           }
-        }
+        });
+      });
+    }
+    /**
+     * Returns an interpolated radians value between two other radians according
+     * to a progress value.
+     * TODO: update this @adrianlafond/geom/Angle
+     */
+    interpolateRadians(r1, r2, progress) {
+      const a1 = import_geom2.Angle.normalize(r1);
+      const a2 = import_geom2.Angle.normalize(r2);
+      let delta = a2 - a1;
+      if (Math.abs(delta) > Math.PI) {
+        const circumference = Math.PI * 2 * (a2 > a1 ? -1 : 1);
+        delta = a2 + circumference - a1;
       }
+      return import_geom2.Angle.normalize(a1 + delta * progress);
+    }
+  };
+
+  // src/demo/bug-demo.ts
+  var import_geom3 = __toESM(require_geom());
+  var BugDemo = class {
+    constructor(app) {
+      this.app = app;
+      this.target = new Graphics();
+      this.head = new Graphics();
+      this.legs = new Graphics();
+      this.stepMs = 0;
+      this.targetEnd = "a";
+      this.renderLeg = (leg) => {
+        const socket = leg.getLive(0);
+        const claw = leg.getLive(1);
+        this.legs.lineStyle({ width: 1, color: 0 });
+        this.legs.moveTo(socket.x, socket.y);
+        this.legs.lineTo(claw.x, claw.y);
+        this.legs.lineStyle({ width: 0 });
+        this.legs.beginFill(0);
+        this.legs.drawCircle(socket.x, socket.y, 3);
+        this.legs.drawCircle(claw.x, claw.y, 2);
+        this.legs.endFill();
+      };
+      this.bug = new Bug();
+      this.app.stage.addChild(this.target);
+      this.app.stage.addChild(this.legs);
+      this.app.stage.addChild(this.head);
+      this.updateTarget();
+    }
+    render(deltaMs = 0) {
+      this.stepMs += deltaMs;
+      if (this.stepMs > 2e3) {
+        this.updateTarget();
+        this.stepMs = 0;
+      }
+      const bug = this.bug.tick(deltaMs);
+      this.renderTarget(bug.target);
+      this.renderHead(bug);
+      this.renderLegs(bug);
+    }
+    renderTarget({ x: x2, y: y2 }) {
+      const radius = 4;
+      this.target.clear();
+      this.target.lineStyle({ width: 1, color: 16711680 });
+      this.target.moveTo(x2 - radius, y2 - radius);
+      this.target.lineTo(x2 + radius, y2 + radius);
+      this.target.moveTo(x2 + radius, y2 - radius);
+      this.target.lineTo(x2 - radius, y2 + radius);
+    }
+    renderHead(bug) {
+      this.head.clear();
+      this.head.beginFill(0);
+      this.head.moveTo(0, -12.5);
+      this.head.lineTo(5, 0);
+      this.head.lineTo(0, -2.5);
+      this.head.lineTo(-5, 0);
+      this.head.lineTo(0, 0);
+      this.head.rotation = bug.head.radians;
+      this.head.position.x = bug.head.x;
+      this.head.position.y = bug.head.y;
+      this.head.endFill();
+    }
+    renderLegs(bug) {
+      this.legs.clear();
+      bug.legs.left.forEach(this.renderLeg);
+      bug.legs.right.forEach(this.renderLeg);
+    }
+    updateTarget() {
+      this.bug.updateTarget(new import_geom3.Point(
+        Math.floor(Math.random() * this.app.view.width),
+        Math.floor(Math.random() * this.app.view.height)
+      ));
     }
   };
 
@@ -24396,14 +24475,14 @@ ${e2}`);
     appendToDom() {
       this.containerElement.replaceChildren(this.app.view);
     }
-    start(demo = "leg") {
+    start(demo = "bug") {
       const demoGfx = [];
       render(this.app);
       switch (demo) {
-        case "leg": {
-          const legDemo = new LegDemo(this.app.stage);
-          legDemo.render();
-          demoGfx.push(legDemo);
+        case "bug": {
+          const bugDemo = new BugDemo(this.app);
+          bugDemo.render();
+          demoGfx.push(bugDemo);
           break;
         }
       }

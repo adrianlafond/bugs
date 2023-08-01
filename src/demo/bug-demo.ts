@@ -8,9 +8,9 @@ export class BugDemo {
   private readonly legs = new PIXI.Graphics()
 
   private bug: Bug;
-  private stepMs = 0
+  // private stepMs = 0
 
-  private targetEnd: 'a' | 'b' = 'a'
+  // private targetEnd: 'a' | 'b' = 'a'
 
   constructor(private readonly app: PIXI.Application) {
     this.bug = new Bug()
@@ -21,16 +21,21 @@ export class BugDemo {
   }
 
   render (deltaMs = 0): void {
-    this.stepMs += deltaMs
-    if (this.stepMs > 2000) {
-      this.updateTarget()
-      this.stepMs = 0
-    }
+    // this.stepMs += deltaMs
+    // if (this.stepMs > 1000) {
+    //   this.updateTarget()
+    //   this.stepMs = 0
+    // }
 
     const bug = this.bug.tick(deltaMs)
+    this.bug.on('targetReached', this.handleTargetReached)
     this.renderTarget(bug.target)
     this.renderHead(bug)
     this.renderLegs(bug)
+  }
+
+  private handleTargetReached = () => {
+    this.updateTarget()
   }
 
   private renderTarget({ x, y }: BugRender['target']) {
@@ -73,7 +78,7 @@ export class BugDemo {
     this.legs.lineStyle({ width: 0 })
     this.legs.beginFill(0x000000)
     this.legs.drawCircle(socket.x, socket.y, 3)
-    this.legs.drawCircle(claw.x, claw.y, 2)
+    this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 3 : 2)
     this.legs.endFill()
   }
 

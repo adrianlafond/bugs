@@ -17,37 +17,49 @@ export class Bug {
 
   private stepProgress = 0
   private stepMs = 0
-  private readonly maxStepMs = 500
+  private readonly maxStepMs = 200
+
+  private readonly maxStepPx = 20
 
   private head = new Vector(100, 100)
   private legs: Legs = {
     left: [new Leg([
       new Point(-3, 5),
-      new Point(-20, -10),
+      new Point(-12, -10),
     ]), new Leg([
       new Point(-3, 10),
-      new Point(-20, 10),
+      new Point(-14, 10),
     ]), new Leg([
       new Point(-3, 15),
-      new Point(-20, 30),
+      new Point(-10, 25),
     ])],
     right: [new Leg([
       new Point(3, 5),
-      new Point(20, -10),
+      new Point(12, -10),
     ]), new Leg([
       new Point(3, 10),
-      new Point(20, 10),
+      new Point(14, 10),
     ]), new Leg([
       new Point(3, 15),
-      new Point(20, 30),
+      new Point(10, 25),
     ])],
   }
-  private target = new Vector()
+  private target = new Vector(this.head.point)
 
   private current: BugRender = {
     head: this.head,
     legs: this.legs,
     target: this.target.point
+  }
+
+  private listeners: {
+    targetReached: ((bugRender: BugRender) => void)[]
+  } = {
+    targetReached: []
+  }
+
+  constructor() {
+    this.updateBug(this.maxStepMs)
   }
 
   /**
@@ -56,14 +68,22 @@ export class Bug {
    */
   tick(deltaMs = 0): BugRender {
     this.stepProgress = this.stepMs / this.maxStepMs
-    this.updateHead()
-    this.updateLegs()
-    this.updateStepProgress(deltaMs)
-    return {
-      head: this.head,
-      legs: this.legs,
-      target: this.target.point
+    this.updateBug(deltaMs)
+
+    if (Point.distance(this.target.point, this.head.point) < this.maxStepPx) {
+      const bugRender = this.getRender()
+      this.listeners.targetReached.forEach(fn => fn(bugRender))
     }
+
+    return this.getRender()
+  }
+
+  on(event: 'targetReached', fn: (bugRender: BugRender) => void) {
+    this.listeners[event].push(fn)
+  }
+
+  off(event: 'targetReached', fn: (bugRender: BugRender) => void) {
+    //
   }
 
   /**
@@ -72,6 +92,20 @@ export class Bug {
   updateTarget(value: Point) {
     this.target.x = value.x
     this.target.y = value.y
+  }
+
+  private getRender(): BugRender {
+    return {
+      head: this.head,
+      legs: this.legs,
+      target: this.target.point
+    }
+  }
+
+  private updateBug(deltaMs: number) {
+    this.updateHead()
+    this.updateLegs()
+    this.updateStepProgress(deltaMs)
   }
 
   /**
@@ -91,6 +125,8 @@ export class Bug {
         left: this.legs.left.map(item => item.clone()),
         right: this.legs.right.map(item => item.clone()),
       }
+      this.legs[this.activeSide].forEach(leg => leg.startMoving())
+      this.legs[this.activeSide === 'left' ? 'right' : 'left'].forEach(leg => leg.stopMoving())
     }
   }
 
@@ -108,6 +144,9 @@ export class Bug {
       this.target.radians,
       Math.min(1, this.stepProgress)
     )
+
+    this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress
+    this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress
   }
 
   private updateLegs() {

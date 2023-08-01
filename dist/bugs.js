@@ -24178,7 +24178,6 @@ ${e2}`);
 
   // src/demo/grid.ts
   var instance;
-  var LINE_COLOR = 12312063;
   var Grid = class {
     constructor(app) {
       this.app = app;
@@ -24191,22 +24190,6 @@ ${e2}`);
       background.beginFill(16777215);
       background.drawRect(0, 0, this.app.view.width, this.app.view.height);
       this.app.stage.addChild(background);
-      let n2 = px;
-      while (n2 < this.app.view.height) {
-        const line = new Graphics();
-        line.beginFill(LINE_COLOR);
-        line.drawRect(0, n2, this.app.view.width, 1);
-        this.app.stage.addChild(line);
-        n2 += px;
-      }
-      n2 = px;
-      while (n2 < this.app.view.width) {
-        const line = new Graphics();
-        line.beginFill(LINE_COLOR);
-        line.drawRect(n2, 0, 1, this.app.view.height);
-        this.app.stage.addChild(line);
-        n2 += px;
-      }
     }
   };
   function render(app, px = 20) {
@@ -24223,6 +24206,7 @@ ${e2}`);
   var Leg = class {
     constructor(model, live) {
       this.joints = [];
+      this.moving = false;
       model.forEach((point, index) => {
         this.joints[index] = {
           model: point,
@@ -24241,6 +24225,15 @@ ${e2}`);
     getLive(index) {
       return this.joints[index].live;
     }
+    startMoving() {
+      this.moving = true;
+    }
+    stopMoving() {
+      this.moving = false;
+    }
+    isMoving() {
+      return this.moving;
+    }
     clone() {
       return new Leg(
         this.joints.map((joint) => joint.model.clone()),
@@ -24255,35 +24248,39 @@ ${e2}`);
       this.activeSide = "left";
       this.stepProgress = 0;
       this.stepMs = 0;
-      this.maxStepMs = 500;
+      this.maxStepMs = 200;
+      this.maxStepPx = 20;
       this.head = new import_geom2.Vector(100, 100);
       this.legs = {
         left: [new Leg([
           new import_geom2.Point(-3, 5),
-          new import_geom2.Point(-20, -10)
+          new import_geom2.Point(-12, -10)
         ]), new Leg([
           new import_geom2.Point(-3, 10),
-          new import_geom2.Point(-20, 10)
+          new import_geom2.Point(-14, 10)
         ]), new Leg([
           new import_geom2.Point(-3, 15),
-          new import_geom2.Point(-20, 30)
+          new import_geom2.Point(-10, 25)
         ])],
         right: [new Leg([
           new import_geom2.Point(3, 5),
-          new import_geom2.Point(20, -10)
+          new import_geom2.Point(12, -10)
         ]), new Leg([
           new import_geom2.Point(3, 10),
-          new import_geom2.Point(20, 10)
+          new import_geom2.Point(14, 10)
         ]), new Leg([
           new import_geom2.Point(3, 15),
-          new import_geom2.Point(20, 30)
+          new import_geom2.Point(10, 25)
         ])]
       };
-      this.target = new import_geom2.Vector();
+      this.target = new import_geom2.Vector(this.head.point);
       this.current = {
         head: this.head,
         legs: this.legs,
         target: this.target.point
+      };
+      this.listeners = {
+        targetReached: []
       };
       this.updateLeg = (leg, currentLeg, index) => {
         const joint = leg.getModel(index);
@@ -24300,6 +24297,7 @@ ${e2}`);
         );
         leg.updateLive(index, new import_geom2.Vector(updatedSocket, radians));
       };
+      this.updateBug(this.maxStepMs);
     }
     /**
      * Commands the bug to move. Takes one arg, the number of milliseconds that
@@ -24307,14 +24305,17 @@ ${e2}`);
      */
     tick(deltaMs = 0) {
       this.stepProgress = this.stepMs / this.maxStepMs;
-      this.updateHead();
-      this.updateLegs();
-      this.updateStepProgress(deltaMs);
-      return {
-        head: this.head,
-        legs: this.legs,
-        target: this.target.point
-      };
+      this.updateBug(deltaMs);
+      if (import_geom2.Point.distance(this.target.point, this.head.point) < this.maxStepPx) {
+        const bugRender = this.getRender();
+        this.listeners.targetReached.forEach((fn) => fn(bugRender));
+      }
+      return this.getRender();
+    }
+    on(event, fn) {
+      this.listeners[event].push(fn);
+    }
+    off(event, fn) {
     }
     /**
      * Allows the target Point that the bug walks towards to be updated.
@@ -24322,6 +24323,18 @@ ${e2}`);
     updateTarget(value) {
       this.target.x = value.x;
       this.target.y = value.y;
+    }
+    getRender() {
+      return {
+        head: this.head,
+        legs: this.legs,
+        target: this.target.point
+      };
+    }
+    updateBug(deltaMs) {
+      this.updateHead();
+      this.updateLegs();
+      this.updateStepProgress(deltaMs);
     }
     /**
      * Adds elapsed milliseconds to the already elapsed milliseconds of the
@@ -24340,6 +24353,8 @@ ${e2}`);
           left: this.legs.left.map((item) => item.clone()),
           right: this.legs.right.map((item) => item.clone())
         };
+        this.legs[this.activeSide].forEach((leg) => leg.startMoving());
+        this.legs[this.activeSide === "left" ? "right" : "left"].forEach((leg) => leg.stopMoving());
       }
     }
     updateHead() {
@@ -24356,6 +24371,8 @@ ${e2}`);
         this.target.radians,
         Math.min(1, this.stepProgress)
       );
+      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress;
+      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress;
     }
     updateLegs() {
       ["left", "right"].forEach((side) => {
@@ -24387,13 +24404,16 @@ ${e2}`);
   // src/demo/bug-demo.ts
   var import_geom3 = __toESM(require_geom());
   var BugDemo = class {
+    // private stepMs = 0
+    // private targetEnd: 'a' | 'b' = 'a'
     constructor(app) {
       this.app = app;
       this.target = new Graphics();
       this.head = new Graphics();
       this.legs = new Graphics();
-      this.stepMs = 0;
-      this.targetEnd = "a";
+      this.handleTargetReached = () => {
+        this.updateTarget();
+      };
       this.renderLeg = (leg) => {
         const socket = leg.getLive(0);
         const claw = leg.getLive(1);
@@ -24403,7 +24423,7 @@ ${e2}`);
         this.legs.lineStyle({ width: 0 });
         this.legs.beginFill(0);
         this.legs.drawCircle(socket.x, socket.y, 3);
-        this.legs.drawCircle(claw.x, claw.y, 2);
+        this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 3 : 2);
         this.legs.endFill();
       };
       this.bug = new Bug();
@@ -24413,12 +24433,8 @@ ${e2}`);
       this.updateTarget();
     }
     render(deltaMs = 0) {
-      this.stepMs += deltaMs;
-      if (this.stepMs > 2e3) {
-        this.updateTarget();
-        this.stepMs = 0;
-      }
       const bug = this.bug.tick(deltaMs);
+      this.bug.on("targetReached", this.handleTargetReached);
       this.renderTarget(bug.target);
       this.renderHead(bug);
       this.renderLegs(bug);

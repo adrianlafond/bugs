@@ -17,23 +17,23 @@ class Grid {
     background.drawRect(0, 0, this.app.view.width, this.app.view.height)
     this.app.stage.addChild(background)
 
-    let n = px
-    while (n < this.app.view.height) {
-      const line = new PIXI.Graphics()
-      line.beginFill(LINE_COLOR)
-      line.drawRect(0, n, this.app.view.width, 1)
-      this.app.stage.addChild(line)
-      n += px
-    }
+    // let n = px
+    // while (n < this.app.view.height) {
+    //   const line = new PIXI.Graphics()
+    //   line.beginFill(LINE_COLOR)
+    //   line.drawRect(0, n, this.app.view.width, 1)
+    //   this.app.stage.addChild(line)
+    //   n += px
+    // }
 
-    n = px
-    while (n < this.app.view.width) {
-      const line = new PIXI.Graphics()
-      line.beginFill(LINE_COLOR)
-      line.drawRect(n, 0, 1, this.app.view.height)
-      this.app.stage.addChild(line)
-      n += px
-    }
+    // n = px
+    // while (n < this.app.view.width) {
+    //   const line = new PIXI.Graphics()
+    //   line.beginFill(LINE_COLOR)
+    //   line.drawRect(n, 0, 1, this.app.view.height)
+    //   this.app.stage.addChild(line)
+    //   n += px
+    // }
   }
 }
 

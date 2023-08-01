@@ -7,6 +7,7 @@ export interface Joint {
 
 export class Leg {
   private joints: Joint[] = [];
+  private moving = false;
 
   constructor(model: Point[], live?: Vector[]) {
     model.forEach((point, index) => {
@@ -29,6 +30,18 @@ export class Leg {
 
   getLive(index: number) {
     return this.joints[index].live
+  }
+
+  startMoving() {
+    this.moving = true
+  }
+
+  stopMoving() {
+    this.moving = false
+  }
+
+  isMoving() {
+    return this.moving
   }
 
   clone() {

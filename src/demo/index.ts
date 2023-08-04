@@ -30,26 +30,13 @@ class DemoApp {
     this.playing ? this.app.start() : this.app.stop()
   }
 
-  start (demo: DemoType = 'bug'): void {
-    const demoGfx: Array<{ render: (delta?: number) => void }> = []
+  start (): void {
     grid.render(this.app)
-    switch (demo) {
-      // case 'leg': {
-      //   const legDemo = new LegDemo(this.app.stage)
-      //   legDemo.render()
-      //   demoGfx.push(legDemo)
-      //   break
-      // }
-      case 'bug': {
-        const bugDemo = new BugDemo(this.app)
-        bugDemo.render()
-        demoGfx.push(bugDemo)
-        break
-      }
-    }
+    const bugDemo = new BugDemo(this.app)
+    bugDemo.render()
 
     this.app.ticker.add(() => {
-      demoGfx.forEach(gfx => gfx.render(this.app.ticker.deltaMS))
+      bugDemo.render(this.app.ticker.deltaMS)
     })
 
     this.playing = true

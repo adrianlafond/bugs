@@ -24178,6 +24178,7 @@ ${e2}`);
 
   // src/demo/grid.ts
   var instance;
+  var LINE_COLOR = 14544639;
   var Grid = class {
     constructor(app) {
       this.app = app;
@@ -24190,9 +24191,25 @@ ${e2}`);
       background.beginFill(16777215);
       background.drawRect(0, 0, this.app.view.width, this.app.view.height);
       this.app.stage.addChild(background);
+      let n2 = px;
+      while (n2 < this.app.view.height) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(0, n2, this.app.view.width, 1);
+        this.app.stage.addChild(line);
+        n2 += px;
+      }
+      n2 = px;
+      while (n2 < this.app.view.width) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(n2, 0, 1, this.app.view.height);
+        this.app.stage.addChild(line);
+        n2 += px;
+      }
     }
   };
-  function render(app, px = 20) {
+  function render(app, px = 10) {
     instance = instance != null ? instance : new Grid(app);
     instance.udpateApp(app);
     instance.render(px);
@@ -24201,7 +24218,7 @@ ${e2}`);
   // src/bug/bug.ts
   var import_geom2 = __toESM(require_geom());
 
-  // src/bug/leg/leg.ts
+  // src/bug/leg.ts
   var import_geom = __toESM(require_geom());
   var Leg = class {
     constructor(model, live) {
@@ -24210,7 +24227,7 @@ ${e2}`);
       model.forEach((point, index) => {
         this.joints[index] = {
           model: point,
-          live: (live == null ? void 0 : live[index]) || new import_geom.Vector(point.clone())
+          live: live != null ? live[index] : new import_geom.Vector(point.clone())
         };
       });
     }
@@ -24248,29 +24265,29 @@ ${e2}`);
       this.activeSide = "left";
       this.stepProgress = 0;
       this.stepMs = 0;
-      this.maxStepMs = 200;
-      this.maxStepPx = 20;
+      this.maxStepMs = 150;
+      this.maxStepPx = 12;
       this.head = new import_geom2.Vector(100, 100);
       this.legs = {
         left: [new Leg([
           new import_geom2.Point(-3, 5),
           new import_geom2.Point(-12, -10)
         ]), new Leg([
-          new import_geom2.Point(-3, 10),
-          new import_geom2.Point(-14, 10)
+          new import_geom2.Point(-3, 8),
+          new import_geom2.Point(-14, 4)
         ]), new Leg([
           new import_geom2.Point(-3, 15),
-          new import_geom2.Point(-10, 25)
+          new import_geom2.Point(-10, 16)
         ])],
         right: [new Leg([
           new import_geom2.Point(3, 5),
           new import_geom2.Point(12, -10)
         ]), new Leg([
-          new import_geom2.Point(3, 10),
-          new import_geom2.Point(14, 10)
+          new import_geom2.Point(3, 8),
+          new import_geom2.Point(14, 4)
         ]), new Leg([
           new import_geom2.Point(3, 15),
-          new import_geom2.Point(10, 25)
+          new import_geom2.Point(10, 16)
         ])]
       };
       this.target = new import_geom2.Vector(this.head.point);
@@ -24312,6 +24329,7 @@ ${e2}`);
       }
       return this.getRender();
     }
+    // TODO: finish pub/sub
     on(event, fn) {
       this.listeners[event].push(fn);
     }
@@ -24371,8 +24389,8 @@ ${e2}`);
         this.target.radians,
         Math.min(1, this.stepProgress)
       );
-      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress;
-      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress;
+      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress + Math.random() * 2 - 1;
+      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress + Math.random() * 2 - 1;
     }
     updateLegs() {
       ["left", "right"].forEach((side) => {
@@ -24404,8 +24422,6 @@ ${e2}`);
   // src/demo/bug-demo.ts
   var import_geom3 = __toESM(require_geom());
   var BugDemo = class {
-    // private stepMs = 0
-    // private targetEnd: 'a' | 'b' = 'a'
     constructor(app) {
       this.app = app;
       this.target = new Graphics();
@@ -24491,19 +24507,12 @@ ${e2}`);
     appendToDom() {
       this.containerElement.replaceChildren(this.app.view);
     }
-    start(demo = "bug") {
-      const demoGfx = [];
+    start() {
       render(this.app);
-      switch (demo) {
-        case "bug": {
-          const bugDemo = new BugDemo(this.app);
-          bugDemo.render();
-          demoGfx.push(bugDemo);
-          break;
-        }
-      }
+      const bugDemo = new BugDemo(this.app);
+      bugDemo.render();
       this.app.ticker.add(() => {
-        demoGfx.forEach((gfx) => gfx.render(this.app.ticker.deltaMS));
+        bugDemo.render(this.app.ticker.deltaMS);
       });
       this.playing = true;
       this.containerElement.addEventListener("mousedown", this.togglePlaying);

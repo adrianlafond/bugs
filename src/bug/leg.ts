@@ -1,50 +1,50 @@
-import { Point, Vector } from '@adrianlafond/geom';
+import { Point, Vector } from '@adrianlafond/geom'
 
 export interface Joint {
-  model: Point;
-  live: Vector;
+  model: Point
+  live: Vector
 }
 
 export class Leg {
-  private joints: Joint[] = [];
-  private moving = false;
+  private joints: Joint[] = []
+  private moving = false
 
-  constructor(model: Point[], live?: Vector[]) {
+  constructor (model: Point[], live?: Vector[]) {
     model.forEach((point, index) => {
       this.joints[index] = {
         model: point,
-        live: live?.[index] || new Vector(point.clone()),
+        live: live != null ? live[index] : new Vector(point.clone())
       }
     })
   }
 
-  getModel(index: number) {
+  getModel (index: number): Point {
     return this.joints[index].model
   }
 
-  updateLive(index:number, vector: Vector) {
+  updateLive (index: number, vector: Vector): void {
     this.getLive(index).x = vector.x
     this.getLive(index).y = vector.y
     this.getLive(index).radians = vector.radians
   }
 
-  getLive(index: number) {
+  getLive (index: number): Vector {
     return this.joints[index].live
   }
 
-  startMoving() {
+  startMoving (): void {
     this.moving = true
   }
 
-  stopMoving() {
+  stopMoving (): void {
     this.moving = false
   }
 
-  isMoving() {
+  isMoving (): boolean {
     return this.moving
   }
 
-  clone() {
+  clone (): Leg {
     return new Leg(
       this.joints.map(joint => joint.model.clone()),
       this.joints.map(joint => joint.live.clone())

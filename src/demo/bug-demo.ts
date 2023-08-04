@@ -1,18 +1,15 @@
 import * as PIXI from 'pixi.js'
-import { Bug, BugRender, Leg } from '../bug';
-import { Point } from '@adrianlafond/geom';
+import { Bug, BugRender, Leg } from '../bug'
+import { Point } from '@adrianlafond/geom'
 
 export class BugDemo {
   private readonly target = new PIXI.Graphics()
   private readonly head = new PIXI.Graphics()
   private readonly legs = new PIXI.Graphics()
 
-  private bug: Bug;
-  // private stepMs = 0
+  private readonly bug: Bug
 
-  // private targetEnd: 'a' | 'b' = 'a'
-
-  constructor(private readonly app: PIXI.Application) {
+  constructor (private readonly app: PIXI.Application) {
     this.bug = new Bug()
     this.app.stage.addChild(this.target)
     this.app.stage.addChild(this.legs)
@@ -21,12 +18,6 @@ export class BugDemo {
   }
 
   render (deltaMs = 0): void {
-    // this.stepMs += deltaMs
-    // if (this.stepMs > 1000) {
-    //   this.updateTarget()
-    //   this.stepMs = 0
-    // }
-
     const bug = this.bug.tick(deltaMs)
     this.bug.on('targetReached', this.handleTargetReached)
     this.renderTarget(bug.target)
@@ -34,11 +25,11 @@ export class BugDemo {
     this.renderLegs(bug)
   }
 
-  private handleTargetReached = () => {
+  private readonly handleTargetReached = (): void => {
     this.updateTarget()
   }
 
-  private renderTarget({ x, y }: BugRender['target']) {
+  private renderTarget ({ x, y }: BugRender['target']): void {
     const radius = 4
     this.target.clear()
     this.target.lineStyle({ width: 1, color: 0xff0000 })
@@ -48,7 +39,7 @@ export class BugDemo {
     this.target.lineTo(x - radius, y + radius)
   }
 
-  private renderHead(bug: BugRender) {
+  private renderHead (bug: BugRender): void {
     this.head.clear()
     this.head.beginFill(0x000000)
     this.head.moveTo(0, -12.5)
@@ -62,13 +53,13 @@ export class BugDemo {
     this.head.endFill()
   }
 
-  private renderLegs(bug: BugRender) {
+  private renderLegs (bug: BugRender): void {
     this.legs.clear()
     bug.legs.left.forEach(this.renderLeg)
     bug.legs.right.forEach(this.renderLeg)
   }
 
-  private renderLeg = (leg: Leg) => {
+  private readonly renderLeg = (leg: Leg): void => {
     const socket = leg.getLive(0)
     const claw = leg.getLive(1)
     this.legs.lineStyle({ width: 1, color: 0x000000 })
@@ -82,16 +73,10 @@ export class BugDemo {
     this.legs.endFill()
   }
 
-  private updateTarget() {
+  private updateTarget (): void {
     this.bug.updateTarget(new Point(
       Math.floor(Math.random() * this.app.view.width),
       Math.floor(Math.random() * this.app.view.height)
     ))
-    // this.bug.updateTarget(this.targetEnd === 'a' ? new Point(
-    //   150, 0
-    // ) : new Point(
-    //   50, 200
-    // ))
-    // this.targetEnd = this.targetEnd === 'a' ? 'b' : 'a'
   }
 }

@@ -24178,6 +24178,7 @@ ${e2}`);
 
   // src/demo/grid.ts
   var instance;
+  var LINE_COLOR = 14544639;
   var Grid = class {
     constructor(app) {
       this.app = app;
@@ -24190,9 +24191,25 @@ ${e2}`);
       background.beginFill(16777215);
       background.drawRect(0, 0, this.app.view.width, this.app.view.height);
       this.app.stage.addChild(background);
+      let n2 = px;
+      while (n2 < this.app.view.height) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(0, n2, this.app.view.width, 1);
+        this.app.stage.addChild(line);
+        n2 += px;
+      }
+      n2 = px;
+      while (n2 < this.app.view.width) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(n2, 0, 1, this.app.view.height);
+        this.app.stage.addChild(line);
+        n2 += px;
+      }
     }
   };
-  function render(app, px = 20) {
+  function render(app, px = 10) {
     instance = instance != null ? instance : new Grid(app);
     instance.udpateApp(app);
     instance.render(px);
@@ -24201,7 +24218,7 @@ ${e2}`);
   // src/bug/bug.ts
   var import_geom2 = __toESM(require_geom());
 
-  // src/bug/leg/leg.ts
+  // src/bug/leg.ts
   var import_geom = __toESM(require_geom());
   var Leg = class {
     constructor(model, live) {
@@ -24210,7 +24227,7 @@ ${e2}`);
       model.forEach((point, index) => {
         this.joints[index] = {
           model: point,
-          live: (live == null ? void 0 : live[index]) || new import_geom.Vector(point.clone())
+          live: live != null ? live[index] : new import_geom.Vector(point.clone())
         };
       });
     }
@@ -24312,6 +24329,7 @@ ${e2}`);
       }
       return this.getRender();
     }
+    // TODO: finish pub/sub
     on(event, fn) {
       this.listeners[event].push(fn);
     }
@@ -24404,8 +24422,6 @@ ${e2}`);
   // src/demo/bug-demo.ts
   var import_geom3 = __toESM(require_geom());
   var BugDemo = class {
-    // private stepMs = 0
-    // private targetEnd: 'a' | 'b' = 'a'
     constructor(app) {
       this.app = app;
       this.target = new Graphics();
@@ -24491,19 +24507,12 @@ ${e2}`);
     appendToDom() {
       this.containerElement.replaceChildren(this.app.view);
     }
-    start(demo = "bug") {
-      const demoGfx = [];
+    start() {
       render(this.app);
-      switch (demo) {
-        case "bug": {
-          const bugDemo = new BugDemo(this.app);
-          bugDemo.render();
-          demoGfx.push(bugDemo);
-          break;
-        }
-      }
+      const bugDemo = new BugDemo(this.app);
+      bugDemo.render();
       this.app.ticker.add(() => {
-        demoGfx.forEach((gfx) => gfx.render(this.app.ticker.deltaMS));
+        bugDemo.render(this.app.ticker.deltaMS);
       });
       this.playing = true;
       this.containerElement.addEventListener("mousedown", this.togglePlaying);

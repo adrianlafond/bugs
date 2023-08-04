@@ -1,1 +1,2 @@
-export { Bug } from './bug';
+export * from './bug'
+export * from './leg'

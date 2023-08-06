@@ -12,6 +12,13 @@ export interface BugRender {
   target: Point
 }
 
+export interface StageRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 export class Bug {
   private activeSide: 'left' | 'right' = 'left'
 
@@ -46,6 +53,7 @@ export class Bug {
   }
 
   private readonly target = new Vector(this.head.point)
+  private readonly repulsionPx = 8
 
   private readonly current: BugRender = {
     head: this.head,
@@ -56,22 +64,28 @@ export class Bug {
   private readonly listeners: {
     targetReached: Array<(bugRender: BugRender) => void>
   } = {
-      targetReached: []
-    }
+    targetReached: []
+  }
 
   constructor () {
-    this.updateBug(this.maxStepMs)
+    this.updateBug({ deltaMs: this.maxStepMs })
   }
 
   /**
    * Commands the bug to move. Takes one arg, the number of milliseconds that
    * have passed since the last movement, so that progress can be calculated.
    */
-  tick (deltaMs = 0): BugRender {
+  tick ({
+    deltaMs = 0,
+    stageRect,
+  }: {
+    deltaMs?: number
+    stageRect?: StageRect
+  }): BugRender {
     this.stepProgress = this.stepMs / this.maxStepMs
-    this.updateBug(deltaMs)
+    this.updateBug({ deltaMs, stageRect })
 
-    if (Point.distance(this.target.point, this.head.point) < this.maxStepPx) {
+    if (Point.distance(this.target.point, this.head.point) < this.maxStepPx + this.repulsionPx) {
       const bugRender = this.getRender()
       this.listeners.targetReached.forEach(fn => fn(bugRender))
     }
@@ -79,13 +93,17 @@ export class Bug {
     return this.getRender()
   }
 
-  // TODO: finish pub/sub
   on (event: 'targetReached', fn: (bugRender: BugRender) => void): void {
-    this.listeners[event].push(fn)
+    if (!this.listeners[event].includes(fn)) {
+      this.listeners[event].push(fn)
+    }
   }
 
   off (event: 'targetReached', fn: (bugRender: BugRender) => void): void {
-    //
+    const index = this.listeners[event].findIndex(item => item === fn)
+    if (index !== -1) {
+      this.listeners[event].splice(index, 1)
+    }
   }
 
   /**
@@ -104,9 +122,21 @@ export class Bug {
     }
   }
 
-  private updateBug (deltaMs: number): void {
-    this.updateHead()
-    this.updateLegs()
+  private updateBug ({
+    deltaMs,
+    stageRect,
+  }: {
+    deltaMs: number
+    stageRect?: StageRect
+  }): void {
+    const repulusionRect = stageRect ? {
+      x: stageRect.x + this.repulsionPx,
+      y: stageRect.y + this.repulsionPx,
+      width: stageRect.width - this.repulsionPx * 2,
+      height: stageRect.height - this.repulsionPx * 2,
+    } : stageRect;
+    this.updateHead(repulusionRect)
+    this.updateLegs(repulusionRect)
     this.updateStepProgress(deltaMs)
   }
 
@@ -132,7 +162,7 @@ export class Bug {
     }
   }
 
-  private updateHead (): void {
+  private updateHead (stageRect?: StageRect): void {
     this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5
     const delta = Angle.delta(this.target.radians, this.current.head.radians)
     const maxTurnRadians = Math.PI * 0.25
@@ -141,7 +171,7 @@ export class Bug {
     } else if (delta < -maxTurnRadians) {
       this.target.radians = Angle.normalize(this.current.head.radians + maxTurnRadians)
     }
-    this.head.radians = this.interpolateRadians(
+    this.head.radians = Angle.interpolate(
       this.current.head.radians,
       this.target.radians,
       Math.min(1, this.stepProgress)
@@ -155,20 +185,25 @@ export class Bug {
       Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) *
       this.stepProgress +
       Math.random() * 2 - 1
+
+    if (stageRect) {
+      this.head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, this.head.x))
+      this.head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, this.head.y))
+    }
   }
 
-  private updateLegs (): void {
+  private updateLegs (stageRect?: StageRect): void {
     (['left', 'right'] as Array<'left' | 'right'>).forEach(side => {
       this.legs[side].forEach((leg, legIndex) => {
-        this.updateLeg(leg, this.current.legs[side][legIndex], 0)
+        this.updateLeg(leg, this.current.legs[side][legIndex], 0, stageRect)
         if (side === this.activeSide) {
-          this.updateLeg(leg, this.current.legs[side][legIndex], 1)
+          this.updateLeg(leg, this.current.legs[side][legIndex], 1, stageRect)
         }
       })
     })
   }
 
-  private readonly updateLeg = (leg: Leg, currentLeg: Leg, index: number): void => {
+  private readonly updateLeg = (leg: Leg, currentLeg: Leg, index: number, stageRect?: StageRect): void => {
     const joint = leg.getModel(index)
     const radius = Point.distance(this.head.point, this.head.point.subtract(joint))
     const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians
@@ -177,11 +212,15 @@ export class Bug {
       targetRadians,
       Math.min(1, this.stepProgress)
     )
-    const updatedSocket = new Point(
+    const updatedPoint = new Point(
       Math.cos(radians) * radius + this.head.x,
       Math.sin(radians) * radius + this.head.y
     )
-    leg.updateLive(index, new Vector(updatedSocket, radians))
+    if (stageRect) {
+      updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x))
+      updatedPoint.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, updatedPoint.y))
+    }
+    leg.updateLive(index, new Vector(updatedPoint, radians))
   }
 
   /**

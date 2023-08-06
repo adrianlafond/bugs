@@ -18,7 +18,15 @@ export class BugDemo {
   }
 
   render (deltaMs = 0): void {
-    const bug = this.bug.tick(deltaMs)
+    const bug = this.bug.tick({
+      deltaMs,
+      stageRect: {
+        x: 5,
+        y: 5,
+        width: this.app.view.width - 5,
+        height: this.app.view.height - 5,
+      }
+    })
     this.bug.on('targetReached', this.handleTargetReached)
     this.renderTarget(bug.target)
     this.renderHead(bug)
@@ -75,6 +83,8 @@ export class BugDemo {
 
   private updateTarget (): void {
     this.bug.updateTarget(new Point(
+      // Math.random() < 0.5 ? 0 : this.app.view.width,
+      // Math.random() < 0.5 ? 0 : this.app.view.height,
       Math.floor(Math.random() * this.app.view.width),
       Math.floor(Math.random() * this.app.view.height)
     ))

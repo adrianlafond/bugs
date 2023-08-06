@@ -33,6 +33,10 @@ export class BugDemo {
     this.renderLegs(bug)
   }
 
+  changeTarget (point: Point): void {
+    this.bug.updateTarget(point)
+  }
+
   private readonly handleTargetReached = (): void => {
     this.updateTarget()
   }
@@ -83,8 +87,6 @@ export class BugDemo {
 
   private updateTarget (): void {
     this.bug.updateTarget(new Point(
-      // Math.random() < 0.5 ? 0 : this.app.view.width,
-      // Math.random() < 0.5 ? 0 : this.app.view.height,
       Math.floor(Math.random() * this.app.view.width),
       Math.floor(Math.random() * this.app.view.height)
     ))

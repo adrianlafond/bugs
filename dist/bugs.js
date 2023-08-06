@@ -3369,10 +3369,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point5 = (
+      var Point6 = (
         /** @class */
         function() {
-          function Point6(x2, y2) {
+          function Point7(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -3382,39 +3382,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point6.prototype, "data", {
+          Object.defineProperty(Point7.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point6.prototype.clone = function() {
-            return new Point6(this.x, this.y);
+          Point7.prototype.clone = function() {
+            return new Point7(this.x, this.y);
           };
-          Point6.prototype.add = function(point) {
+          Point7.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point6.prototype.subtract = function(point) {
+          Point7.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point6.prototype.toString = function() {
+          Point7.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point6.distance = function(p1, p2) {
+          Point7.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point6.radians = function(p1, p2) {
+          Point7.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point6;
+          return Point7;
         }()
       );
-      exports.default = Point5;
+      exports.default = Point6;
     }
   });
 
@@ -26034,14 +26034,20 @@ ${e2}`);
   var instance;
   var LINE_COLOR = 14544639;
   var Grid = class {
-    constructor(app) {
-      this.app = app;
+    constructor(app2) {
+      this.app = app2;
+      this.pointerDownHandler = () => void 0;
+      this.handlePointerDown = (event) => {
+        this.pointerDownHandler(event);
+      };
     }
-    udpateApp(app) {
-      this.app = app;
+    udpateApp(app2) {
+      this.app = app2;
     }
     render(px) {
       const background = new Graphics();
+      background.interactive = true;
+      background.on("pointerdown", this.handlePointerDown);
       background.beginFill(16777215);
       background.drawRect(0, 0, this.app.view.width, this.app.view.height);
       this.app.stage.addChild(background);
@@ -26062,11 +26068,18 @@ ${e2}`);
         n2 += px;
       }
     }
+    onPointerDown(handler) {
+      this.pointerDownHandler = handler;
+    }
   };
-  function render(app, px = 10) {
-    instance = instance != null ? instance : new Grid(app);
-    instance.udpateApp(app);
+  function render(app2, px = 10) {
+    instance = instance != null ? instance : new Grid(app2);
+    instance.udpateApp(app2);
     instance.render(px);
+  }
+  function onPointerDown(handler) {
+    instance = instance != null ? instance : new Grid(app);
+    instance.onPointerDown(handler);
   }
 
   // src/bug/bug.ts
@@ -26302,8 +26315,8 @@ ${e2}`);
   // src/demo/bug-demo.ts
   var import_geom3 = __toESM(require_dist());
   var BugDemo = class {
-    constructor(app) {
-      this.app = app;
+    constructor(app2) {
+      this.app = app2;
       this.target = new Graphics();
       this.head = new Graphics();
       this.legs = new Graphics();
@@ -26343,6 +26356,9 @@ ${e2}`);
       this.renderHead(bug);
       this.renderLegs(bug);
     }
+    changeTarget(point) {
+      this.bug.updateTarget(point);
+    }
     renderTarget({ x: x2, y: y2 }) {
       const radius = 4;
       this.target.clear();
@@ -26372,8 +26388,6 @@ ${e2}`);
     }
     updateTarget() {
       this.bug.updateTarget(new import_geom3.Point(
-        // Math.random() < 0.5 ? 0 : this.app.view.width,
-        // Math.random() < 0.5 ? 0 : this.app.view.height,
         Math.floor(Math.random() * this.app.view.width),
         Math.floor(Math.random() * this.app.view.height)
       ));
@@ -26381,6 +26395,7 @@ ${e2}`);
   };
 
   // src/demo/index.ts
+  var import_geom4 = __toESM(require_dist());
   var instance2;
   var DemoApp = class {
     constructor(containerElement) {
@@ -26400,12 +26415,16 @@ ${e2}`);
     start() {
       render(this.app);
       const bugDemo = new BugDemo(this.app);
+      onPointerDown((event) => {
+        const viewRect = this.app.view.getBoundingClientRect();
+        bugDemo.changeTarget(new import_geom4.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+      });
       bugDemo.render();
       this.app.ticker.add(() => {
         bugDemo.render(this.app.ticker.deltaMS);
       });
       this.playing = true;
-      this.containerElement.addEventListener("mousedown", this.togglePlaying);
+      this.containerElement.addEventListener("dblclick", this.togglePlaying);
     }
   };
   function start() {

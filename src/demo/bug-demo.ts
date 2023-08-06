@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import { Bug, BugRender, Leg } from '../bug'
 import { Point } from '@adrianlafond/geom'
+import { Spiral } from './spiral'
 
 export class BugDemo {
   private readonly target = new PIXI.Graphics()
@@ -69,6 +70,20 @@ export class BugDemo {
     this.legs.clear()
     bug.legs.left.forEach(this.renderLeg)
     bug.legs.right.forEach(this.renderLeg)
+
+    this.legs.lineStyle({ width: 1, color: 0x000000 })
+    const left0 = bug.legs.left[0].getLive(0)
+    this.legs.moveTo(left0.x, left0.y)
+    for (let i = 1; i < bug.legs.left.length; i++) {
+      const leg = bug.legs.left[i].getLive(0);
+      this.legs.lineTo(leg.x, leg.y)
+    }
+    const right0 = bug.legs.right[0].getLive(0)
+    this.legs.moveTo(right0.x, right0.y)
+    for (let i = 1; i < bug.legs.right.length; i++) {
+      const leg = bug.legs.right[i].getLive(0);
+      this.legs.lineTo(leg.x, leg.y)
+    }
   }
 
   private readonly renderLeg = (leg: Leg): void => {
@@ -80,15 +95,18 @@ export class BugDemo {
 
     this.legs.lineStyle({ width: 0 })
     this.legs.beginFill(0x000000)
-    this.legs.drawCircle(socket.x, socket.y, 3)
-    this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 3 : 2)
+    this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 2 : 1)
     this.legs.endFill()
   }
 
   private updateTarget (): void {
-    this.bug.updateTarget(new Point(
-      Math.floor(Math.random() * this.app.view.width),
-      Math.floor(Math.random() * this.app.view.height)
-    ))
+    // this.bug.updateTarget(new Point(
+    //   Math.floor(Math.random() * this.app.view.width),
+    //   Math.floor(Math.random() * this.app.view.height)
+    // ))
+    const point = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5)
+    point.x += this.app.view.width / 2
+    point.y += this.app.view.height / 2
+    this.bug.updateTarget(point)
   }
 }

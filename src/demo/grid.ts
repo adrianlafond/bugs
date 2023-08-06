@@ -15,7 +15,7 @@ class Grid {
 
   render (px: number): void {
     const background = new PIXI.Graphics()
-    background.interactive = true
+    background.eventMode = 'static'
     background.on('pointerdown', this.handlePointerDown)
 
     background.beginFill(0xffffff)

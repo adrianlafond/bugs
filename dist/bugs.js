@@ -3326,41 +3326,41 @@
     "node_modules/@adrianlafond/geom/dist/angle.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Angle2 = (
+      var Angle3 = (
         /** @class */
         function() {
-          function Angle3() {
+          function Angle4() {
           }
-          Angle3.toRadians = function(value) {
+          Angle4.toRadians = function(value) {
             return value * Math.PI / 180;
           };
-          Angle3.toDegrees = function(value) {
+          Angle4.toDegrees = function(value) {
             return value * 180 / Math.PI;
           };
-          Angle3.delta = function(r1, r2) {
-            return Angle3.normalize(r1 - r2);
+          Angle4.delta = function(r1, r2) {
+            return Angle4.normalize(r1 - r2);
           };
-          Angle3.interpolate = function(r1, r2, progress) {
-            var a1 = Angle3.normalize(r1);
-            var a2 = Angle3.normalize(r2);
+          Angle4.interpolate = function(r1, r2, progress) {
+            var a1 = Angle4.normalize(r1);
+            var a2 = Angle4.normalize(r2);
             var delta = a2 - a1;
             if (Math.abs(delta) > Math.PI) {
               var circumference = Math.PI * 2 * (a2 > a1 ? -1 : 1);
               delta = a2 + circumference - a1;
             }
-            return Angle3.normalize(a1 + delta * progress);
+            return Angle4.normalize(a1 + delta * progress);
           };
-          Angle3.normalize = function(value) {
+          Angle4.normalize = function(value) {
             var result = value % (Math.PI * 2);
             if (result < 0) {
               result += Math.PI * 2;
             }
             return result;
           };
-          return Angle3;
+          return Angle4;
         }()
       );
-      exports.default = Angle2;
+      exports.default = Angle3;
     }
   });
 
@@ -26046,7 +26046,7 @@ ${e2}`);
     }
     render(px) {
       const background = new Graphics();
-      background.interactive = true;
+      background.eventMode = "static";
       background.on("pointerdown", this.handlePointerDown);
       background.beginFill(16777215);
       background.drawRect(0, 0, this.app.view.width, this.app.view.height);
@@ -26312,8 +26312,26 @@ ${e2}`);
     }
   };
 
-  // src/demo/bug-demo.ts
+  // src/demo/spiral.ts
   var import_geom3 = __toESM(require_dist());
+  var _Spiral = class {
+    static getPoint(maxRadius) {
+      if (_Spiral.radius >= maxRadius) {
+        _Spiral.radius = 0;
+        _Spiral.radians = 0;
+      }
+      const x2 = Math.cos(_Spiral.radians) * _Spiral.radius;
+      const y2 = Math.sin(_Spiral.radians) * _Spiral.radius;
+      _Spiral.radians = import_geom3.Angle.normalize(_Spiral.radians - Math.PI * 0.05);
+      _Spiral.radius += 1;
+      return new import_geom3.Point(x2, y2);
+    }
+  };
+  var Spiral = _Spiral;
+  Spiral.radians = 0;
+  Spiral.radius = 0;
+
+  // src/demo/bug-demo.ts
   var BugDemo = class {
     constructor(app2) {
       this.app = app2;
@@ -26331,8 +26349,7 @@ ${e2}`);
         this.legs.lineTo(claw.x, claw.y);
         this.legs.lineStyle({ width: 0 });
         this.legs.beginFill(0);
-        this.legs.drawCircle(socket.x, socket.y, 3);
-        this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 3 : 2);
+        this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 2 : 1);
         this.legs.endFill();
       };
       this.bug = new Bug();
@@ -26385,12 +26402,25 @@ ${e2}`);
       this.legs.clear();
       bug.legs.left.forEach(this.renderLeg);
       bug.legs.right.forEach(this.renderLeg);
+      this.legs.lineStyle({ width: 1, color: 0 });
+      const left0 = bug.legs.left[0].getLive(0);
+      this.legs.moveTo(left0.x, left0.y);
+      for (let i2 = 1; i2 < bug.legs.left.length; i2++) {
+        const leg = bug.legs.left[i2].getLive(0);
+        this.legs.lineTo(leg.x, leg.y);
+      }
+      const right0 = bug.legs.right[0].getLive(0);
+      this.legs.moveTo(right0.x, right0.y);
+      for (let i2 = 1; i2 < bug.legs.right.length; i2++) {
+        const leg = bug.legs.right[i2].getLive(0);
+        this.legs.lineTo(leg.x, leg.y);
+      }
     }
     updateTarget() {
-      this.bug.updateTarget(new import_geom3.Point(
-        Math.floor(Math.random() * this.app.view.width),
-        Math.floor(Math.random() * this.app.view.height)
-      ));
+      const point = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5);
+      point.x += this.app.view.width / 2;
+      point.y += this.app.view.height / 2;
+      this.bug.updateTarget(point);
     }
   };
 

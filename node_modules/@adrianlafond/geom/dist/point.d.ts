@@ -9,7 +9,7 @@ export default class Point {
     x: number;
     y: number;
     constructor(x?: number, y?: number);
-    readonly data: PointData;
+    get data(): PointData;
     clone(): Point;
     add(point: Point): Point;
     subtract(point: Point): Point;

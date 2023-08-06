@@ -7,17 +7,18 @@
     "declaration": true,
     "noImplicitAny": true,
     "target": "es5",
+    "types": ["jest", "node"],
     "lib": [
       "es2015",
       "dom"
     ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "test/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+    "node_modules"
   ],
   "typedocOptions": {
     "mode": "modules",

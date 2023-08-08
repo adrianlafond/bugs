@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 
 let instance: Grid
 
-const LINE_COLOR = 0xddeeff
+const LINE_COLOR = 0x112233
 
 class Grid {
   pointerDownHandler: (event: PIXI.FederatedPointerEvent) => void = () => undefined
@@ -18,7 +18,7 @@ class Grid {
     background.eventMode = 'static'
     background.on('pointerdown', this.handlePointerDown)
 
-    background.beginFill(0xffffff)
+    background.beginFill(0x000000)
     background.drawRect(0, 0, this.app.view.width, this.app.view.height)
     this.app.stage.addChild(background)
 

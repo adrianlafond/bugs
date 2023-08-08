@@ -3369,10 +3369,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point6 = (
+      var Point7 = (
         /** @class */
         function() {
-          function Point7(x2, y2) {
+          function Point8(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -3382,39 +3382,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point7.prototype, "data", {
+          Object.defineProperty(Point8.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point7.prototype.clone = function() {
-            return new Point7(this.x, this.y);
+          Point8.prototype.clone = function() {
+            return new Point8(this.x, this.y);
           };
-          Point7.prototype.add = function(point) {
+          Point8.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point7.prototype.subtract = function(point) {
+          Point8.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point7.prototype.toString = function() {
+          Point8.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point7.distance = function(p1, p2) {
+          Point8.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point7.radians = function(p1, p2) {
+          Point8.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point7;
+          return Point8;
         }()
       );
-      exports.default = Point6;
+      exports.default = Point7;
     }
   });
 
@@ -26032,7 +26032,7 @@ ${e2}`);
 
   // src/demo/grid.ts
   var instance;
-  var LINE_COLOR = 14544639;
+  var LINE_COLOR = 1122867;
   var Grid = class {
     constructor(app2) {
       this.app = app2;
@@ -26048,7 +26048,7 @@ ${e2}`);
       const background = new Graphics();
       background.eventMode = "static";
       background.on("pointerdown", this.handlePointerDown);
-      background.beginFill(16777215);
+      background.beginFill(0);
       background.drawRect(0, 0, this.app.view.width, this.app.view.height);
       this.app.stage.addChild(background);
       let n2 = px;
@@ -26098,6 +26098,15 @@ ${e2}`);
         };
       });
     }
+    get socketIndex() {
+      return 0;
+    }
+    get jointIndex() {
+      return this.joints.length > 2 ? 1 : -1;
+    }
+    get clawIndex() {
+      return this.joints.length - 1;
+    }
     getModel(index) {
       return this.joints[index].model;
     }
@@ -26135,27 +26144,31 @@ ${e2}`);
       this.maxStepMs = 150;
       this.maxStepPx = 12;
       this.head = new import_geom2.Vector(100, 100);
-      this.legs = {
-        left: [new Leg([
+      this.legsModel = {
+        left: [[
           new import_geom2.Point(-3, 5),
           new import_geom2.Point(-12, -10)
-        ]), new Leg([
+        ], [
           new import_geom2.Point(-3, 8),
           new import_geom2.Point(-14, 4)
-        ]), new Leg([
+        ], [
           new import_geom2.Point(-3, 15),
           new import_geom2.Point(-10, 16)
-        ])],
-        right: [new Leg([
+        ]],
+        right: [[
           new import_geom2.Point(3, 5),
           new import_geom2.Point(12, -10)
-        ]), new Leg([
+        ], [
           new import_geom2.Point(3, 8),
           new import_geom2.Point(14, 4)
-        ]), new Leg([
+        ], [
           new import_geom2.Point(3, 15),
           new import_geom2.Point(10, 16)
-        ])]
+        ]]
+      };
+      this.legs = {
+        left: [],
+        right: []
       };
       this.target = new import_geom2.Vector(this.head.point);
       this.repulsionPx = 8;
@@ -26186,6 +26199,7 @@ ${e2}`);
         }
         leg.updateLive(index, new import_geom2.Vector(updatedPoint, radians));
       };
+      this.createLegs();
       this.updateBug({ deltaMs: this.maxStepMs });
     }
     /**
@@ -26228,6 +26242,22 @@ ${e2}`);
         legs: this.legs,
         target: this.target.point
       };
+    }
+    createLegs() {
+      this.legsModel.left.forEach((joints, index) => {
+        joints.splice(1, 0, new import_geom2.Point(
+          (joints[0].x + joints[1].x) * 0.5,
+          (joints[0].y + joints[1].y) * 0.5
+        ));
+        this.legs.left[index] = new Leg(joints);
+      });
+      this.legsModel.right.forEach((joints, index) => {
+        joints.splice(1, 0, new import_geom2.Point(
+          (joints[0].x + joints[1].x) * 0.5,
+          (joints[0].y + joints[1].y) * 0.5
+        ));
+        this.legs.right[index] = new Leg(joints);
+      });
     }
     updateBug({
       deltaMs,
@@ -26288,9 +26318,19 @@ ${e2}`);
     updateLegs(stageRect) {
       ["left", "right"].forEach((side) => {
         this.legs[side].forEach((leg, legIndex) => {
-          this.updateLeg(leg, this.current.legs[side][legIndex], 0, stageRect);
+          this.updateLeg(leg, this.current.legs[side][legIndex], leg.socketIndex, stageRect);
           if (side === this.activeSide) {
-            this.updateLeg(leg, this.current.legs[side][legIndex], 1, stageRect);
+            this.updateLeg(leg, this.current.legs[side][legIndex], leg.clawIndex, stageRect);
+          }
+          if (leg.jointIndex !== -1) {
+            const socketPoint = leg.getLive(leg.socketIndex).point;
+            const clawPoint = leg.getLive(leg.clawIndex).point;
+            const radians = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2;
+            const offset = import_geom2.Point.distance(leg.getModel(0), leg.getModel(2)) * 0.5;
+            leg.updateLive(leg.jointIndex, new import_geom2.Vector(
+              (socketPoint.x + clawPoint.x) * 0.5,
+              (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians) * offset
+            ));
           }
         });
       });
@@ -26316,20 +26356,47 @@ ${e2}`);
   var import_geom3 = __toESM(require_dist());
   var _Spiral = class {
     static getPoint(maxRadius) {
+      let complete = false;
       if (_Spiral.radius >= maxRadius) {
         _Spiral.radius = 0;
         _Spiral.radians = 0;
+        complete = true;
       }
       const x2 = Math.cos(_Spiral.radians) * _Spiral.radius;
       const y2 = Math.sin(_Spiral.radians) * _Spiral.radius;
       _Spiral.radians = import_geom3.Angle.normalize(_Spiral.radians - Math.PI * 0.05);
       _Spiral.radius += 1;
-      return new import_geom3.Point(x2, y2);
+      return {
+        point: new import_geom3.Point(x2, y2),
+        complete
+      };
     }
   };
   var Spiral = _Spiral;
   Spiral.radians = 0;
   Spiral.radius = 0;
+
+  // src/demo/vertical.ts
+  var import_geom4 = __toESM(require_dist());
+  var _Vertical = class {
+    static getPoint(width, height) {
+      if (_Vertical.count === 10) {
+        _Vertical.count = 0;
+      }
+      const x2 = _Vertical.count * width / 10 + Math.random() * _Vertical.offset;
+      const y2 = Math.random() * 20 + _Vertical.offset;
+      return {
+        point: new import_geom4.Point(
+          x2,
+          _Vertical.count % 2 === 0 ? y2 : height - y2
+        ),
+        complete: ++_Vertical.count === 10
+      };
+    }
+  };
+  var Vertical = _Vertical;
+  Vertical.count = 0;
+  Vertical.offset = 10;
 
   // src/demo/bug-demo.ts
   var BugDemo = class {
@@ -26338,17 +26405,22 @@ ${e2}`);
       this.target = new Graphics();
       this.head = new Graphics();
       this.legs = new Graphics();
+      this.loop = "vertical";
       this.handleTargetReached = () => {
         this.updateTarget();
       };
       this.renderLeg = (leg) => {
-        const socket = leg.getLive(0);
-        const claw = leg.getLive(1);
-        this.legs.lineStyle({ width: 1, color: 0 });
+        const socket = leg.getLive(leg.socketIndex);
+        const joint = leg.jointIndex !== -1 ? leg.getLive(leg.jointIndex) : null;
+        const claw = leg.getLive(leg.clawIndex);
+        this.legs.lineStyle({ width: 1, color: 14544639 });
         this.legs.moveTo(socket.x, socket.y);
+        if (joint) {
+          this.legs.lineTo(joint.x, joint.y);
+        }
         this.legs.lineTo(claw.x, claw.y);
         this.legs.lineStyle({ width: 0 });
-        this.legs.beginFill(0);
+        this.legs.beginFill(14544639);
         this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 2 : 1);
         this.legs.endFill();
       };
@@ -26377,9 +26449,9 @@ ${e2}`);
       this.bug.updateTarget(point);
     }
     renderTarget({ x: x2, y: y2 }) {
-      const radius = 4;
+      const radius = 2;
       this.target.clear();
-      this.target.lineStyle({ width: 1, color: 16711680 });
+      this.target.lineStyle({ width: 1, color: 16764057 });
       this.target.moveTo(x2 - radius, y2 - radius);
       this.target.lineTo(x2 + radius, y2 + radius);
       this.target.moveTo(x2 + radius, y2 - radius);
@@ -26387,7 +26459,7 @@ ${e2}`);
     }
     renderHead(bug) {
       this.head.clear();
-      this.head.beginFill(0);
+      this.head.beginFill(14544639);
       this.head.moveTo(0, -12.5);
       this.head.lineTo(5, 0);
       this.head.lineTo(0, -2.5);
@@ -26402,7 +26474,7 @@ ${e2}`);
       this.legs.clear();
       bug.legs.left.forEach(this.renderLeg);
       bug.legs.right.forEach(this.renderLeg);
-      this.legs.lineStyle({ width: 1, color: 0 });
+      this.legs.lineStyle({ width: 1, color: 14544639 });
       const left0 = bug.legs.left[0].getLive(0);
       this.legs.moveTo(left0.x, left0.y);
       for (let i2 = 1; i2 < bug.legs.left.length; i2++) {
@@ -26417,15 +26489,26 @@ ${e2}`);
       }
     }
     updateTarget() {
-      const point = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5);
-      point.x += this.app.view.width / 2;
-      point.y += this.app.view.height / 2;
-      this.bug.updateTarget(point);
+      if (this.loop === "vertical") {
+        const { point, complete } = Vertical.getPoint(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.loop = "spiral";
+        }
+      } else if (this.loop === "spiral") {
+        const { point, complete } = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5);
+        point.x += this.app.view.width / 2;
+        point.y += this.app.view.height / 2;
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.loop = "vertical";
+        }
+      }
     }
   };
 
   // src/demo/index.ts
-  var import_geom4 = __toESM(require_dist());
+  var import_geom5 = __toESM(require_dist());
   var instance2;
   var DemoApp = class {
     constructor(containerElement) {
@@ -26447,7 +26530,7 @@ ${e2}`);
       const bugDemo = new BugDemo(this.app);
       onPointerDown((event) => {
         const viewRect = this.app.view.getBoundingClientRect();
-        bugDemo.changeTarget(new import_geom4.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+        bugDemo.changeTarget(new import_geom5.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
       });
       bugDemo.render();
       this.app.ticker.add(() => {

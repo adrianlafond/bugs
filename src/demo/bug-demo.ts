@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js'
 import { Bug, BugRender, Leg } from '../bug'
 import { Point } from '@adrianlafond/geom'
 import { Spiral } from './spiral'
+import { Vertical } from './vertical'
 
 export class BugDemo {
   private readonly target = new PIXI.Graphics()
@@ -9,6 +10,8 @@ export class BugDemo {
   private readonly legs = new PIXI.Graphics()
 
   private readonly bug: Bug
+
+  private loop: 'vertical' | 'spiral' = 'vertical'
 
   constructor (private readonly app: PIXI.Application) {
     this.bug = new Bug()
@@ -43,9 +46,9 @@ export class BugDemo {
   }
 
   private renderTarget ({ x, y }: BugRender['target']): void {
-    const radius = 4
+    const radius = 2
     this.target.clear()
-    this.target.lineStyle({ width: 1, color: 0xff0000 })
+    this.target.lineStyle({ width: 1, color: 0xffcc99 })
     this.target.moveTo(x - radius, y - radius)
     this.target.lineTo(x + radius, y + radius)
     this.target.moveTo(x + radius, y - radius)
@@ -54,7 +57,7 @@ export class BugDemo {
 
   private renderHead (bug: BugRender): void {
     this.head.clear()
-    this.head.beginFill(0x000000)
+    this.head.beginFill(0xddeeff)
     this.head.moveTo(0, -12.5)
     this.head.lineTo(5, 0)
     this.head.lineTo(0, -2.5)
@@ -71,7 +74,8 @@ export class BugDemo {
     bug.legs.left.forEach(this.renderLeg)
     bug.legs.right.forEach(this.renderLeg)
 
-    this.legs.lineStyle({ width: 1, color: 0x000000 })
+    // Draws "spinal" column between leg sockets.
+    this.legs.lineStyle({ width: 1, color: 0xddeeff })
     const left0 = bug.legs.left[0].getLive(0)
     this.legs.moveTo(left0.x, left0.y)
     for (let i = 1; i < bug.legs.left.length; i++) {
@@ -87,14 +91,18 @@ export class BugDemo {
   }
 
   private readonly renderLeg = (leg: Leg): void => {
-    const socket = leg.getLive(0)
-    const claw = leg.getLive(1)
-    this.legs.lineStyle({ width: 1, color: 0x000000 })
+    const socket = leg.getLive(leg.socketIndex)
+    const joint = leg.jointIndex !== -1 ? leg.getLive(leg.jointIndex) : null
+    const claw = leg.getLive(leg.clawIndex)
+    this.legs.lineStyle({ width: 1, color: 0xddeeff })
     this.legs.moveTo(socket.x, socket.y)
+    if (joint) {
+      this.legs.lineTo(joint.x, joint.y)
+    }
     this.legs.lineTo(claw.x, claw.y)
 
     this.legs.lineStyle({ width: 0 })
-    this.legs.beginFill(0x000000)
+    this.legs.beginFill(0xddeeff)
     this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 2 : 1)
     this.legs.endFill()
   }
@@ -104,9 +112,20 @@ export class BugDemo {
     //   Math.floor(Math.random() * this.app.view.width),
     //   Math.floor(Math.random() * this.app.view.height)
     // ))
-    const point = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5)
-    point.x += this.app.view.width / 2
-    point.y += this.app.view.height / 2
-    this.bug.updateTarget(point)
+    if (this.loop === 'vertical') {
+      const { point, complete } = Vertical.getPoint(this.app.view.width, this.app.view.height)
+      this.bug.updateTarget(point)
+      if (complete) {
+        this.loop = 'spiral'
+      }
+    } else if (this.loop === 'spiral') {
+      const { point, complete } = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5)
+      point.x += this.app.view.width / 2
+      point.y += this.app.view.height / 2
+      this.bug.updateTarget(point)
+      if (complete) {
+        this.loop = 'vertical'
+      }
+    }
   }
 }

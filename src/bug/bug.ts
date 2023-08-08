@@ -29,27 +29,34 @@ export class Bug {
   private readonly maxStepPx = 12
 
   private readonly head = new Vector(100, 100)
-  private readonly legs: Legs = {
-    left: [new Leg([
+  private readonly legsModel: {
+    left: Point[][],
+    right: Point[][],
+  } = {
+    left: [[
       new Point(-3, 5),
       new Point(-12, -10)
-    ]), new Leg([
+    ], [
       new Point(-3, 8),
       new Point(-14, 4)
-    ]), new Leg([
+    ], [
       new Point(-3, 15),
       new Point(-10, 16)
-    ])],
-    right: [new Leg([
+    ]],
+    right: [[
       new Point(3, 5),
       new Point(12, -10)
-    ]), new Leg([
+    ], [
       new Point(3, 8),
       new Point(14, 4)
-    ]), new Leg([
+    ], [
       new Point(3, 15),
       new Point(10, 16)
-    ])]
+    ]],
+  }
+  private legs: Legs = {
+    left: [],
+    right: []
   }
 
   private readonly target = new Vector(this.head.point)
@@ -68,6 +75,7 @@ export class Bug {
   }
 
   constructor () {
+    this.createLegs()
     this.updateBug({ deltaMs: this.maxStepMs })
   }
 
@@ -120,6 +128,23 @@ export class Bug {
       legs: this.legs,
       target: this.target.point
     }
+  }
+
+  private createLegs() {
+    this.legsModel.left.forEach((joints, index) => {
+      joints.splice(1, 0, new Point(
+        (joints[0].x + joints[1].x) * 0.5,
+        (joints[0].y + joints[1].y) * 0.5,
+      ))
+      this.legs.left[index] = new Leg(joints)
+    })
+    this.legsModel.right.forEach((joints, index) => {
+      joints.splice(1, 0, new Point(
+        (joints[0].x + joints[1].x) * 0.5,
+        (joints[0].y + joints[1].y) * 0.5,
+      ))
+      this.legs.right[index] = new Leg(joints)
+    })
   }
 
   private updateBug ({
@@ -195,9 +220,21 @@ export class Bug {
   private updateLegs (stageRect?: StageRect): void {
     (['left', 'right'] as Array<'left' | 'right'>).forEach(side => {
       this.legs[side].forEach((leg, legIndex) => {
-        this.updateLeg(leg, this.current.legs[side][legIndex], 0, stageRect)
+        this.updateLeg(leg, this.current.legs[side][legIndex], leg.socketIndex, stageRect)
         if (side === this.activeSide) {
-          this.updateLeg(leg, this.current.legs[side][legIndex], 1, stageRect)
+          this.updateLeg(leg, this.current.legs[side][legIndex], leg.clawIndex, stageRect)
+        }
+        if (leg.jointIndex !== -1) {
+          const socketPoint = leg.getLive(leg.socketIndex).point
+          const clawPoint = leg.getLive(leg.clawIndex).point
+
+          const radians = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2
+          const offset = Point.distance(leg.getModel(0), leg.getModel(2)) * 0.5
+
+          leg.updateLive(leg.jointIndex, new Vector(
+            (socketPoint.x + clawPoint.x) * 0.5,
+            (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians) * offset,
+          ))
         }
       })
     })
@@ -220,6 +257,7 @@ export class Bug {
       updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x))
       updatedPoint.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, updatedPoint.y))
     }
+
     leg.updateLive(index, new Vector(updatedPoint, radians))
   }
 

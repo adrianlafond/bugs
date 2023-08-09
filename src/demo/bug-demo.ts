@@ -1,8 +1,12 @@
 import * as PIXI from 'pixi.js'
 import { Bug, BugRender, Leg } from '../bug'
 import { Point } from '@adrianlafond/geom'
-import { Spiral } from './spiral'
-import { Vertical } from './vertical'
+import { calculateSpiralPattern } from './patterns/spiral'
+import { calculateVerticalPattern } from './patterns/vertical'
+import { calculateHorizontalPattern } from './patterns/horizontal'
+import { calculateRandomPattern } from './patterns/random'
+
+type Pattern = 'random' | 'horizontal' | 'vertical' | 'spiral'
 
 export class BugDemo {
   private readonly target = new PIXI.Graphics()
@@ -11,9 +15,10 @@ export class BugDemo {
 
   private readonly bug: Bug
 
-  private loop: 'vertical' | 'spiral' = 'vertical'
+  private pattern: Pattern
 
   constructor (private readonly app: PIXI.Application) {
+    this.pattern = this.updatePattern()
     this.bug = new Bug()
     this.app.stage.addChild(this.target)
     this.app.stage.addChild(this.legs)
@@ -28,7 +33,7 @@ export class BugDemo {
         x: 5,
         y: 5,
         width: this.app.view.width - 5,
-        height: this.app.view.height - 5,
+        height: this.app.view.height - 5
       }
     })
     this.bug.on('targetReached', this.handleTargetReached)
@@ -79,13 +84,13 @@ export class BugDemo {
     const left0 = bug.legs.left[0].getLive(0)
     this.legs.moveTo(left0.x, left0.y)
     for (let i = 1; i < bug.legs.left.length; i++) {
-      const leg = bug.legs.left[i].getLive(0);
+      const leg = bug.legs.left[i].getLive(0)
       this.legs.lineTo(leg.x, leg.y)
     }
     const right0 = bug.legs.right[0].getLive(0)
     this.legs.moveTo(right0.x, right0.y)
     for (let i = 1; i < bug.legs.right.length; i++) {
-      const leg = bug.legs.right[i].getLive(0);
+      const leg = bug.legs.right[i].getLive(0)
       this.legs.lineTo(leg.x, leg.y)
     }
   }
@@ -96,7 +101,7 @@ export class BugDemo {
     const claw = leg.getLive(leg.clawIndex)
     this.legs.lineStyle({ width: 1, color: 0xddeeff })
     this.legs.moveTo(socket.x, socket.y)
-    if (joint) {
+    if (joint != null) {
       this.legs.lineTo(joint.x, joint.y)
     }
     this.legs.lineTo(claw.x, claw.y)
@@ -108,24 +113,38 @@ export class BugDemo {
   }
 
   private updateTarget (): void {
-    // this.bug.updateTarget(new Point(
-    //   Math.floor(Math.random() * this.app.view.width),
-    //   Math.floor(Math.random() * this.app.view.height)
-    // ))
-    if (this.loop === 'vertical') {
-      const { point, complete } = Vertical.getPoint(this.app.view.width, this.app.view.height)
+    if (this.pattern === 'random') {
+      const { point, complete } = calculateRandomPattern(this.app.view.width, this.app.view.height)
       this.bug.updateTarget(point)
       if (complete) {
-        this.loop = 'spiral'
+        this.updatePattern()
       }
-    } else if (this.loop === 'spiral') {
-      const { point, complete } = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5)
+    } else if (this.pattern === 'vertical') {
+      const { point, complete } = calculateVerticalPattern(this.app.view.width, this.app.view.height)
+      this.bug.updateTarget(point)
+      if (complete) {
+        this.updatePattern()
+      }
+    } else if (this.pattern === 'horizontal') {
+      const { point, complete } = calculateHorizontalPattern(this.app.view.width, this.app.view.height)
+      this.bug.updateTarget(point)
+      if (complete) {
+        this.updatePattern()
+      }
+    } else if (this.pattern === 'spiral') {
+      const { point, complete } = calculateSpiralPattern(Math.min(this.app.view.width, this.app.view.height) * 0.5)
       point.x += this.app.view.width / 2
       point.y += this.app.view.height / 2
       this.bug.updateTarget(point)
       if (complete) {
-        this.loop = 'vertical'
+        this.updatePattern()
       }
     }
+  }
+
+  private updatePattern (): Pattern {
+    const index = Math.floor(Math.random() * 4)
+    const patterns: Pattern[] = ['random', 'horizontal', 'vertical', 'spiral']
+    return (this.pattern = patterns[index])
   }
 }

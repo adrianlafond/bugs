@@ -18,15 +18,15 @@ export class Leg {
     })
   }
 
-  get socketIndex(): number {
+  get socketIndex (): number {
     return 0
   }
 
-  get jointIndex(): number {
+  get jointIndex (): number {
     return this.joints.length > 2 ? 1 : -1
   }
 
-  get clawIndex(): number {
+  get clawIndex (): number {
     return this.joints.length - 1
   }
 

@@ -2328,7 +2328,7 @@
       };
       var toISO = Date.prototype.toISOString;
       var defaultFormat = formats2["default"];
-      var defaults = {
+      var defaults2 = {
         addQueryPrefix: false,
         allowDots: false,
         charset: "utf-8",
@@ -2384,14 +2384,14 @@
         }
         if (obj === null) {
           if (strictNullHandling) {
-            return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, "key", format2) : prefix;
+            return encoder && !encodeValuesOnly ? encoder(prefix, defaults2.encoder, charset, "key", format2) : prefix;
           }
           obj = "";
         }
         if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
           if (encoder) {
-            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, "key", format2);
-            return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset, "value", format2))];
+            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults2.encoder, charset, "key", format2);
+            return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults2.encoder, charset, "value", format2))];
           }
           return [formatter(prefix) + "=" + formatter(String(obj))];
         }
@@ -2445,12 +2445,12 @@
       };
       var normalizeStringifyOptions = function normalizeStringifyOptions2(opts) {
         if (!opts) {
-          return defaults;
+          return defaults2;
         }
         if (opts.encoder !== null && typeof opts.encoder !== "undefined" && typeof opts.encoder !== "function") {
           throw new TypeError("Encoder has to be a function.");
         }
-        var charset = opts.charset || defaults.charset;
+        var charset = opts.charset || defaults2.charset;
         if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
           throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
         }
@@ -2462,26 +2462,26 @@
           format2 = opts.format;
         }
         var formatter = formats2.formatters[format2];
-        var filter = defaults.filter;
+        var filter = defaults2.filter;
         if (typeof opts.filter === "function" || isArray(opts.filter)) {
           filter = opts.filter;
         }
         return {
-          addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults.addQueryPrefix,
-          allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
+          addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults2.addQueryPrefix,
+          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
           charset,
-          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
-          delimiter: typeof opts.delimiter === "undefined" ? defaults.delimiter : opts.delimiter,
-          encode: typeof opts.encode === "boolean" ? opts.encode : defaults.encode,
-          encoder: typeof opts.encoder === "function" ? opts.encoder : defaults.encoder,
-          encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
+          delimiter: typeof opts.delimiter === "undefined" ? defaults2.delimiter : opts.delimiter,
+          encode: typeof opts.encode === "boolean" ? opts.encode : defaults2.encode,
+          encoder: typeof opts.encoder === "function" ? opts.encoder : defaults2.encoder,
+          encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults2.encodeValuesOnly,
           filter,
           format: format2,
           formatter,
-          serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults.serializeDate,
-          skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults.skipNulls,
+          serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults2.serializeDate,
+          skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults2.skipNulls,
           sort: typeof opts.sort === "function" ? opts.sort : null,
-          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
         };
       };
       module.exports = function(object, opts) {
@@ -2565,7 +2565,7 @@
       var utils = require_utils();
       var has = Object.prototype.hasOwnProperty;
       var isArray = Array.isArray;
-      var defaults = {
+      var defaults2 = {
         allowDots: false,
         allowPrototypes: false,
         allowSparse: false,
@@ -2626,14 +2626,14 @@
           var pos = bracketEqualsPos === -1 ? part.indexOf("=") : bracketEqualsPos + 1;
           var key, val;
           if (pos === -1) {
-            key = options.decoder(part, defaults.decoder, charset, "key");
+            key = options.decoder(part, defaults2.decoder, charset, "key");
             val = options.strictNullHandling ? null : "";
           } else {
-            key = options.decoder(part.slice(0, pos), defaults.decoder, charset, "key");
+            key = options.decoder(part.slice(0, pos), defaults2.decoder, charset, "key");
             val = utils.maybeMap(
               parseArrayValue(part.slice(pos + 1), options),
               function(encodedVal) {
-                return options.decoder(encodedVal, defaults.decoder, charset, "value");
+                return options.decoder(encodedVal, defaults2.decoder, charset, "value");
               }
             );
           }
@@ -2710,7 +2710,7 @@
       };
       var normalizeParseOptions = function normalizeParseOptions2(opts) {
         if (!opts) {
-          return defaults;
+          return defaults2;
         }
         if (opts.decoder !== null && opts.decoder !== void 0 && typeof opts.decoder !== "function") {
           throw new TypeError("Decoder has to be a function.");
@@ -2718,25 +2718,25 @@
         if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
           throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
         }
-        var charset = typeof opts.charset === "undefined" ? defaults.charset : opts.charset;
+        var charset = typeof opts.charset === "undefined" ? defaults2.charset : opts.charset;
         return {
-          allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
-          allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults.allowPrototypes,
-          allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults.allowSparse,
-          arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults.arrayLimit,
+          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
+          allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults2.allowPrototypes,
+          allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults2.allowSparse,
+          arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults2.arrayLimit,
           charset,
-          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
-          comma: typeof opts.comma === "boolean" ? opts.comma : defaults.comma,
-          decoder: typeof opts.decoder === "function" ? opts.decoder : defaults.decoder,
-          delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
+          comma: typeof opts.comma === "boolean" ? opts.comma : defaults2.comma,
+          decoder: typeof opts.decoder === "function" ? opts.decoder : defaults2.decoder,
+          delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults2.delimiter,
           // eslint-disable-next-line no-implicit-coercion, no-extra-parens
-          depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults.depth,
+          depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults2.depth,
           ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
-          interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
-          parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults.parameterLimit,
+          interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults2.interpretNumericEntities,
+          parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults2.parameterLimit,
           parseArrays: opts.parseArrays !== false,
-          plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults.plainObjects,
-          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling
+          plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults2.plainObjects,
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
         };
       };
       module.exports = function(str, opts) {
@@ -3369,10 +3369,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point7 = (
+      var Point9 = (
         /** @class */
         function() {
-          function Point8(x2, y2) {
+          function Point10(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -3382,39 +3382,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point8.prototype, "data", {
+          Object.defineProperty(Point10.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point8.prototype.clone = function() {
-            return new Point8(this.x, this.y);
+          Point10.prototype.clone = function() {
+            return new Point10(this.x, this.y);
           };
-          Point8.prototype.add = function(point) {
+          Point10.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point8.prototype.subtract = function(point) {
+          Point10.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point8.prototype.toString = function() {
+          Point10.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point8.distance = function(p1, p2) {
+          Point10.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point8.radians = function(p1, p2) {
+          Point10.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point8;
+          return Point10;
         }()
       );
-      exports.default = Point7;
+      exports.default = Point9;
     }
   });
 
@@ -3427,15 +3427,15 @@
       var Vector3 = (
         /** @class */
         function() {
-          function Vector4(x_point, y_point, radians) {
+          function Vector4(x_point, y_point, radians2) {
             if (x_point === void 0) {
               x_point = 0;
             }
             if (y_point === void 0) {
               y_point = 0;
             }
-            if (radians === void 0) {
-              radians = 0;
+            if (radians2 === void 0) {
+              radians2 = 0;
             }
             this.model = {};
             if (x_point instanceof point_1.default) {
@@ -3443,7 +3443,7 @@
               this.model.radians = y_point;
             } else {
               this.model.point = new point_1.default(x_point, y_point);
-              this.model.radians = radians;
+              this.model.radians = radians2;
             }
           }
           Object.defineProperty(Vector4.prototype, "point", {
@@ -3485,8 +3485,8 @@
           });
           Object.defineProperty(Vector4.prototype, "data", {
             get: function() {
-              var _a = this, x2 = _a.x, y2 = _a.y, radians = _a.radians;
-              return { x: x2, y: y2, radians };
+              var _a = this, x2 = _a.x, y2 = _a.y, radians2 = _a.radians;
+              return { x: x2, y: y2, radians: radians2 };
             },
             enumerable: false,
             configurable: true
@@ -6186,9 +6186,9 @@ Deprecated since v${version}`);
       if (geometry.indexBuffer) {
         geometryOut.indexBuffer = geometryOut.buffers[geometry.buffers.indexOf(geometry.indexBuffer)];
         geometryOut.indexBuffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER;
-        let offset = 0;
+        let offset4 = 0;
         let stride = 0;
-        let offset2 = 0;
+        let offset22 = 0;
         let bufferIndexToCount = 0;
         for (let i2 = 0; i2 < geometry.buffers.length; i2++) {
           if (geometry.buffers[i2] !== geometry.indexBuffer) {
@@ -6205,10 +6205,10 @@ Deprecated since v${version}`);
         for (let i2 = 0; i2 < geometries.length; i2++) {
           const indexBufferData = geometries[i2].indexBuffer.data;
           for (let j2 = 0; j2 < indexBufferData.length; j2++) {
-            geometryOut.indexBuffer.data[j2 + offset2] += offset;
+            geometryOut.indexBuffer.data[j2 + offset22] += offset4;
           }
-          offset += geometries[i2].buffers[bufferIndexToCount].data.length / stride;
-          offset2 += indexBufferData.length;
+          offset4 += geometries[i2].buffers[bufferIndexToCount].data.length / stride;
+          offset22 += indexBufferData.length;
         }
       }
       return geometryOut;
@@ -6424,10 +6424,10 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/math/lib/shapes/Circle.mjs
   var Circle = class {
-    constructor(x2 = 0, y2 = 0, radius = 0) {
+    constructor(x2 = 0, y2 = 0, radius2 = 0) {
       this.x = x2;
       this.y = y2;
-      this.radius = radius;
+      this.radius = radius2;
       this.type = SHAPES.CIRC;
     }
     clone() {
@@ -6525,12 +6525,12 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/math/lib/shapes/RoundedRectangle.mjs
   var RoundedRectangle = class {
-    constructor(x2 = 0, y2 = 0, width = 0, height = 0, radius = 20) {
+    constructor(x2 = 0, y2 = 0, width = 0, height = 0, radius2 = 20) {
       this.x = x2;
       this.y = y2;
       this.width = width;
       this.height = height;
-      this.radius = radius;
+      this.radius = radius2;
       this.type = SHAPES.RREC;
     }
     clone() {
@@ -6542,26 +6542,26 @@ Deprecated since v${version}`);
       }
       if (x2 >= this.x && x2 <= this.x + this.width) {
         if (y2 >= this.y && y2 <= this.y + this.height) {
-          const radius = Math.max(0, Math.min(this.radius, Math.min(this.width, this.height) / 2));
-          if (y2 >= this.y + radius && y2 <= this.y + this.height - radius || x2 >= this.x + radius && x2 <= this.x + this.width - radius) {
+          const radius2 = Math.max(0, Math.min(this.radius, Math.min(this.width, this.height) / 2));
+          if (y2 >= this.y + radius2 && y2 <= this.y + this.height - radius2 || x2 >= this.x + radius2 && x2 <= this.x + this.width - radius2) {
             return true;
           }
-          let dx = x2 - (this.x + radius);
-          let dy = y2 - (this.y + radius);
-          const radius2 = radius * radius;
-          if (dx * dx + dy * dy <= radius2) {
+          let dx = x2 - (this.x + radius2);
+          let dy = y2 - (this.y + radius2);
+          const radius22 = radius2 * radius2;
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
-          dx = x2 - (this.x + this.width - radius);
-          if (dx * dx + dy * dy <= radius2) {
+          dx = x2 - (this.x + this.width - radius2);
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
-          dy = y2 - (this.y + this.height - radius);
-          if (dx * dx + dy * dy <= radius2) {
+          dy = y2 - (this.y + this.height - radius2);
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
-          dx = x2 - (this.x + radius);
-          if (dx * dx + dy * dy <= radius2) {
+          dx = x2 - (this.x + radius2);
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
         }
@@ -8430,9 +8430,9 @@ ${this.fragmentSrc}`;
       }
     }
     boundArray(texArray, boundTextures, batchId, maxTextures) {
-      const { elements, ids, count } = texArray;
+      const { elements, ids, count: count4 } = texArray;
       let j2 = 0;
-      for (let i2 = 0; i2 < count; i2++) {
+      for (let i2 = 0; i2 < count4; i2++) {
         const tex = elements[i2];
         const loc = tex._batchLocation;
         if (loc >= 0 && loc < maxTextures && boundTextures[loc] === tex) {
@@ -9974,11 +9974,11 @@ ${this.fragmentSrc}`;
         }
       }
       const colorTextures = framebuffer.colorTextures;
-      let count = colorTextures.length;
+      let count4 = colorTextures.length;
       if (!gl.drawBuffers) {
-        count = Math.min(count, 1);
+        count4 = Math.min(count4, 1);
       }
-      for (let i2 = 0; i2 < count; i2++) {
+      for (let i2 = 0; i2 < count4; i2++) {
         const texture = colorTextures[i2];
         const parentTexture = texture.parentTextureArray || texture;
         this.renderer.texture.bind(parentTexture, 0);
@@ -9995,9 +9995,9 @@ ${this.fragmentSrc}`;
       const { gl } = this;
       const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
       const colorTextures = framebuffer.colorTextures;
-      let count = colorTextures.length;
+      let count4 = colorTextures.length;
       if (!gl.drawBuffers) {
-        count = Math.min(count, 1);
+        count4 = Math.min(count4, 1);
       }
       if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer)) {
         fbo.msaaBuffer = fbo.msaaBuffer || gl.createRenderbuffer();
@@ -10010,7 +10010,7 @@ ${this.fragmentSrc}`;
         }
       }
       const activeTextures = [];
-      for (let i2 = 0; i2 < count; i2++) {
+      for (let i2 = 0; i2 < count4; i2++) {
         const texture = colorTextures[i2];
         const parentTexture = texture.parentTextureArray || texture;
         this.renderer.texture.bind(parentTexture, 0);
@@ -10517,13 +10517,13 @@ ${this.fragmentSrc}`;
       const texBase = tex.baseTexture;
       const frame = this.uClampFrame;
       const margin = this.clampMargin / texBase.resolution;
-      const offset = this.clampOffset;
-      frame[0] = (tex._frame.x + margin + offset) / texBase.width;
-      frame[1] = (tex._frame.y + margin + offset) / texBase.height;
-      frame[2] = (tex._frame.x + tex._frame.width - margin + offset) / texBase.width;
-      frame[3] = (tex._frame.y + tex._frame.height - margin + offset) / texBase.height;
-      this.uClampOffset[0] = offset / texBase.realWidth;
-      this.uClampOffset[1] = offset / texBase.realHeight;
+      const offset4 = this.clampOffset;
+      frame[0] = (tex._frame.x + margin + offset4) / texBase.width;
+      frame[1] = (tex._frame.y + margin + offset4) / texBase.height;
+      frame[2] = (tex._frame.x + tex._frame.width - margin + offset4) / texBase.width;
+      frame[3] = (tex._frame.y + tex._frame.height - margin + offset4) / texBase.height;
+      this.uClampOffset[0] = offset4 / texBase.realWidth;
+      this.uClampOffset[1] = offset4 / texBase.realHeight;
       this.isSimple = tex._frame.width === texBase.width && tex._frame.height === texBase.height && tex.rotate === 0;
       return true;
     }
@@ -11449,7 +11449,7 @@ ${this.fragmentSrc}`;
     }));
     let size = 0;
     let chunkSize = 0;
-    let offset = 0;
+    let offset4 = 0;
     for (let i2 = 0; i2 < uboElements.length; i2++) {
       const uboElement = uboElements[i2];
       size = GLSL_TO_STD40_SIZE[uboElement.data.type];
@@ -11460,21 +11460,21 @@ ${this.fragmentSrc}`;
       if (chunkSize % size !== 0 && chunkSize < 16) {
         const lineUpValue = chunkSize % size % 16;
         chunkSize += lineUpValue;
-        offset += lineUpValue;
+        offset4 += lineUpValue;
       }
       if (chunkSize + size > 16) {
-        offset = Math.ceil(offset / 16) * 16;
-        uboElement.offset = offset;
-        offset += size;
+        offset4 = Math.ceil(offset4 / 16) * 16;
+        uboElement.offset = offset4;
+        offset4 += size;
         chunkSize = size;
       } else {
-        uboElement.offset = offset;
+        uboElement.offset = offset4;
         chunkSize += size;
-        offset += size;
+        offset4 += size;
       }
     }
-    offset = Math.ceil(offset / 16) * 16;
-    return { uboElements, size: offset };
+    offset4 = Math.ceil(offset4 / 16) * 16;
+    return { uboElements, size: offset4 };
   }
   function getUBOData(uniforms, uniformData) {
     const usedUniformDatas = [];
@@ -12792,12 +12792,12 @@ ${this.fragmentSrc}`;
       if (!this._head) {
         return 0;
       }
-      let count = 0;
+      let count4 = 0;
       let current = this._head;
       while (current = current.next) {
-        count++;
+        count4++;
       }
-      return count;
+      return count4;
     }
     start() {
       if (!this.started) {
@@ -13055,11 +13055,11 @@ ${this.fragmentSrc}`;
         gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
       }
     }
-    bindBufferRange(buffer, index, offset) {
+    bindBufferRange(buffer, index, offset4) {
       const { gl, CONTEXT_UID } = this;
-      offset = offset || 0;
+      offset4 = offset4 || 0;
       const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
-      gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset * 256, 256);
+      gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset4 * 256, 256);
     }
     update(buffer) {
       const { gl, CONTEXT_UID } = this;
@@ -18454,7 +18454,7 @@ void main() {
       if (!this._parsersValidated) {
         this._validateParsers();
       }
-      let count = 0;
+      let count4 = 0;
       const assets = {};
       const singleAsset = isSingleItem(assetsToLoadIn);
       const assetsToLoad = convertToList(assetsToLoadIn, (item) => ({
@@ -18470,7 +18470,7 @@ void main() {
             }
             assets[asset.src] = await this.promiseCache[url2].promise;
             if (onProgress)
-              onProgress(++count / total);
+              onProgress(++count4 / total);
           } catch (e2) {
             delete this.promiseCache[url2];
             delete assets[asset.src];
@@ -19238,10 +19238,10 @@ ${e2}`);
       const resolveResults = this.resolver.resolveBundle(bundleIds);
       const out = {};
       const keys = Object.keys(resolveResults);
-      let count = 0;
+      let count4 = 0;
       let total = 0;
       const _onProgress = () => {
-        onProgress?.(++count / total);
+        onProgress?.(++count4 / total);
       };
       const promises = keys.map((bundleId) => {
         const resolveResult = resolveResults[bundleId];
@@ -19716,7 +19716,7 @@ ${e2}`);
     }
     static _createLevelBuffers(buffer, format2, levels, blockWidth, blockHeight, imageWidth, imageHeight) {
       const buffers = new Array(levels);
-      let offset = buffer.byteOffset;
+      let offset4 = buffer.byteOffset;
       let levelWidth = imageWidth;
       let levelHeight = imageHeight;
       let alignedLevelWidth = levelWidth + blockWidth - 1 & ~(blockWidth - 1);
@@ -19727,9 +19727,9 @@ ${e2}`);
           levelID: i2,
           levelWidth: levels > 1 ? levelWidth : alignedLevelWidth,
           levelHeight: levels > 1 ? levelHeight : alignedLevelHeight,
-          levelBuffer: new Uint8Array(buffer.buffer, offset, levelSize)
+          levelBuffer: new Uint8Array(buffer.buffer, offset4, levelSize)
         };
-        offset += levelSize;
+        offset4 += levelSize;
         levelWidth = levelWidth >> 1 || 1;
         levelHeight = levelHeight >> 1 || 1;
         alignedLevelWidth = levelWidth + blockWidth - 1 & ~(blockWidth - 1);
@@ -20663,7 +20663,7 @@ ${e2}`);
 
   // node_modules/@pixi/graphics/lib/utils/ArcUtils.mjs
   var ArcUtils = class {
-    static curveTo(x1, y1, x2, y2, radius, points) {
+    static curveTo(x1, y1, x2, y2, radius2, points) {
       const fromX = points[points.length - 2];
       const fromY = points[points.length - 1];
       const a1 = fromY - y1;
@@ -20671,7 +20671,7 @@ ${e2}`);
       const a2 = y2 - y1;
       const b2 = x2 - x1;
       const mm = Math.abs(a1 * b2 - b1 * a2);
-      if (mm < 1e-8 || radius === 0) {
+      if (mm < 1e-8 || radius2 === 0) {
         if (points[points.length - 2] !== x1 || points[points.length - 1] !== y1) {
           points.push(x1, y1);
         }
@@ -20680,8 +20680,8 @@ ${e2}`);
       const dd = a1 * a1 + b1 * b1;
       const cc = a2 * a2 + b2 * b2;
       const tt = a1 * a2 + b1 * b2;
-      const k1 = radius * Math.sqrt(dd) / mm;
-      const k2 = radius * Math.sqrt(cc) / mm;
+      const k1 = radius2 * Math.sqrt(dd) / mm;
+      const k2 = radius2 * Math.sqrt(cc) / mm;
       const j1 = k1 * tt / dd;
       const j2 = k2 * tt / cc;
       const cx = k1 * b2 + k2 * b1;
@@ -20695,15 +20695,15 @@ ${e2}`);
       return {
         cx: cx + x1,
         cy: cy + y1,
-        radius,
+        radius: radius2,
         startAngle,
         endAngle,
         anticlockwise: b1 * a2 > b2 * a1
       };
     }
-    static arc(_startX, _startY, cx, cy, radius, startAngle, endAngle, _anticlockwise, points) {
+    static arc(_startX, _startY, cx, cy, radius2, startAngle, endAngle, _anticlockwise, points) {
       const sweep = endAngle - startAngle;
-      const n2 = curves._segmentsCount(Math.abs(sweep) * radius, Math.ceil(Math.abs(sweep) / PI_2) * 40);
+      const n2 = curves._segmentsCount(Math.abs(sweep) * radius2, Math.ceil(Math.abs(sweep) / PI_2) * 40);
       const theta = sweep / (n2 * 2);
       const theta2 = theta * 2;
       const cTheta = Math.cos(theta);
@@ -20715,7 +20715,7 @@ ${e2}`);
         const angle = theta + startAngle + theta2 * real;
         const c2 = Math.cos(angle);
         const s2 = -Math.sin(angle);
-        points.push((cTheta * c2 + sTheta * s2) * radius + cx, (cTheta * -s2 + sTheta * c2) * radius + cy);
+        points.push((cTheta * c2 + sTheta * s2) * radius2 + cx, (cTheta * -s2 + sTheta * c2) * radius2 + cy);
       }
     }
   };
@@ -20836,20 +20836,20 @@ ${e2}`);
     let startAngle = angle0;
     const angleDiff = angle1 - angle0;
     const absAngleDiff = Math.abs(angleDiff);
-    const radius = Math.sqrt(cx2p0x * cx2p0x + cy2p0y * cy2p0y);
-    const segCount = (15 * absAngleDiff * Math.sqrt(radius) / Math.PI >> 0) + 1;
+    const radius2 = Math.sqrt(cx2p0x * cx2p0x + cy2p0y * cy2p0y);
+    const segCount = (15 * absAngleDiff * Math.sqrt(radius2) / Math.PI >> 0) + 1;
     const angleInc = angleDiff / segCount;
     startAngle += angleInc;
     if (clockwise) {
       verts.push(cx, cy, sx, sy);
       for (let i2 = 1, angle = startAngle; i2 < segCount; i2++, angle += angleInc) {
-        verts.push(cx, cy, cx + Math.sin(angle) * radius, cy + Math.cos(angle) * radius);
+        verts.push(cx, cy, cx + Math.sin(angle) * radius2, cy + Math.cos(angle) * radius2);
       }
       verts.push(cx, cy, ex, ey);
     } else {
       verts.push(sx, sy, cx, cy);
       for (let i2 = 1, angle = startAngle; i2 < segCount; i2++, angle += angleInc) {
-        verts.push(cx + Math.sin(angle) * radius, cy + Math.cos(angle) * radius, cx, cy);
+        verts.push(cx + Math.sin(angle) * radius2, cy + Math.cos(angle) * radius2, cx, cy);
       }
       verts.push(ex, ey, cx, cy);
     }
@@ -21556,18 +21556,18 @@ ${e2}`);
         points[i2 * 2 + 1] = matrix.b * x2 + matrix.d * y2 + matrix.ty;
       }
     }
-    addColors(colors, color, alpha, size, offset = 0) {
+    addColors(colors, color, alpha, size, offset4 = 0) {
       const bgr = Color.shared.setValue(color).toLittleEndianNumber();
       const result = Color.shared.setValue(bgr).toPremultiplied(alpha);
-      colors.length = Math.max(colors.length, offset + size);
+      colors.length = Math.max(colors.length, offset4 + size);
       for (let i2 = 0; i2 < size; i2++) {
-        colors[offset + i2] = result;
+        colors[offset4 + i2] = result;
       }
     }
-    addTextureIds(textureIds, id, size, offset = 0) {
-      textureIds.length = Math.max(textureIds.length, offset + size);
+    addTextureIds(textureIds, id, size, offset4 = 0) {
+      textureIds.length = Math.max(textureIds.length, offset4 + size);
       for (let i2 = 0; i2 < size; i2++) {
-        textureIds[offset + i2] = id;
+        textureIds[offset4 + i2] = id;
       }
     }
     addUvs(verts, uvs, texture, start2, size, matrix = null) {
@@ -21832,17 +21832,17 @@ ${e2}`);
       BezierUtils.curveTo(cpX, cpY, cpX2, cpY2, toX, toY, this.currentPath.points);
       return this;
     }
-    arcTo(x1, y1, x2, y2, radius) {
+    arcTo(x1, y1, x2, y2, radius2) {
       this._initCurve(x1, y1);
       const points = this.currentPath.points;
-      const result = ArcUtils.curveTo(x1, y1, x2, y2, radius, points);
+      const result = ArcUtils.curveTo(x1, y1, x2, y2, radius2, points);
       if (result) {
-        const { cx, cy, radius: radius2, startAngle, endAngle, anticlockwise } = result;
-        this.arc(cx, cy, radius2, startAngle, endAngle, anticlockwise);
+        const { cx, cy, radius: radius22, startAngle, endAngle, anticlockwise } = result;
+        this.arc(cx, cy, radius22, startAngle, endAngle, anticlockwise);
       }
       return this;
     }
-    arc(cx, cy, radius, startAngle, endAngle, anticlockwise = false) {
+    arc(cx, cy, radius2, startAngle, endAngle, anticlockwise = false) {
       if (startAngle === endAngle) {
         return this;
       }
@@ -21855,8 +21855,8 @@ ${e2}`);
       if (sweep === 0) {
         return this;
       }
-      const startX = cx + Math.cos(startAngle) * radius;
-      const startY = cy + Math.sin(startAngle) * radius;
+      const startX = cx + Math.cos(startAngle) * radius2;
+      const startY = cy + Math.sin(startAngle) * radius2;
       const eps = this._geometry.closePointEps;
       let points = this.currentPath ? this.currentPath.points : null;
       if (points) {
@@ -21870,7 +21870,7 @@ ${e2}`);
         this.moveTo(startX, startY);
         points = this.currentPath.points;
       }
-      ArcUtils.arc(startX, startY, cx, cy, radius, startAngle, endAngle, anticlockwise, points);
+      ArcUtils.arc(startX, startY, cx, cy, radius2, startAngle, endAngle, anticlockwise, points);
       return this;
     }
     beginFill(color = 0, alpha) {
@@ -21912,11 +21912,11 @@ ${e2}`);
     drawRect(x2, y2, width, height) {
       return this.drawShape(new Rectangle(x2, y2, width, height));
     }
-    drawRoundedRect(x2, y2, width, height, radius) {
-      return this.drawShape(new RoundedRectangle(x2, y2, width, height, radius));
+    drawRoundedRect(x2, y2, width, height, radius2) {
+      return this.drawShape(new RoundedRectangle(x2, y2, width, height, radius2));
     }
-    drawCircle(x2, y2, radius) {
-      return this.drawShape(new Circle(x2, y2, radius));
+    drawCircle(x2, y2, radius2) {
+      return this.drawShape(new Circle(x2, y2, radius2));
     }
     drawEllipse(x2, y2, width, height) {
       return this.drawShape(new Ellipse(x2, y2, width, height));
@@ -22098,12 +22098,12 @@ ${e2}`);
       const ty = wt.ty;
       const data = this._geometry.points;
       const vertexData = this.vertexData;
-      let count = 0;
+      let count4 = 0;
       for (let i2 = 0; i2 < data.length; i2 += 2) {
         const x2 = data[i2];
         const y2 = data[i2 + 1];
-        vertexData[count++] = a2 * x2 + c2 * y2 + tx;
-        vertexData[count++] = d2 * y2 + b2 * x2 + ty;
+        vertexData[count4++] = a2 * x2 + c2 * y2 + tx;
+        vertexData[count4++] = d2 * y2 + b2 * x2 + ty;
       }
     }
     closePath() {
@@ -22693,7 +22693,7 @@ ${e2}`);
       const dynamicPropertyFlags = container._properties;
       return new ParticleBuffer(this.properties, dynamicPropertyFlags, batchSize);
     }
-    uploadVertices(children, startIndex, amount, array, stride, offset) {
+    uploadVertices(children, startIndex, amount, array, stride, offset4) {
       let w0 = 0;
       let w1 = 0;
       let h0 = 0;
@@ -22716,76 +22716,76 @@ ${e2}`);
           h0 = orig.height * (1 - sprite.anchor.y);
           h1 = orig.height * -sprite.anchor.y;
         }
-        array[offset] = w1 * sx;
-        array[offset + 1] = h1 * sy;
-        array[offset + stride] = w0 * sx;
-        array[offset + stride + 1] = h1 * sy;
-        array[offset + stride * 2] = w0 * sx;
-        array[offset + stride * 2 + 1] = h0 * sy;
-        array[offset + stride * 3] = w1 * sx;
-        array[offset + stride * 3 + 1] = h0 * sy;
-        offset += stride * 4;
+        array[offset4] = w1 * sx;
+        array[offset4 + 1] = h1 * sy;
+        array[offset4 + stride] = w0 * sx;
+        array[offset4 + stride + 1] = h1 * sy;
+        array[offset4 + stride * 2] = w0 * sx;
+        array[offset4 + stride * 2 + 1] = h0 * sy;
+        array[offset4 + stride * 3] = w1 * sx;
+        array[offset4 + stride * 3 + 1] = h0 * sy;
+        offset4 += stride * 4;
       }
     }
-    uploadPosition(children, startIndex, amount, array, stride, offset) {
+    uploadPosition(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; i2++) {
         const spritePosition = children[startIndex + i2].position;
-        array[offset] = spritePosition.x;
-        array[offset + 1] = spritePosition.y;
-        array[offset + stride] = spritePosition.x;
-        array[offset + stride + 1] = spritePosition.y;
-        array[offset + stride * 2] = spritePosition.x;
-        array[offset + stride * 2 + 1] = spritePosition.y;
-        array[offset + stride * 3] = spritePosition.x;
-        array[offset + stride * 3 + 1] = spritePosition.y;
-        offset += stride * 4;
+        array[offset4] = spritePosition.x;
+        array[offset4 + 1] = spritePosition.y;
+        array[offset4 + stride] = spritePosition.x;
+        array[offset4 + stride + 1] = spritePosition.y;
+        array[offset4 + stride * 2] = spritePosition.x;
+        array[offset4 + stride * 2 + 1] = spritePosition.y;
+        array[offset4 + stride * 3] = spritePosition.x;
+        array[offset4 + stride * 3 + 1] = spritePosition.y;
+        offset4 += stride * 4;
       }
     }
-    uploadRotation(children, startIndex, amount, array, stride, offset) {
+    uploadRotation(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; i2++) {
         const spriteRotation = children[startIndex + i2].rotation;
-        array[offset] = spriteRotation;
-        array[offset + stride] = spriteRotation;
-        array[offset + stride * 2] = spriteRotation;
-        array[offset + stride * 3] = spriteRotation;
-        offset += stride * 4;
+        array[offset4] = spriteRotation;
+        array[offset4 + stride] = spriteRotation;
+        array[offset4 + stride * 2] = spriteRotation;
+        array[offset4 + stride * 3] = spriteRotation;
+        offset4 += stride * 4;
       }
     }
-    uploadUvs(children, startIndex, amount, array, stride, offset) {
+    uploadUvs(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; ++i2) {
         const textureUvs = children[startIndex + i2]._texture._uvs;
         if (textureUvs) {
-          array[offset] = textureUvs.x0;
-          array[offset + 1] = textureUvs.y0;
-          array[offset + stride] = textureUvs.x1;
-          array[offset + stride + 1] = textureUvs.y1;
-          array[offset + stride * 2] = textureUvs.x2;
-          array[offset + stride * 2 + 1] = textureUvs.y2;
-          array[offset + stride * 3] = textureUvs.x3;
-          array[offset + stride * 3 + 1] = textureUvs.y3;
-          offset += stride * 4;
+          array[offset4] = textureUvs.x0;
+          array[offset4 + 1] = textureUvs.y0;
+          array[offset4 + stride] = textureUvs.x1;
+          array[offset4 + stride + 1] = textureUvs.y1;
+          array[offset4 + stride * 2] = textureUvs.x2;
+          array[offset4 + stride * 2 + 1] = textureUvs.y2;
+          array[offset4 + stride * 3] = textureUvs.x3;
+          array[offset4 + stride * 3 + 1] = textureUvs.y3;
+          offset4 += stride * 4;
         } else {
-          array[offset] = 0;
-          array[offset + 1] = 0;
-          array[offset + stride] = 0;
-          array[offset + stride + 1] = 0;
-          array[offset + stride * 2] = 0;
-          array[offset + stride * 2 + 1] = 0;
-          array[offset + stride * 3] = 0;
-          array[offset + stride * 3 + 1] = 0;
-          offset += stride * 4;
+          array[offset4] = 0;
+          array[offset4 + 1] = 0;
+          array[offset4 + stride] = 0;
+          array[offset4 + stride + 1] = 0;
+          array[offset4 + stride * 2] = 0;
+          array[offset4 + stride * 2 + 1] = 0;
+          array[offset4 + stride * 3] = 0;
+          array[offset4 + stride * 3 + 1] = 0;
+          offset4 += stride * 4;
         }
       }
     }
-    uploadTint(children, startIndex, amount, array, stride, offset) {
+    uploadTint(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; ++i2) {
         const sprite = children[startIndex + i2];
         const result = Color.shared.setValue(sprite._tintRGB).toPremultiplied(sprite.alpha, sprite.texture.baseTexture.alphaMode > 0);
-        array[offset] = result;
-        array[offset + stride] = result;
-        array[offset + stride * 2] = result;
-        array[offset + stride * 3] = result;
-        offset += stride * 4;
+        array[offset4] = result;
+        array[offset4 + stride] = result;
+        array[offset4 + stride * 2] = result;
+        array[offset4 + stride * 3] = result;
+        offset4 += stride * 4;
       }
     }
     destroy() {
@@ -25241,11 +25241,11 @@ ${e2}`);
       }
       for (let i2 = 0; i2 < lenChars; i2++) {
         const char = chars[i2];
-        let offset = char.position.x + lineAlignOffsets[char.line] * (this._align === "justify" ? char.prevSpaces : 1);
+        let offset4 = char.position.x + lineAlignOffsets[char.line] * (this._align === "justify" ? char.prevSpaces : 1);
         if (this._roundPixels) {
-          offset = Math.round(offset);
+          offset4 = Math.round(offset4);
         }
-        const xPos = offset * scale;
+        const xPos = offset4 * scale;
         const yPos = char.position.y * scale;
         const texture = char.texture;
         const pageMesh = pagesMeshData[texture.baseTexture.uid];
@@ -26034,15 +26034,15 @@ ${e2}`);
   var instance;
   var LINE_COLOR = 1122867;
   var Grid = class {
-    constructor(app2) {
-      this.app = app2;
+    constructor(app) {
+      this.app = app;
       this.pointerDownHandler = () => void 0;
       this.handlePointerDown = (event) => {
         this.pointerDownHandler(event);
       };
     }
-    udpateApp(app2) {
-      this.app = app2;
+    udpateApp(app) {
+      this.app = app;
     }
     render(px) {
       const background = new Graphics();
@@ -26072,14 +26072,15 @@ ${e2}`);
       this.pointerDownHandler = handler;
     }
   };
-  function render(app2, px = 10) {
-    instance = instance != null ? instance : new Grid(app2);
-    instance.udpateApp(app2);
+  function render(app, px = 10) {
+    instance = instance != null ? instance : new Grid(app);
+    instance.udpateApp(app);
     instance.render(px);
   }
   function onPointerDown(handler) {
-    instance = instance != null ? instance : new Grid(app);
-    instance.onPointerDown(handler);
+    if (instance != null) {
+      instance.onPointerDown(handler);
+    }
   }
 
   // src/bug/bug.ts
@@ -26136,71 +26137,84 @@ ${e2}`);
   };
 
   // src/bug/bug.ts
+  var defaults = {
+    activeSide: "left",
+    millisecondsPerStep: 250,
+    maxStepPx: 18,
+    position: new import_geom2.Vector(),
+    legs: {
+      left: [[
+        new import_geom2.Point(-3, 5),
+        new import_geom2.Point(-12, -10)
+      ], [
+        new import_geom2.Point(-3, 8),
+        new import_geom2.Point(-14, 4)
+      ], [
+        new import_geom2.Point(-3, 15),
+        new import_geom2.Point(-10, 16)
+      ]],
+      right: [[
+        new import_geom2.Point(3, 5),
+        new import_geom2.Point(12, -10)
+      ], [
+        new import_geom2.Point(3, 8),
+        new import_geom2.Point(14, 4)
+      ], [
+        new import_geom2.Point(3, 15),
+        new import_geom2.Point(10, 16)
+      ]]
+    },
+    jointOffset: 0.25,
+    repulsionPx: 0,
+    maxJigglePx: 3,
+    target: new import_geom2.Vector()
+  };
   var Bug = class {
-    constructor() {
-      this.activeSide = "left";
+    constructor(options) {
       this.stepProgress = 0;
       this.stepMs = 0;
-      this.maxStepMs = 150;
-      this.maxStepPx = 12;
-      this.head = new import_geom2.Vector(100, 100);
-      this.legsModel = {
-        left: [[
-          new import_geom2.Point(-3, 5),
-          new import_geom2.Point(-12, -10)
-        ], [
-          new import_geom2.Point(-3, 8),
-          new import_geom2.Point(-14, 4)
-        ], [
-          new import_geom2.Point(-3, 15),
-          new import_geom2.Point(-10, 16)
-        ]],
-        right: [[
-          new import_geom2.Point(3, 5),
-          new import_geom2.Point(12, -10)
-        ], [
-          new import_geom2.Point(3, 8),
-          new import_geom2.Point(14, 4)
-        ], [
-          new import_geom2.Point(3, 15),
-          new import_geom2.Point(10, 16)
-        ]]
-      };
       this.legs = {
         left: [],
         right: []
-      };
-      this.target = new import_geom2.Vector(this.head.point);
-      this.repulsionPx = 8;
-      this.current = {
-        head: this.head,
-        legs: this.legs,
-        target: this.target.point
       };
       this.listeners = {
         targetReached: []
       };
       this.updateLeg = (leg, currentLeg, index, stageRect) => {
         const joint = leg.getModel(index);
-        const radius = import_geom2.Point.distance(this.head.point, this.head.point.subtract(joint));
+        const radius2 = import_geom2.Point.distance(this.head.point, this.head.point.subtract(joint));
         const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians;
-        const radians = this.interpolateRadians(
+        const radians2 = this.interpolateRadians(
           currentLeg.getLive(index).radians,
           targetRadians,
           Math.min(1, this.stepProgress)
         );
         const updatedPoint = new import_geom2.Point(
-          Math.cos(radians) * radius + this.head.x,
-          Math.sin(radians) * radius + this.head.y
+          Math.cos(radians2) * radius2 + this.head.x,
+          Math.sin(radians2) * radius2 + this.head.y
         );
-        if (stageRect) {
+        if (stageRect != null) {
           updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x));
           updatedPoint.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, updatedPoint.y));
         }
-        leg.updateLive(index, new import_geom2.Vector(updatedPoint, radians));
+        leg.updateLive(index, new import_geom2.Vector(updatedPoint, radians2));
       };
-      this.createLegs();
-      this.updateBug({ deltaMs: this.maxStepMs });
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+      this.activeSide = (_a = options == null ? void 0 : options.activeSide) != null ? _a : defaults.activeSide;
+      this.millisecondsPerStep = (_b = options == null ? void 0 : options.millisecondsPerStep) != null ? _b : defaults.millisecondsPerStep;
+      this.maxStepPx = (_c = options == null ? void 0 : options.maxStepPx) != null ? _c : defaults.maxStepPx;
+      this.jointOffset = (_d = options == null ? void 0 : options.jointOffset) != null ? _d : defaults.jointOffset;
+      this.repulsionPx = (_e = options == null ? void 0 : options.repulsionPx) != null ? _e : defaults.repulsionPx;
+      this.maxJigglePx = (_f = options == null ? void 0 : options.maxJigglePx) != null ? _f : defaults.maxJigglePx;
+      this.head = (_g = options == null ? void 0 : options.position) != null ? _g : defaults.position;
+      this.target = (_h = options == null ? void 0 : options.target) != null ? _h : defaults.target;
+      this.current = {
+        head: this.head,
+        legs: this.legs,
+        target: this.target.point
+      };
+      this.createLegs((_i = options == null ? void 0 : options.legs) != null ? _i : defaults.legs);
+      this.updateBug({ deltaMs: this.millisecondsPerStep });
     }
     /**
      * Commands the bug to move. Takes one arg, the number of milliseconds that
@@ -26210,7 +26224,7 @@ ${e2}`);
       deltaMs = 0,
       stageRect
     }) {
-      this.stepProgress = this.stepMs / this.maxStepMs;
+      this.stepProgress = this.stepMs / this.millisecondsPerStep;
       this.updateBug({ deltaMs, stageRect });
       if (import_geom2.Point.distance(this.target.point, this.head.point) < this.maxStepPx + this.repulsionPx) {
         const bugRender = this.getRender();
@@ -26243,15 +26257,15 @@ ${e2}`);
         target: this.target.point
       };
     }
-    createLegs() {
-      this.legsModel.left.forEach((joints, index) => {
+    createLegs(legsModel) {
+      legsModel.left.forEach((joints, index) => {
         joints.splice(1, 0, new import_geom2.Point(
           (joints[0].x + joints[1].x) * 0.5,
           (joints[0].y + joints[1].y) * 0.5
         ));
         this.legs.left[index] = new Leg(joints);
       });
-      this.legsModel.right.forEach((joints, index) => {
+      legsModel.right.forEach((joints, index) => {
         joints.splice(1, 0, new import_geom2.Point(
           (joints[0].x + joints[1].x) * 0.5,
           (joints[0].y + joints[1].y) * 0.5
@@ -26263,7 +26277,7 @@ ${e2}`);
       deltaMs,
       stageRect
     }) {
-      const repulusionRect = stageRect ? {
+      const repulusionRect = stageRect != null ? {
         x: stageRect.x + this.repulsionPx,
         y: stageRect.y + this.repulsionPx,
         width: stageRect.width - this.repulsionPx * 2,
@@ -26281,8 +26295,8 @@ ${e2}`);
      * copied for use in calculations.
      */
     updateStepProgress(deltaMs) {
-      this.stepMs = Math.min(this.maxStepMs, this.stepMs + deltaMs);
-      if (this.stepMs >= this.maxStepMs) {
+      this.stepMs = Math.min(this.millisecondsPerStep, this.stepMs + deltaMs);
+      if (this.stepMs >= this.millisecondsPerStep) {
         this.stepMs = 0;
         this.activeSide = this.activeSide === "left" ? "right" : "left";
         this.current.head = this.head.clone();
@@ -26308,9 +26322,9 @@ ${e2}`);
         this.target.radians,
         Math.min(1, this.stepProgress)
       );
-      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress + Math.random() * 2 - 1;
-      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress + Math.random() * 2 - 1;
-      if (stageRect) {
+      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
+      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
+      if (stageRect != null) {
         this.head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, this.head.x));
         this.head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, this.head.y));
       }
@@ -26325,11 +26339,12 @@ ${e2}`);
           if (leg.jointIndex !== -1) {
             const socketPoint = leg.getLive(leg.socketIndex).point;
             const clawPoint = leg.getLive(leg.clawIndex).point;
-            const radians = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2;
-            const offset = import_geom2.Point.distance(leg.getModel(0), leg.getModel(2)) * 0.5;
+            const radians2 = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2;
+            const length = import_geom2.Point.distance(leg.getModel(0), leg.getModel(2));
+            const offset4 = length * this.jointOffset;
             leg.updateLive(leg.jointIndex, new import_geom2.Vector(
-              (socketPoint.x + clawPoint.x) * 0.5,
-              (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians) * offset
+              (socketPoint.x + clawPoint.x) * 0.5 - Math.cos(radians2) * offset4,
+              (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians2) * offset4
             ));
           }
         });
@@ -26352,60 +26367,91 @@ ${e2}`);
     }
   };
 
-  // src/demo/spiral.ts
+  // src/demo/patterns/spiral.ts
   var import_geom3 = __toESM(require_dist());
-  var _Spiral = class {
-    static getPoint(maxRadius) {
-      let complete = false;
-      if (_Spiral.radius >= maxRadius) {
-        _Spiral.radius = 0;
-        _Spiral.radians = 0;
-        complete = true;
-      }
-      const x2 = Math.cos(_Spiral.radians) * _Spiral.radius;
-      const y2 = Math.sin(_Spiral.radians) * _Spiral.radius;
-      _Spiral.radians = import_geom3.Angle.normalize(_Spiral.radians - Math.PI * 0.05);
-      _Spiral.radius += 1;
-      return {
-        point: new import_geom3.Point(x2, y2),
-        complete
-      };
+  var radians = 0;
+  var radius = 0;
+  var direction = 1;
+  var calculateSpiralPattern = (maxRadius) => {
+    let complete = false;
+    if (radius >= maxRadius) {
+      radius = 0;
+      radians = 0;
+      direction *= -1;
+      complete = true;
     }
+    const x2 = Math.cos(radians) * radius;
+    const y2 = Math.sin(radians) * radius;
+    radians = import_geom3.Angle.normalize(radians - Math.PI * 0.05 * direction);
+    radius += 1;
+    return {
+      point: new import_geom3.Point(x2, y2),
+      complete
+    };
   };
-  var Spiral = _Spiral;
-  Spiral.radians = 0;
-  Spiral.radius = 0;
 
-  // src/demo/vertical.ts
+  // src/demo/patterns/vertical.ts
   var import_geom4 = __toESM(require_dist());
-  var _Vertical = class {
-    static getPoint(width, height) {
-      if (_Vertical.count === 10) {
-        _Vertical.count = 0;
-      }
-      const x2 = _Vertical.count * width / 10 + Math.random() * _Vertical.offset;
-      const y2 = Math.random() * 20 + _Vertical.offset;
-      return {
-        point: new import_geom4.Point(
-          x2,
-          _Vertical.count % 2 === 0 ? y2 : height - y2
-        ),
-        complete: ++_Vertical.count === 10
-      };
+  var count = 0;
+  var offset = 10;
+  var calculateVerticalPattern = (width, height) => {
+    if (count === 10) {
+      count = 0;
     }
+    const x2 = count * width / 10 + Math.random() * offset;
+    const y2 = Math.random() * 20 + offset;
+    return {
+      point: new import_geom4.Point(
+        x2,
+        count % 2 === 0 ? y2 : height - y2
+      ),
+      complete: ++count === 10
+    };
   };
-  var Vertical = _Vertical;
-  Vertical.count = 0;
-  Vertical.offset = 10;
+
+  // src/demo/patterns/horizontal.ts
+  var import_geom5 = __toESM(require_dist());
+  var count2 = 0;
+  var offset2 = 10;
+  var calculateHorizontalPattern = (width, height) => {
+    if (count2 === 10) {
+      count2 = 0;
+    }
+    const x2 = Math.random() * 20 + offset2;
+    const y2 = count2 * height / 10 + Math.random() * offset2;
+    return {
+      point: new import_geom5.Point(
+        count2 % 2 === 0 ? x2 : width - x2,
+        y2
+      ),
+      complete: ++count2 === 10
+    };
+  };
+
+  // src/demo/patterns/random.ts
+  var import_geom6 = __toESM(require_dist());
+  var count3 = 0;
+  var offset3 = 10;
+  var calculateRandomPattern = (width, height) => {
+    if (count3 === 10) {
+      count3 = 0;
+    }
+    return {
+      point: new import_geom6.Point(
+        offset3 + Math.floor(Math.random() * (width - offset3 * 2)),
+        offset3 + Math.floor(Math.random() * (height - offset3 * 2))
+      ),
+      complete: ++count3 === 10
+    };
+  };
 
   // src/demo/bug-demo.ts
   var BugDemo = class {
-    constructor(app2) {
-      this.app = app2;
+    constructor(app) {
+      this.app = app;
       this.target = new Graphics();
       this.head = new Graphics();
       this.legs = new Graphics();
-      this.loop = "vertical";
       this.handleTargetReached = () => {
         this.updateTarget();
       };
@@ -26415,7 +26461,7 @@ ${e2}`);
         const claw = leg.getLive(leg.clawIndex);
         this.legs.lineStyle({ width: 1, color: 14544639 });
         this.legs.moveTo(socket.x, socket.y);
-        if (joint) {
+        if (joint != null) {
           this.legs.lineTo(joint.x, joint.y);
         }
         this.legs.lineTo(claw.x, claw.y);
@@ -26424,6 +26470,7 @@ ${e2}`);
         this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 2 : 1);
         this.legs.endFill();
       };
+      this.pattern = this.updatePattern();
       this.bug = new Bug();
       this.app.stage.addChild(this.target);
       this.app.stage.addChild(this.legs);
@@ -26449,13 +26496,13 @@ ${e2}`);
       this.bug.updateTarget(point);
     }
     renderTarget({ x: x2, y: y2 }) {
-      const radius = 2;
+      const radius2 = 2;
       this.target.clear();
       this.target.lineStyle({ width: 1, color: 16764057 });
-      this.target.moveTo(x2 - radius, y2 - radius);
-      this.target.lineTo(x2 + radius, y2 + radius);
-      this.target.moveTo(x2 + radius, y2 - radius);
-      this.target.lineTo(x2 - radius, y2 + radius);
+      this.target.moveTo(x2 - radius2, y2 - radius2);
+      this.target.lineTo(x2 + radius2, y2 + radius2);
+      this.target.moveTo(x2 + radius2, y2 - radius2);
+      this.target.lineTo(x2 - radius2, y2 + radius2);
     }
     renderHead(bug) {
       this.head.clear();
@@ -26489,26 +26536,43 @@ ${e2}`);
       }
     }
     updateTarget() {
-      if (this.loop === "vertical") {
-        const { point, complete } = Vertical.getPoint(this.app.view.width, this.app.view.height);
+      if (this.pattern === "random") {
+        const { point, complete } = calculateRandomPattern(this.app.view.width, this.app.view.height);
         this.bug.updateTarget(point);
         if (complete) {
-          this.loop = "spiral";
+          this.updatePattern();
         }
-      } else if (this.loop === "spiral") {
-        const { point, complete } = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5);
+      } else if (this.pattern === "vertical") {
+        const { point, complete } = calculateVerticalPattern(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "horizontal") {
+        const { point, complete } = calculateHorizontalPattern(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "spiral") {
+        const { point, complete } = calculateSpiralPattern(Math.min(this.app.view.width, this.app.view.height) * 0.5);
         point.x += this.app.view.width / 2;
         point.y += this.app.view.height / 2;
         this.bug.updateTarget(point);
         if (complete) {
-          this.loop = "vertical";
+          this.updatePattern();
         }
       }
+    }
+    updatePattern() {
+      const index = Math.floor(Math.random() * 4);
+      const patterns = ["random", "horizontal", "vertical", "spiral"];
+      return this.pattern = patterns[index];
     }
   };
 
   // src/demo/index.ts
-  var import_geom5 = __toESM(require_dist());
+  var import_geom7 = __toESM(require_dist());
   var instance2;
   var DemoApp = class {
     constructor(containerElement) {
@@ -26530,7 +26594,7 @@ ${e2}`);
       const bugDemo = new BugDemo(this.app);
       onPointerDown((event) => {
         const viewRect = this.app.view.getBoundingClientRect();
-        bugDemo.changeTarget(new import_geom5.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+        bugDemo.changeTarget(new import_geom7.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
       });
       bugDemo.render();
       this.app.ticker.add(() => {

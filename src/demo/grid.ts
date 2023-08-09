@@ -45,7 +45,7 @@ class Grid {
     this.pointerDownHandler = handler
   }
 
-  private handlePointerDown = (event: PIXI.FederatedPointerEvent) => {
+  private readonly handlePointerDown = (event: PIXI.FederatedPointerEvent): void => {
     this.pointerDownHandler(event)
   }
 }
@@ -57,6 +57,7 @@ export function render (app: PIXI.Application, px = 10): void {
 }
 
 export function onPointerDown (handler: (event: PIXI.FederatedPointerEvent) => void): void {
-  instance = instance ?? new Grid(app)
-  instance.onPointerDown(handler)
+  if (instance != null) {
+    instance.onPointerDown(handler)
+  }
 }

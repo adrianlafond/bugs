@@ -59,10 +59,10 @@ const defaults: Required<BugOptions> = {
     ], [
       new Point(3, 15),
       new Point(10, 16)
-    ]],
+    ]]
   },
   jointOffset: 0.25,
-  repulsionPx: 8,
+  repulsionPx: 0,
   maxJigglePx: 3,
   target: new Vector()
 }
@@ -72,27 +72,27 @@ export class Bug {
 
   private stepProgress = 0
   private stepMs = 0
-  private millisecondsPerStep: number
-  private maxStepPx: number
-  private jointOffset: number
+  private readonly millisecondsPerStep: number
+  private readonly maxStepPx: number
+  private readonly jointOffset: number
 
-  private head: Vector
-  private legs: Legs = {
+  private readonly head: Vector
+  private readonly legs: Legs = {
     left: [],
     right: []
   }
 
-  private target: Vector
-  private repulsionPx: number
-  private maxJigglePx: number
+  private readonly target: Vector
+  private readonly repulsionPx: number
+  private readonly maxJigglePx: number
 
-  private current: BugRender
+  private readonly current: BugRender
 
   private readonly listeners: {
     targetReached: Array<(bugRender: BugRender) => void>
   } = {
-    targetReached: []
-  }
+      targetReached: []
+    }
 
   constructor (options?: BugOptions) {
     this.activeSide = options?.activeSide ?? defaults.activeSide
@@ -118,7 +118,7 @@ export class Bug {
    */
   tick ({
     deltaMs = 0,
-    stageRect,
+    stageRect
   }: {
     deltaMs?: number
     stageRect?: StageRect
@@ -163,18 +163,18 @@ export class Bug {
     }
   }
 
-  private createLegs(legsModel: BugOptions['legs']) {
+  private createLegs (legsModel: BugOptions['legs']): void {
     legsModel.left.forEach((joints, index) => {
       joints.splice(1, 0, new Point(
         (joints[0].x + joints[1].x) * 0.5,
-        (joints[0].y + joints[1].y) * 0.5,
+        (joints[0].y + joints[1].y) * 0.5
       ))
       this.legs.left[index] = new Leg(joints)
     })
     legsModel.right.forEach((joints, index) => {
       joints.splice(1, 0, new Point(
         (joints[0].x + joints[1].x) * 0.5,
-        (joints[0].y + joints[1].y) * 0.5,
+        (joints[0].y + joints[1].y) * 0.5
       ))
       this.legs.right[index] = new Leg(joints)
     })
@@ -182,17 +182,19 @@ export class Bug {
 
   private updateBug ({
     deltaMs,
-    stageRect,
+    stageRect
   }: {
     deltaMs: number
     stageRect?: StageRect
   }): void {
-    const repulusionRect = stageRect ? {
-      x: stageRect.x + this.repulsionPx,
-      y: stageRect.y + this.repulsionPx,
-      width: stageRect.width - this.repulsionPx * 2,
-      height: stageRect.height - this.repulsionPx * 2,
-    } : stageRect;
+    const repulusionRect = (stageRect != null)
+      ? {
+          x: stageRect.x + this.repulsionPx,
+          y: stageRect.y + this.repulsionPx,
+          width: stageRect.width - this.repulsionPx * 2,
+          height: stageRect.height - this.repulsionPx * 2
+        }
+      : stageRect
     this.updateHead(repulusionRect)
     this.updateLegs(repulusionRect)
     this.updateStepProgress(deltaMs)
@@ -244,7 +246,7 @@ export class Bug {
       this.stepProgress +
       Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
 
-    if (stageRect) {
+    if (stageRect != null) {
       this.head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, this.head.x))
       this.head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, this.head.y))
     }
@@ -267,7 +269,7 @@ export class Bug {
 
           leg.updateLive(leg.jointIndex, new Vector(
             (socketPoint.x + clawPoint.x) * 0.5 - Math.cos(radians) * offset,
-            (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians) * offset,
+            (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians) * offset
           ))
         }
       })
@@ -287,7 +289,7 @@ export class Bug {
       Math.cos(radians) * radius + this.head.x,
       Math.sin(radians) * radius + this.head.y
     )
-    if (stageRect) {
+    if (stageRect != null) {
       updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x))
       updatedPoint.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, updatedPoint.y))
     }

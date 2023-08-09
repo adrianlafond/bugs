@@ -1,25 +1,22 @@
-import { Point } from '@adrianlafond/geom';
+import { Point } from '@adrianlafond/geom'
 
-export class Vertical {
-  private static count = 0;
-  private static offset = 10
+let count = 0
+const offset = 10
 
-
-  static getPoint(width: number, height: number): {
-    point: Point
-    complete: boolean
-  } {
-    if (Vertical.count === 10) {
-      Vertical.count = 0
-    }
-    const x = Vertical.count * width / 10 + Math.random() * Vertical.offset
-    const y = Math.random() * 20 + Vertical.offset
-    return {
-      point: new Point(
-        x,
-        Vertical.count % 2 === 0 ? y : height - y
-      ),
-      complete: ++Vertical.count === 10
-    }
+export const calculateVerticalPattern = (width: number, height: number): {
+  point: Point
+  complete: boolean
+} => {
+  if (count === 10) {
+    count = 0
+  }
+  const x = count * width / 10 + Math.random() * offset
+  const y = Math.random() * 20 + offset
+  return {
+    point: new Point(
+      x,
+      count % 2 === 0 ? y : height - y
+    ),
+    complete: ++count === 10
   }
 }

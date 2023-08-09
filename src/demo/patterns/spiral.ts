@@ -1,30 +1,28 @@
 import { Angle, Point } from '@adrianlafond/geom'
 
-export class Spiral {
-  private static radians = 0
-  private static radius = 0
-  private static direction: 1 | -1 = 1
+let radians = 0
+let radius = 0
+let direction: 1 | -1 = 1
 
-  static getPoint(maxRadius: number): {
-    point: Point
-    complete: boolean
-  } {
-    let complete = false
-    if (Spiral.radius >= maxRadius) {
-      Spiral.radius = 0
-      Spiral.radians = 0
-      Spiral.direction *= -1
-      complete = true
-    }
-    const x = Math.cos(Spiral.radians) * Spiral.radius
-    const y = Math.sin(Spiral.radians) * Spiral.radius
+export const calculateSpiralPattern = (maxRadius: number): {
+  point: Point
+  complete: boolean
+} => {
+  let complete = false
+  if (radius >= maxRadius) {
+    radius = 0
+    radians = 0
+    direction *= -1
+    complete = true
+  }
+  const x = Math.cos(radians) * radius
+  const y = Math.sin(radians) * radius
 
-    Spiral.radians = Angle.normalize(Spiral.radians - Math.PI * 0.05 * Spiral.direction)
-    Spiral.radius += 1
+  radians = Angle.normalize(radians - Math.PI * 0.05 * direction)
+  radius += 1
 
-    return {
-      point: new Point(x, y),
-      complete,
-    }
+  return {
+    point: new Point(x, y),
+    complete
   }
 }

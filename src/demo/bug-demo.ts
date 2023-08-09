@@ -1,8 +1,12 @@
 import * as PIXI from 'pixi.js'
 import { Bug, BugRender, Leg } from '../bug'
 import { Point } from '@adrianlafond/geom'
-import { Spiral } from './spiral'
-import { Vertical } from './vertical'
+import { Spiral } from './patterns/spiral'
+import { Vertical } from './patterns/vertical'
+import { Horizontal } from './patterns/horizontal'
+import { Random } from './patterns/random'
+
+type Pattern = 'random' | 'horizontal' | 'vertical' | 'spiral'
 
 export class BugDemo {
   private readonly target = new PIXI.Graphics()
@@ -11,7 +15,7 @@ export class BugDemo {
 
   private readonly bug: Bug
 
-  private loop: 'vertical' | 'spiral' = 'vertical'
+  private pattern: Pattern = 'random'
 
   constructor (private readonly app: PIXI.Application) {
     this.bug = new Bug()
@@ -108,24 +112,38 @@ export class BugDemo {
   }
 
   private updateTarget (): void {
-    // this.bug.updateTarget(new Point(
-    //   Math.floor(Math.random() * this.app.view.width),
-    //   Math.floor(Math.random() * this.app.view.height)
-    // ))
-    if (this.loop === 'vertical') {
+    if (this.pattern === 'random') {
+      const { point, complete } = Random.getPoint(this.app.view.width, this.app.view.height)
+      this.bug.updateTarget(point)
+      if (complete) {
+        this.updatePattern()
+      }
+    } else if (this.pattern === 'vertical') {
       const { point, complete } = Vertical.getPoint(this.app.view.width, this.app.view.height)
       this.bug.updateTarget(point)
       if (complete) {
-        this.loop = 'spiral'
+        this.updatePattern()
       }
-    } else if (this.loop === 'spiral') {
+    } else if (this.pattern === 'horizontal') {
+      const { point, complete } = Horizontal.getPoint(this.app.view.width, this.app.view.height)
+      this.bug.updateTarget(point)
+      if (complete) {
+        this.updatePattern()
+      }
+    } else if (this.pattern === 'spiral') {
       const { point, complete } = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5)
       point.x += this.app.view.width / 2
       point.y += this.app.view.height / 2
       this.bug.updateTarget(point)
       if (complete) {
-        this.loop = 'vertical'
+        this.updatePattern()
       }
     }
+  }
+
+  private updatePattern() {
+    const index = Math.floor(Math.random() * 4)
+    const patterns: Pattern[] = ['random', 'horizontal', 'vertical', 'spiral']
+    this.pattern = patterns[index]
   }
 }

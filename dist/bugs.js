@@ -2328,7 +2328,7 @@
       };
       var toISO = Date.prototype.toISOString;
       var defaultFormat = formats2["default"];
-      var defaults = {
+      var defaults2 = {
         addQueryPrefix: false,
         allowDots: false,
         charset: "utf-8",
@@ -2384,14 +2384,14 @@
         }
         if (obj === null) {
           if (strictNullHandling) {
-            return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, "key", format2) : prefix;
+            return encoder && !encodeValuesOnly ? encoder(prefix, defaults2.encoder, charset, "key", format2) : prefix;
           }
           obj = "";
         }
         if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
           if (encoder) {
-            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, "key", format2);
-            return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset, "value", format2))];
+            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults2.encoder, charset, "key", format2);
+            return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults2.encoder, charset, "value", format2))];
           }
           return [formatter(prefix) + "=" + formatter(String(obj))];
         }
@@ -2445,12 +2445,12 @@
       };
       var normalizeStringifyOptions = function normalizeStringifyOptions2(opts) {
         if (!opts) {
-          return defaults;
+          return defaults2;
         }
         if (opts.encoder !== null && typeof opts.encoder !== "undefined" && typeof opts.encoder !== "function") {
           throw new TypeError("Encoder has to be a function.");
         }
-        var charset = opts.charset || defaults.charset;
+        var charset = opts.charset || defaults2.charset;
         if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
           throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
         }
@@ -2462,26 +2462,26 @@
           format2 = opts.format;
         }
         var formatter = formats2.formatters[format2];
-        var filter = defaults.filter;
+        var filter = defaults2.filter;
         if (typeof opts.filter === "function" || isArray(opts.filter)) {
           filter = opts.filter;
         }
         return {
-          addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults.addQueryPrefix,
-          allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
+          addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults2.addQueryPrefix,
+          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
           charset,
-          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
-          delimiter: typeof opts.delimiter === "undefined" ? defaults.delimiter : opts.delimiter,
-          encode: typeof opts.encode === "boolean" ? opts.encode : defaults.encode,
-          encoder: typeof opts.encoder === "function" ? opts.encoder : defaults.encoder,
-          encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
+          delimiter: typeof opts.delimiter === "undefined" ? defaults2.delimiter : opts.delimiter,
+          encode: typeof opts.encode === "boolean" ? opts.encode : defaults2.encode,
+          encoder: typeof opts.encoder === "function" ? opts.encoder : defaults2.encoder,
+          encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults2.encodeValuesOnly,
           filter,
           format: format2,
           formatter,
-          serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults.serializeDate,
-          skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults.skipNulls,
+          serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults2.serializeDate,
+          skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults2.skipNulls,
           sort: typeof opts.sort === "function" ? opts.sort : null,
-          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
         };
       };
       module.exports = function(object, opts) {
@@ -2565,7 +2565,7 @@
       var utils = require_utils();
       var has = Object.prototype.hasOwnProperty;
       var isArray = Array.isArray;
-      var defaults = {
+      var defaults2 = {
         allowDots: false,
         allowPrototypes: false,
         allowSparse: false,
@@ -2626,14 +2626,14 @@
           var pos = bracketEqualsPos === -1 ? part.indexOf("=") : bracketEqualsPos + 1;
           var key, val;
           if (pos === -1) {
-            key = options.decoder(part, defaults.decoder, charset, "key");
+            key = options.decoder(part, defaults2.decoder, charset, "key");
             val = options.strictNullHandling ? null : "";
           } else {
-            key = options.decoder(part.slice(0, pos), defaults.decoder, charset, "key");
+            key = options.decoder(part.slice(0, pos), defaults2.decoder, charset, "key");
             val = utils.maybeMap(
               parseArrayValue(part.slice(pos + 1), options),
               function(encodedVal) {
-                return options.decoder(encodedVal, defaults.decoder, charset, "value");
+                return options.decoder(encodedVal, defaults2.decoder, charset, "value");
               }
             );
           }
@@ -2710,7 +2710,7 @@
       };
       var normalizeParseOptions = function normalizeParseOptions2(opts) {
         if (!opts) {
-          return defaults;
+          return defaults2;
         }
         if (opts.decoder !== null && opts.decoder !== void 0 && typeof opts.decoder !== "function") {
           throw new TypeError("Decoder has to be a function.");
@@ -2718,25 +2718,25 @@
         if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
           throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
         }
-        var charset = typeof opts.charset === "undefined" ? defaults.charset : opts.charset;
+        var charset = typeof opts.charset === "undefined" ? defaults2.charset : opts.charset;
         return {
-          allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
-          allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults.allowPrototypes,
-          allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults.allowSparse,
-          arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults.arrayLimit,
+          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
+          allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults2.allowPrototypes,
+          allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults2.allowSparse,
+          arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults2.arrayLimit,
           charset,
-          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
-          comma: typeof opts.comma === "boolean" ? opts.comma : defaults.comma,
-          decoder: typeof opts.decoder === "function" ? opts.decoder : defaults.decoder,
-          delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
+          comma: typeof opts.comma === "boolean" ? opts.comma : defaults2.comma,
+          decoder: typeof opts.decoder === "function" ? opts.decoder : defaults2.decoder,
+          delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults2.delimiter,
           // eslint-disable-next-line no-implicit-coercion, no-extra-parens
-          depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults.depth,
+          depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults2.depth,
           ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
-          interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
-          parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults.parameterLimit,
+          interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults2.interpretNumericEntities,
+          parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults2.parameterLimit,
           parseArrays: opts.parseArrays !== false,
-          plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults.plainObjects,
-          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling
+          plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults2.plainObjects,
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
         };
       };
       module.exports = function(str, opts) {
@@ -3369,10 +3369,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point7 = (
+      var Point9 = (
         /** @class */
         function() {
-          function Point8(x2, y2) {
+          function Point10(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -3382,39 +3382,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point8.prototype, "data", {
+          Object.defineProperty(Point10.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point8.prototype.clone = function() {
-            return new Point8(this.x, this.y);
+          Point10.prototype.clone = function() {
+            return new Point10(this.x, this.y);
           };
-          Point8.prototype.add = function(point) {
+          Point10.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point8.prototype.subtract = function(point) {
+          Point10.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point8.prototype.toString = function() {
+          Point10.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point8.distance = function(p1, p2) {
+          Point10.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point8.radians = function(p1, p2) {
+          Point10.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point8;
+          return Point10;
         }()
       );
-      exports.default = Point7;
+      exports.default = Point9;
     }
   });
 
@@ -26136,46 +26136,45 @@ ${e2}`);
   };
 
   // src/bug/bug.ts
+  var defaults = {
+    activeSide: "left",
+    millisecondsPerStep: 250,
+    maxStepPx: 18,
+    position: new import_geom2.Vector(),
+    legs: {
+      left: [[
+        new import_geom2.Point(-3, 5),
+        new import_geom2.Point(-12, -10)
+      ], [
+        new import_geom2.Point(-3, 8),
+        new import_geom2.Point(-14, 4)
+      ], [
+        new import_geom2.Point(-3, 15),
+        new import_geom2.Point(-10, 16)
+      ]],
+      right: [[
+        new import_geom2.Point(3, 5),
+        new import_geom2.Point(12, -10)
+      ], [
+        new import_geom2.Point(3, 8),
+        new import_geom2.Point(14, 4)
+      ], [
+        new import_geom2.Point(3, 15),
+        new import_geom2.Point(10, 16)
+      ]]
+    },
+    jointOffset: 0.25,
+    repulsionPx: 8,
+    maxJigglePx: 3,
+    target: new import_geom2.Vector()
+  };
   var Bug = class {
-    constructor() {
-      this.activeSide = "left";
+    constructor(options) {
       this.stepProgress = 0;
       this.stepMs = 0;
-      this.maxStepMs = 150;
-      this.maxStepPx = 12;
-      this.head = new import_geom2.Vector(100, 100);
-      this.legsModel = {
-        left: [[
-          new import_geom2.Point(-3, 5),
-          new import_geom2.Point(-12, -10)
-        ], [
-          new import_geom2.Point(-3, 8),
-          new import_geom2.Point(-14, 4)
-        ], [
-          new import_geom2.Point(-3, 15),
-          new import_geom2.Point(-10, 16)
-        ]],
-        right: [[
-          new import_geom2.Point(3, 5),
-          new import_geom2.Point(12, -10)
-        ], [
-          new import_geom2.Point(3, 8),
-          new import_geom2.Point(14, 4)
-        ], [
-          new import_geom2.Point(3, 15),
-          new import_geom2.Point(10, 16)
-        ]]
-      };
       this.legs = {
         left: [],
         right: []
-      };
-      this.target = new import_geom2.Vector(this.head.point);
-      this.repulsionPx = 8;
-      this.current = {
-        head: this.head,
-        legs: this.legs,
-        target: this.target.point
       };
       this.listeners = {
         targetReached: []
@@ -26199,8 +26198,22 @@ ${e2}`);
         }
         leg.updateLive(index, new import_geom2.Vector(updatedPoint, radians));
       };
-      this.createLegs();
-      this.updateBug({ deltaMs: this.maxStepMs });
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+      this.activeSide = (_a = options == null ? void 0 : options.activeSide) != null ? _a : defaults.activeSide;
+      this.millisecondsPerStep = (_b = options == null ? void 0 : options.millisecondsPerStep) != null ? _b : defaults.millisecondsPerStep;
+      this.maxStepPx = (_c = options == null ? void 0 : options.maxStepPx) != null ? _c : defaults.maxStepPx;
+      this.jointOffset = (_d = options == null ? void 0 : options.jointOffset) != null ? _d : defaults.jointOffset;
+      this.repulsionPx = (_e = options == null ? void 0 : options.repulsionPx) != null ? _e : defaults.repulsionPx;
+      this.maxJigglePx = (_f = options == null ? void 0 : options.maxJigglePx) != null ? _f : defaults.maxJigglePx;
+      this.head = (_g = options == null ? void 0 : options.position) != null ? _g : defaults.position;
+      this.target = (_h = options == null ? void 0 : options.target) != null ? _h : defaults.target;
+      this.current = {
+        head: this.head,
+        legs: this.legs,
+        target: this.target.point
+      };
+      this.createLegs((_i = options == null ? void 0 : options.legs) != null ? _i : defaults.legs);
+      this.updateBug({ deltaMs: this.millisecondsPerStep });
     }
     /**
      * Commands the bug to move. Takes one arg, the number of milliseconds that
@@ -26210,7 +26223,7 @@ ${e2}`);
       deltaMs = 0,
       stageRect
     }) {
-      this.stepProgress = this.stepMs / this.maxStepMs;
+      this.stepProgress = this.stepMs / this.millisecondsPerStep;
       this.updateBug({ deltaMs, stageRect });
       if (import_geom2.Point.distance(this.target.point, this.head.point) < this.maxStepPx + this.repulsionPx) {
         const bugRender = this.getRender();
@@ -26243,15 +26256,15 @@ ${e2}`);
         target: this.target.point
       };
     }
-    createLegs() {
-      this.legsModel.left.forEach((joints, index) => {
+    createLegs(legsModel) {
+      legsModel.left.forEach((joints, index) => {
         joints.splice(1, 0, new import_geom2.Point(
           (joints[0].x + joints[1].x) * 0.5,
           (joints[0].y + joints[1].y) * 0.5
         ));
         this.legs.left[index] = new Leg(joints);
       });
-      this.legsModel.right.forEach((joints, index) => {
+      legsModel.right.forEach((joints, index) => {
         joints.splice(1, 0, new import_geom2.Point(
           (joints[0].x + joints[1].x) * 0.5,
           (joints[0].y + joints[1].y) * 0.5
@@ -26281,8 +26294,8 @@ ${e2}`);
      * copied for use in calculations.
      */
     updateStepProgress(deltaMs) {
-      this.stepMs = Math.min(this.maxStepMs, this.stepMs + deltaMs);
-      if (this.stepMs >= this.maxStepMs) {
+      this.stepMs = Math.min(this.millisecondsPerStep, this.stepMs + deltaMs);
+      if (this.stepMs >= this.millisecondsPerStep) {
         this.stepMs = 0;
         this.activeSide = this.activeSide === "left" ? "right" : "left";
         this.current.head = this.head.clone();
@@ -26308,8 +26321,8 @@ ${e2}`);
         this.target.radians,
         Math.min(1, this.stepProgress)
       );
-      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress + Math.random() * 2 - 1;
-      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress + Math.random() * 2 - 1;
+      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
+      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
       if (stageRect) {
         this.head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, this.head.x));
         this.head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, this.head.y));
@@ -26326,9 +26339,10 @@ ${e2}`);
             const socketPoint = leg.getLive(leg.socketIndex).point;
             const clawPoint = leg.getLive(leg.clawIndex).point;
             const radians = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2;
-            const offset = import_geom2.Point.distance(leg.getModel(0), leg.getModel(2)) * 0.5;
+            const length = import_geom2.Point.distance(leg.getModel(0), leg.getModel(2));
+            const offset = length * this.jointOffset;
             leg.updateLive(leg.jointIndex, new import_geom2.Vector(
-              (socketPoint.x + clawPoint.x) * 0.5,
+              (socketPoint.x + clawPoint.x) * 0.5 - Math.cos(radians) * offset,
               (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians) * offset
             ));
           }
@@ -26352,7 +26366,7 @@ ${e2}`);
     }
   };
 
-  // src/demo/spiral.ts
+  // src/demo/patterns/spiral.ts
   var import_geom3 = __toESM(require_dist());
   var _Spiral = class {
     static getPoint(maxRadius) {
@@ -26360,11 +26374,12 @@ ${e2}`);
       if (_Spiral.radius >= maxRadius) {
         _Spiral.radius = 0;
         _Spiral.radians = 0;
+        _Spiral.direction *= -1;
         complete = true;
       }
       const x2 = Math.cos(_Spiral.radians) * _Spiral.radius;
       const y2 = Math.sin(_Spiral.radians) * _Spiral.radius;
-      _Spiral.radians = import_geom3.Angle.normalize(_Spiral.radians - Math.PI * 0.05);
+      _Spiral.radians = import_geom3.Angle.normalize(_Spiral.radians - Math.PI * 0.05 * _Spiral.direction);
       _Spiral.radius += 1;
       return {
         point: new import_geom3.Point(x2, y2),
@@ -26375,8 +26390,9 @@ ${e2}`);
   var Spiral = _Spiral;
   Spiral.radians = 0;
   Spiral.radius = 0;
+  Spiral.direction = 1;
 
-  // src/demo/vertical.ts
+  // src/demo/patterns/vertical.ts
   var import_geom4 = __toESM(require_dist());
   var _Vertical = class {
     static getPoint(width, height) {
@@ -26398,6 +26414,48 @@ ${e2}`);
   Vertical.count = 0;
   Vertical.offset = 10;
 
+  // src/demo/patterns/horizontal.ts
+  var import_geom5 = __toESM(require_dist());
+  var _Horizontal = class {
+    static getPoint(width, height) {
+      if (_Horizontal.count === 10) {
+        _Horizontal.count = 0;
+      }
+      const x2 = Math.random() * 20 + _Horizontal.offset;
+      const y2 = _Horizontal.count * height / 10 + Math.random() * _Horizontal.offset;
+      return {
+        point: new import_geom5.Point(
+          _Horizontal.count % 2 === 0 ? x2 : width - x2,
+          y2
+        ),
+        complete: ++_Horizontal.count === 10
+      };
+    }
+  };
+  var Horizontal = _Horizontal;
+  Horizontal.count = 0;
+  Horizontal.offset = 10;
+
+  // src/demo/patterns/random.ts
+  var import_geom6 = __toESM(require_dist());
+  var _Random = class {
+    static getPoint(width, height) {
+      if (_Random.count === 10) {
+        _Random.count = 0;
+      }
+      return {
+        point: new import_geom6.Point(
+          Math.floor(Math.random() * width),
+          Math.floor(Math.random() * height)
+        ),
+        complete: ++_Random.count === 10
+      };
+    }
+  };
+  var Random = _Random;
+  Random.count = 0;
+  Random.offset = 10;
+
   // src/demo/bug-demo.ts
   var BugDemo = class {
     constructor(app2) {
@@ -26405,7 +26463,7 @@ ${e2}`);
       this.target = new Graphics();
       this.head = new Graphics();
       this.legs = new Graphics();
-      this.loop = "vertical";
+      this.pattern = "random";
       this.handleTargetReached = () => {
         this.updateTarget();
       };
@@ -26489,26 +26547,43 @@ ${e2}`);
       }
     }
     updateTarget() {
-      if (this.loop === "vertical") {
+      if (this.pattern === "random") {
+        const { point, complete } = Random.getPoint(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "vertical") {
         const { point, complete } = Vertical.getPoint(this.app.view.width, this.app.view.height);
         this.bug.updateTarget(point);
         if (complete) {
-          this.loop = "spiral";
+          this.updatePattern();
         }
-      } else if (this.loop === "spiral") {
+      } else if (this.pattern === "horizontal") {
+        const { point, complete } = Horizontal.getPoint(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "spiral") {
         const { point, complete } = Spiral.getPoint(Math.min(this.app.view.width, this.app.view.height) * 0.5);
         point.x += this.app.view.width / 2;
         point.y += this.app.view.height / 2;
         this.bug.updateTarget(point);
         if (complete) {
-          this.loop = "vertical";
+          this.updatePattern();
         }
       }
+    }
+    updatePattern() {
+      const index = Math.floor(Math.random() * 4);
+      const patterns = ["random", "horizontal", "vertical", "spiral"];
+      this.pattern = patterns[index];
     }
   };
 
   // src/demo/index.ts
-  var import_geom5 = __toESM(require_dist());
+  var import_geom7 = __toESM(require_dist());
   var instance2;
   var DemoApp = class {
     constructor(containerElement) {
@@ -26530,7 +26605,7 @@ ${e2}`);
       const bugDemo = new BugDemo(this.app);
       onPointerDown((event) => {
         const viewRect = this.app.view.getBoundingClientRect();
-        bugDemo.changeTarget(new import_geom5.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+        bugDemo.changeTarget(new import_geom7.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
       });
       bugDemo.render();
       this.app.ticker.add(() => {

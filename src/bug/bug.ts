@@ -24,20 +24,20 @@ export interface BugOptions {
   millisecondsPerStep?: number
   maxStepPx?: number
   position?: Vector
-  legs: {
+  legs?: {
     left: Point[][]
     right: Point[][]
   }
-  jointOffset: number
-  repulsionPx: number
-  maxJigglePx: number
-  target: Vector
+  jointOffset?: number
+  repulsionPx?: number
+  maxJigglePx?: number
+  target?: Vector
 }
 
 const defaults: Required<BugOptions> = {
   activeSide: 'left',
   millisecondsPerStep: 250,
-  maxStepPx: 18,
+  maxStepPx: 16,
   position: new Vector(),
   legs: {
     left: [[
@@ -163,7 +163,7 @@ export class Bug {
     }
   }
 
-  private createLegs (legsModel: BugOptions['legs']): void {
+  private createLegs (legsModel: Required<BugOptions>['legs']): void {
     legsModel.left.forEach((joints, index) => {
       joints.splice(1, 0, new Point(
         (joints[0].x + joints[1].x) * 0.5,
@@ -219,18 +219,23 @@ export class Bug {
       }
       this.legs[this.activeSide].forEach(leg => leg.startMoving())
       this.legs[this.activeSide === 'left' ? 'right' : 'left'].forEach(leg => leg.stopMoving())
+
+      this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x)
+        + Math.PI * 0.5
+      const maxTurnRadians = Math.PI * 0.25
+      let delta = Angle.normalize(this.target.radians) - Angle.normalize(this.current.head.radians)
+      if (Math.abs(delta) > Math.PI) {
+        delta = Angle.normalize(this.current.head.radians) - Angle.normalize(this.target.radians)
+      }
+      if (delta > maxTurnRadians) {
+        this.target.radians = this.current.head.radians + maxTurnRadians
+      } else if (delta < -maxTurnRadians) {
+        this.target.radians = this.current.head.radians - maxTurnRadians
+      }
     }
   }
 
   private updateHead (stageRect?: StageRect): void {
-    this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5
-    const delta = Angle.delta(this.target.radians, this.current.head.radians)
-    const maxTurnRadians = Math.PI * 0.25
-    if (delta > maxTurnRadians) {
-      this.target.radians = Angle.normalize(this.current.head.radians - maxTurnRadians)
-    } else if (delta < -maxTurnRadians) {
-      this.target.radians = Angle.normalize(this.current.head.radians + maxTurnRadians)
-    }
     this.head.radians = Angle.interpolate(
       this.current.head.radians,
       this.target.radians,
@@ -280,7 +285,7 @@ export class Bug {
     const joint = leg.getModel(index)
     const radius = Point.distance(this.head.point, this.head.point.subtract(joint))
     const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians
-    const radians = this.interpolateRadians(
+    const radians = Angle.interpolate(
       currentLeg.getLive(index).radians,
       targetRadians,
       Math.min(1, this.stepProgress)
@@ -295,21 +300,5 @@ export class Bug {
     }
 
     leg.updateLive(index, new Vector(updatedPoint, radians))
-  }
-
-  /**
-   * Returns an interpolated radians value between two other radians according
-   * to a progress value.
-   * TODO: update this @adrianlafond/geom/Angle
-   */
-  private interpolateRadians (r1: number, r2: number, progress: number): number {
-    const a1 = Angle.normalize(r1)
-    const a2 = Angle.normalize(r2)
-    let delta = a2 - a1
-    if (Math.abs(delta) > Math.PI) {
-      const circumference = Math.PI * 2 * (a2 > a1 ? -1 : 1)
-      delta = a2 + circumference - a1
-    }
-    return Angle.normalize(a1 + delta * progress)
   }
 }

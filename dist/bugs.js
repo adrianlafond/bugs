@@ -26140,7 +26140,7 @@ ${e2}`);
   var defaults = {
     activeSide: "left",
     millisecondsPerStep: 250,
-    maxStepPx: 18,
+    maxStepPx: 16,
     position: new import_geom2.Vector(),
     legs: {
       left: [[
@@ -26184,7 +26184,7 @@ ${e2}`);
         const joint = leg.getModel(index);
         const radius2 = import_geom2.Point.distance(this.head.point, this.head.point.subtract(joint));
         const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians;
-        const radians2 = this.interpolateRadians(
+        const radians2 = import_geom2.Angle.interpolate(
           currentLeg.getLive(index).radians,
           targetRadians,
           Math.min(1, this.stepProgress)
@@ -26306,17 +26306,20 @@ ${e2}`);
         };
         this.legs[this.activeSide].forEach((leg) => leg.startMoving());
         this.legs[this.activeSide === "left" ? "right" : "left"].forEach((leg) => leg.stopMoving());
+        this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5;
+        const maxTurnRadians = Math.PI * 0.25;
+        let delta = import_geom2.Angle.normalize(this.target.radians) - import_geom2.Angle.normalize(this.current.head.radians);
+        if (Math.abs(delta) > Math.PI) {
+          delta = import_geom2.Angle.normalize(this.current.head.radians) - import_geom2.Angle.normalize(this.target.radians);
+        }
+        if (delta > maxTurnRadians) {
+          this.target.radians = this.current.head.radians + maxTurnRadians;
+        } else if (delta < -maxTurnRadians) {
+          this.target.radians = this.current.head.radians - maxTurnRadians;
+        }
       }
     }
     updateHead(stageRect) {
-      this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5;
-      const delta = import_geom2.Angle.delta(this.target.radians, this.current.head.radians);
-      const maxTurnRadians = Math.PI * 0.25;
-      if (delta > maxTurnRadians) {
-        this.target.radians = import_geom2.Angle.normalize(this.current.head.radians - maxTurnRadians);
-      } else if (delta < -maxTurnRadians) {
-        this.target.radians = import_geom2.Angle.normalize(this.current.head.radians + maxTurnRadians);
-      }
       this.head.radians = import_geom2.Angle.interpolate(
         this.current.head.radians,
         this.target.radians,
@@ -26349,21 +26352,6 @@ ${e2}`);
           }
         });
       });
-    }
-    /**
-     * Returns an interpolated radians value between two other radians according
-     * to a progress value.
-     * TODO: update this @adrianlafond/geom/Angle
-     */
-    interpolateRadians(r1, r2, progress) {
-      const a1 = import_geom2.Angle.normalize(r1);
-      const a2 = import_geom2.Angle.normalize(r2);
-      let delta = a2 - a1;
-      if (Math.abs(delta) > Math.PI) {
-        const circumference = Math.PI * 2 * (a2 > a1 ? -1 : 1);
-        delta = a2 + circumference - a1;
-      }
-      return import_geom2.Angle.normalize(a1 + delta * progress);
     }
   };
 

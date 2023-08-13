@@ -222,11 +222,34 @@ export class Bug {
 
       this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x)
         + Math.PI * 0.5
+      this.target.radians = Angle.normalize(this.target.radians)
       const maxTurnRadians = Math.PI * 0.25
+
+      // Calculate the delta between the bug's current angle and the target
+      // angle so that it can be constrained; i.e., prevent the bug from turning
+      // too far in a single step.
       let delta = Angle.normalize(this.target.radians) - Angle.normalize(this.current.head.radians)
+
       if (Math.abs(delta) > Math.PI) {
+        // If delta is > half a semi-circle, then the shortest turn is in the
+        // opposite direction.
         delta = Angle.normalize(this.current.head.radians) - Angle.normalize(this.target.radians)
       }
+
+      const fullCircle = Math.PI * 2
+      if (Math.abs(delta) > Math.PI) {
+        // If delta is still > Math.PI then it is because delta is flipping back
+        // and forth over zero/6.28.
+        if (delta < 0) {
+          // const tr = this.target.radians
+          const cr = this.current.head.radians + fullCircle
+          delta = this.target.radians - cr
+        } else if (delta > 0) {
+          const tr = this.target.radians + fullCircle
+          delta = tr - this.current.head.radians
+        }
+      }
+
       if (delta > maxTurnRadians) {
         this.target.radians = this.current.head.radians + maxTurnRadians
       } else if (delta < -maxTurnRadians) {

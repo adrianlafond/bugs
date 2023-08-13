@@ -26307,10 +26307,21 @@ ${e2}`);
         this.legs[this.activeSide].forEach((leg) => leg.startMoving());
         this.legs[this.activeSide === "left" ? "right" : "left"].forEach((leg) => leg.stopMoving());
         this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5;
+        this.target.radians = import_geom2.Angle.normalize(this.target.radians);
         const maxTurnRadians = Math.PI * 0.25;
         let delta = import_geom2.Angle.normalize(this.target.radians) - import_geom2.Angle.normalize(this.current.head.radians);
         if (Math.abs(delta) > Math.PI) {
           delta = import_geom2.Angle.normalize(this.current.head.radians) - import_geom2.Angle.normalize(this.target.radians);
+        }
+        const fullCircle = Math.PI * 2;
+        if (Math.abs(delta) > Math.PI) {
+          if (delta < 0) {
+            const cr = this.current.head.radians + fullCircle;
+            delta = this.target.radians - cr;
+          } else if (delta > 0) {
+            const tr = this.target.radians + fullCircle;
+            delta = tr - this.current.head.radians;
+          }
         }
         if (delta > maxTurnRadians) {
           this.target.radians = this.current.head.radians + maxTurnRadians;

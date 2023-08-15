@@ -694,7 +694,7 @@
           "invalid-input": "Invalid input"
         }, baseMinusTMin = base - tMin, floor = Math.floor, stringFromCharCode = String.fromCharCode, key;
         function error(type) {
-          throw RangeError(errors[type]);
+          throw new RangeError(errors[type]);
         }
         function map4(array, fn) {
           var length = array.length;
@@ -888,7 +888,7 @@
            * @memberOf punycode
            * @type String
            */
-          "version": "1.3.2",
+          "version": "1.4.1",
           /**
            * An object of methods to convert from JavaScript's internal character
            * representation (UCS-2) to Unicode code points, and back.
@@ -924,122 +924,1854 @@
     }
   });
 
-  // node_modules/url/util.js
-  var require_util = __commonJS({
-    "node_modules/url/util.js"(exports, module) {
+  // node_modules/has-symbols/shams.js
+  var require_shams = __commonJS({
+    "node_modules/has-symbols/shams.js"(exports, module) {
       "use strict";
-      module.exports = {
-        isString: function(arg) {
-          return typeof arg === "string";
-        },
-        isObject: function(arg) {
-          return typeof arg === "object" && arg !== null;
-        },
-        isNull: function(arg) {
-          return arg === null;
-        },
-        isNullOrUndefined: function(arg) {
-          return arg == null;
+      module.exports = function hasSymbols() {
+        if (typeof Symbol !== "function" || typeof Object.getOwnPropertySymbols !== "function") {
+          return false;
         }
+        if (typeof Symbol.iterator === "symbol") {
+          return true;
+        }
+        var obj = {};
+        var sym = Symbol("test");
+        var symObj = Object(sym);
+        if (typeof sym === "string") {
+          return false;
+        }
+        if (Object.prototype.toString.call(sym) !== "[object Symbol]") {
+          return false;
+        }
+        if (Object.prototype.toString.call(symObj) !== "[object Symbol]") {
+          return false;
+        }
+        var symVal = 42;
+        obj[sym] = symVal;
+        for (sym in obj) {
+          return false;
+        }
+        if (typeof Object.keys === "function" && Object.keys(obj).length !== 0) {
+          return false;
+        }
+        if (typeof Object.getOwnPropertyNames === "function" && Object.getOwnPropertyNames(obj).length !== 0) {
+          return false;
+        }
+        var syms = Object.getOwnPropertySymbols(obj);
+        if (syms.length !== 1 || syms[0] !== sym) {
+          return false;
+        }
+        if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) {
+          return false;
+        }
+        if (typeof Object.getOwnPropertyDescriptor === "function") {
+          var descriptor = Object.getOwnPropertyDescriptor(obj, sym);
+          if (descriptor.value !== symVal || descriptor.enumerable !== true) {
+            return false;
+          }
+        }
+        return true;
       };
     }
   });
 
-  // node_modules/querystring/decode.js
-  var require_decode = __commonJS({
-    "node_modules/querystring/decode.js"(exports, module) {
+  // node_modules/has-symbols/index.js
+  var require_has_symbols = __commonJS({
+    "node_modules/has-symbols/index.js"(exports, module) {
       "use strict";
-      function hasOwnProperty(obj, prop) {
-        return Object.prototype.hasOwnProperty.call(obj, prop);
-      }
-      module.exports = function(qs, sep, eq, options) {
-        sep = sep || "&";
-        eq = eq || "=";
-        var obj = {};
-        if (typeof qs !== "string" || qs.length === 0) {
-          return obj;
+      var origSymbol = typeof Symbol !== "undefined" && Symbol;
+      var hasSymbolSham = require_shams();
+      module.exports = function hasNativeSymbols() {
+        if (typeof origSymbol !== "function") {
+          return false;
         }
-        var regexp = /\+/g;
-        qs = qs.split(sep);
-        var maxKeys = 1e3;
-        if (options && typeof options.maxKeys === "number") {
-          maxKeys = options.maxKeys;
+        if (typeof Symbol !== "function") {
+          return false;
         }
-        var len = qs.length;
-        if (maxKeys > 0 && len > maxKeys) {
-          len = maxKeys;
+        if (typeof origSymbol("foo") !== "symbol") {
+          return false;
         }
-        for (var i2 = 0; i2 < len; ++i2) {
-          var x2 = qs[i2].replace(regexp, "%20"), idx = x2.indexOf(eq), kstr, vstr, k2, v2;
-          if (idx >= 0) {
-            kstr = x2.substr(0, idx);
-            vstr = x2.substr(idx + 1);
+        if (typeof Symbol("bar") !== "symbol") {
+          return false;
+        }
+        return hasSymbolSham();
+      };
+    }
+  });
+
+  // node_modules/has-proto/index.js
+  var require_has_proto = __commonJS({
+    "node_modules/has-proto/index.js"(exports, module) {
+      "use strict";
+      var test = {
+        foo: {}
+      };
+      var $Object = Object;
+      module.exports = function hasProto() {
+        return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
+      };
+    }
+  });
+
+  // node_modules/function-bind/implementation.js
+  var require_implementation = __commonJS({
+    "node_modules/function-bind/implementation.js"(exports, module) {
+      "use strict";
+      var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
+      var slice = Array.prototype.slice;
+      var toStr = Object.prototype.toString;
+      var funcType = "[object Function]";
+      module.exports = function bind(that) {
+        var target = this;
+        if (typeof target !== "function" || toStr.call(target) !== funcType) {
+          throw new TypeError(ERROR_MESSAGE + target);
+        }
+        var args = slice.call(arguments, 1);
+        var bound;
+        var binder = function() {
+          if (this instanceof bound) {
+            var result = target.apply(
+              this,
+              args.concat(slice.call(arguments))
+            );
+            if (Object(result) === result) {
+              return result;
+            }
+            return this;
           } else {
-            kstr = x2;
-            vstr = "";
+            return target.apply(
+              that,
+              args.concat(slice.call(arguments))
+            );
           }
-          k2 = decodeURIComponent(kstr);
-          v2 = decodeURIComponent(vstr);
-          if (!hasOwnProperty(obj, k2)) {
-            obj[k2] = v2;
-          } else if (Array.isArray(obj[k2])) {
-            obj[k2].push(v2);
+        };
+        var boundLength = Math.max(0, target.length - args.length);
+        var boundArgs = [];
+        for (var i2 = 0; i2 < boundLength; i2++) {
+          boundArgs.push("$" + i2);
+        }
+        bound = Function("binder", "return function (" + boundArgs.join(",") + "){ return binder.apply(this,arguments); }")(binder);
+        if (target.prototype) {
+          var Empty = function Empty2() {
+          };
+          Empty.prototype = target.prototype;
+          bound.prototype = new Empty();
+          Empty.prototype = null;
+        }
+        return bound;
+      };
+    }
+  });
+
+  // node_modules/function-bind/index.js
+  var require_function_bind = __commonJS({
+    "node_modules/function-bind/index.js"(exports, module) {
+      "use strict";
+      var implementation = require_implementation();
+      module.exports = Function.prototype.bind || implementation;
+    }
+  });
+
+  // node_modules/has/src/index.js
+  var require_src = __commonJS({
+    "node_modules/has/src/index.js"(exports, module) {
+      "use strict";
+      var bind = require_function_bind();
+      module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
+    }
+  });
+
+  // node_modules/get-intrinsic/index.js
+  var require_get_intrinsic = __commonJS({
+    "node_modules/get-intrinsic/index.js"(exports, module) {
+      "use strict";
+      var undefined2;
+      var $SyntaxError = SyntaxError;
+      var $Function = Function;
+      var $TypeError = TypeError;
+      var getEvalledConstructor = function(expressionSyntax) {
+        try {
+          return $Function('"use strict"; return (' + expressionSyntax + ").constructor;")();
+        } catch (e2) {
+        }
+      };
+      var $gOPD = Object.getOwnPropertyDescriptor;
+      if ($gOPD) {
+        try {
+          $gOPD({}, "");
+        } catch (e2) {
+          $gOPD = null;
+        }
+      }
+      var throwTypeError = function() {
+        throw new $TypeError();
+      };
+      var ThrowTypeError = $gOPD ? function() {
+        try {
+          arguments.callee;
+          return throwTypeError;
+        } catch (calleeThrows) {
+          try {
+            return $gOPD(arguments, "callee").get;
+          } catch (gOPDthrows) {
+            return throwTypeError;
+          }
+        }
+      }() : throwTypeError;
+      var hasSymbols = require_has_symbols()();
+      var hasProto = require_has_proto()();
+      var getProto = Object.getPrototypeOf || (hasProto ? function(x2) {
+        return x2.__proto__;
+      } : null);
+      var needsEval = {};
+      var TypedArray = typeof Uint8Array === "undefined" || !getProto ? undefined2 : getProto(Uint8Array);
+      var INTRINSICS = {
+        "%AggregateError%": typeof AggregateError === "undefined" ? undefined2 : AggregateError,
+        "%Array%": Array,
+        "%ArrayBuffer%": typeof ArrayBuffer === "undefined" ? undefined2 : ArrayBuffer,
+        "%ArrayIteratorPrototype%": hasSymbols && getProto ? getProto([][Symbol.iterator]()) : undefined2,
+        "%AsyncFromSyncIteratorPrototype%": undefined2,
+        "%AsyncFunction%": needsEval,
+        "%AsyncGenerator%": needsEval,
+        "%AsyncGeneratorFunction%": needsEval,
+        "%AsyncIteratorPrototype%": needsEval,
+        "%Atomics%": typeof Atomics === "undefined" ? undefined2 : Atomics,
+        "%BigInt%": typeof BigInt === "undefined" ? undefined2 : BigInt,
+        "%BigInt64Array%": typeof BigInt64Array === "undefined" ? undefined2 : BigInt64Array,
+        "%BigUint64Array%": typeof BigUint64Array === "undefined" ? undefined2 : BigUint64Array,
+        "%Boolean%": Boolean,
+        "%DataView%": typeof DataView === "undefined" ? undefined2 : DataView,
+        "%Date%": Date,
+        "%decodeURI%": decodeURI,
+        "%decodeURIComponent%": decodeURIComponent,
+        "%encodeURI%": encodeURI,
+        "%encodeURIComponent%": encodeURIComponent,
+        "%Error%": Error,
+        "%eval%": eval,
+        // eslint-disable-line no-eval
+        "%EvalError%": EvalError,
+        "%Float32Array%": typeof Float32Array === "undefined" ? undefined2 : Float32Array,
+        "%Float64Array%": typeof Float64Array === "undefined" ? undefined2 : Float64Array,
+        "%FinalizationRegistry%": typeof FinalizationRegistry === "undefined" ? undefined2 : FinalizationRegistry,
+        "%Function%": $Function,
+        "%GeneratorFunction%": needsEval,
+        "%Int8Array%": typeof Int8Array === "undefined" ? undefined2 : Int8Array,
+        "%Int16Array%": typeof Int16Array === "undefined" ? undefined2 : Int16Array,
+        "%Int32Array%": typeof Int32Array === "undefined" ? undefined2 : Int32Array,
+        "%isFinite%": isFinite,
+        "%isNaN%": isNaN,
+        "%IteratorPrototype%": hasSymbols && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined2,
+        "%JSON%": typeof JSON === "object" ? JSON : undefined2,
+        "%Map%": typeof Map === "undefined" ? undefined2 : Map,
+        "%MapIteratorPrototype%": typeof Map === "undefined" || !hasSymbols || !getProto ? undefined2 : getProto((/* @__PURE__ */ new Map())[Symbol.iterator]()),
+        "%Math%": Math,
+        "%Number%": Number,
+        "%Object%": Object,
+        "%parseFloat%": parseFloat,
+        "%parseInt%": parseInt,
+        "%Promise%": typeof Promise === "undefined" ? undefined2 : Promise,
+        "%Proxy%": typeof Proxy === "undefined" ? undefined2 : Proxy,
+        "%RangeError%": RangeError,
+        "%ReferenceError%": ReferenceError,
+        "%Reflect%": typeof Reflect === "undefined" ? undefined2 : Reflect,
+        "%RegExp%": RegExp,
+        "%Set%": typeof Set === "undefined" ? undefined2 : Set,
+        "%SetIteratorPrototype%": typeof Set === "undefined" || !hasSymbols || !getProto ? undefined2 : getProto((/* @__PURE__ */ new Set())[Symbol.iterator]()),
+        "%SharedArrayBuffer%": typeof SharedArrayBuffer === "undefined" ? undefined2 : SharedArrayBuffer,
+        "%String%": String,
+        "%StringIteratorPrototype%": hasSymbols && getProto ? getProto(""[Symbol.iterator]()) : undefined2,
+        "%Symbol%": hasSymbols ? Symbol : undefined2,
+        "%SyntaxError%": $SyntaxError,
+        "%ThrowTypeError%": ThrowTypeError,
+        "%TypedArray%": TypedArray,
+        "%TypeError%": $TypeError,
+        "%Uint8Array%": typeof Uint8Array === "undefined" ? undefined2 : Uint8Array,
+        "%Uint8ClampedArray%": typeof Uint8ClampedArray === "undefined" ? undefined2 : Uint8ClampedArray,
+        "%Uint16Array%": typeof Uint16Array === "undefined" ? undefined2 : Uint16Array,
+        "%Uint32Array%": typeof Uint32Array === "undefined" ? undefined2 : Uint32Array,
+        "%URIError%": URIError,
+        "%WeakMap%": typeof WeakMap === "undefined" ? undefined2 : WeakMap,
+        "%WeakRef%": typeof WeakRef === "undefined" ? undefined2 : WeakRef,
+        "%WeakSet%": typeof WeakSet === "undefined" ? undefined2 : WeakSet
+      };
+      if (getProto) {
+        try {
+          null.error;
+        } catch (e2) {
+          errorProto = getProto(getProto(e2));
+          INTRINSICS["%Error.prototype%"] = errorProto;
+        }
+      }
+      var errorProto;
+      var doEval = function doEval2(name) {
+        var value;
+        if (name === "%AsyncFunction%") {
+          value = getEvalledConstructor("async function () {}");
+        } else if (name === "%GeneratorFunction%") {
+          value = getEvalledConstructor("function* () {}");
+        } else if (name === "%AsyncGeneratorFunction%") {
+          value = getEvalledConstructor("async function* () {}");
+        } else if (name === "%AsyncGenerator%") {
+          var fn = doEval2("%AsyncGeneratorFunction%");
+          if (fn) {
+            value = fn.prototype;
+          }
+        } else if (name === "%AsyncIteratorPrototype%") {
+          var gen = doEval2("%AsyncGenerator%");
+          if (gen && getProto) {
+            value = getProto(gen.prototype);
+          }
+        }
+        INTRINSICS[name] = value;
+        return value;
+      };
+      var LEGACY_ALIASES = {
+        "%ArrayBufferPrototype%": ["ArrayBuffer", "prototype"],
+        "%ArrayPrototype%": ["Array", "prototype"],
+        "%ArrayProto_entries%": ["Array", "prototype", "entries"],
+        "%ArrayProto_forEach%": ["Array", "prototype", "forEach"],
+        "%ArrayProto_keys%": ["Array", "prototype", "keys"],
+        "%ArrayProto_values%": ["Array", "prototype", "values"],
+        "%AsyncFunctionPrototype%": ["AsyncFunction", "prototype"],
+        "%AsyncGenerator%": ["AsyncGeneratorFunction", "prototype"],
+        "%AsyncGeneratorPrototype%": ["AsyncGeneratorFunction", "prototype", "prototype"],
+        "%BooleanPrototype%": ["Boolean", "prototype"],
+        "%DataViewPrototype%": ["DataView", "prototype"],
+        "%DatePrototype%": ["Date", "prototype"],
+        "%ErrorPrototype%": ["Error", "prototype"],
+        "%EvalErrorPrototype%": ["EvalError", "prototype"],
+        "%Float32ArrayPrototype%": ["Float32Array", "prototype"],
+        "%Float64ArrayPrototype%": ["Float64Array", "prototype"],
+        "%FunctionPrototype%": ["Function", "prototype"],
+        "%Generator%": ["GeneratorFunction", "prototype"],
+        "%GeneratorPrototype%": ["GeneratorFunction", "prototype", "prototype"],
+        "%Int8ArrayPrototype%": ["Int8Array", "prototype"],
+        "%Int16ArrayPrototype%": ["Int16Array", "prototype"],
+        "%Int32ArrayPrototype%": ["Int32Array", "prototype"],
+        "%JSONParse%": ["JSON", "parse"],
+        "%JSONStringify%": ["JSON", "stringify"],
+        "%MapPrototype%": ["Map", "prototype"],
+        "%NumberPrototype%": ["Number", "prototype"],
+        "%ObjectPrototype%": ["Object", "prototype"],
+        "%ObjProto_toString%": ["Object", "prototype", "toString"],
+        "%ObjProto_valueOf%": ["Object", "prototype", "valueOf"],
+        "%PromisePrototype%": ["Promise", "prototype"],
+        "%PromiseProto_then%": ["Promise", "prototype", "then"],
+        "%Promise_all%": ["Promise", "all"],
+        "%Promise_reject%": ["Promise", "reject"],
+        "%Promise_resolve%": ["Promise", "resolve"],
+        "%RangeErrorPrototype%": ["RangeError", "prototype"],
+        "%ReferenceErrorPrototype%": ["ReferenceError", "prototype"],
+        "%RegExpPrototype%": ["RegExp", "prototype"],
+        "%SetPrototype%": ["Set", "prototype"],
+        "%SharedArrayBufferPrototype%": ["SharedArrayBuffer", "prototype"],
+        "%StringPrototype%": ["String", "prototype"],
+        "%SymbolPrototype%": ["Symbol", "prototype"],
+        "%SyntaxErrorPrototype%": ["SyntaxError", "prototype"],
+        "%TypedArrayPrototype%": ["TypedArray", "prototype"],
+        "%TypeErrorPrototype%": ["TypeError", "prototype"],
+        "%Uint8ArrayPrototype%": ["Uint8Array", "prototype"],
+        "%Uint8ClampedArrayPrototype%": ["Uint8ClampedArray", "prototype"],
+        "%Uint16ArrayPrototype%": ["Uint16Array", "prototype"],
+        "%Uint32ArrayPrototype%": ["Uint32Array", "prototype"],
+        "%URIErrorPrototype%": ["URIError", "prototype"],
+        "%WeakMapPrototype%": ["WeakMap", "prototype"],
+        "%WeakSetPrototype%": ["WeakSet", "prototype"]
+      };
+      var bind = require_function_bind();
+      var hasOwn = require_src();
+      var $concat = bind.call(Function.call, Array.prototype.concat);
+      var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
+      var $replace = bind.call(Function.call, String.prototype.replace);
+      var $strSlice = bind.call(Function.call, String.prototype.slice);
+      var $exec = bind.call(Function.call, RegExp.prototype.exec);
+      var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
+      var reEscapeChar = /\\(\\)?/g;
+      var stringToPath = function stringToPath2(string) {
+        var first = $strSlice(string, 0, 1);
+        var last = $strSlice(string, -1);
+        if (first === "%" && last !== "%") {
+          throw new $SyntaxError("invalid intrinsic syntax, expected closing `%`");
+        } else if (last === "%" && first !== "%") {
+          throw new $SyntaxError("invalid intrinsic syntax, expected opening `%`");
+        }
+        var result = [];
+        $replace(string, rePropName, function(match, number, quote, subString) {
+          result[result.length] = quote ? $replace(subString, reEscapeChar, "$1") : number || match;
+        });
+        return result;
+      };
+      var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
+        var intrinsicName = name;
+        var alias;
+        if (hasOwn(LEGACY_ALIASES, intrinsicName)) {
+          alias = LEGACY_ALIASES[intrinsicName];
+          intrinsicName = "%" + alias[0] + "%";
+        }
+        if (hasOwn(INTRINSICS, intrinsicName)) {
+          var value = INTRINSICS[intrinsicName];
+          if (value === needsEval) {
+            value = doEval(intrinsicName);
+          }
+          if (typeof value === "undefined" && !allowMissing) {
+            throw new $TypeError("intrinsic " + name + " exists, but is not available. Please file an issue!");
+          }
+          return {
+            alias,
+            name: intrinsicName,
+            value
+          };
+        }
+        throw new $SyntaxError("intrinsic " + name + " does not exist!");
+      };
+      module.exports = function GetIntrinsic(name, allowMissing) {
+        if (typeof name !== "string" || name.length === 0) {
+          throw new $TypeError("intrinsic name must be a non-empty string");
+        }
+        if (arguments.length > 1 && typeof allowMissing !== "boolean") {
+          throw new $TypeError('"allowMissing" argument must be a boolean');
+        }
+        if ($exec(/^%?[^%]*%?$/, name) === null) {
+          throw new $SyntaxError("`%` may not be present anywhere but at the beginning and end of the intrinsic name");
+        }
+        var parts = stringToPath(name);
+        var intrinsicBaseName = parts.length > 0 ? parts[0] : "";
+        var intrinsic = getBaseIntrinsic("%" + intrinsicBaseName + "%", allowMissing);
+        var intrinsicRealName = intrinsic.name;
+        var value = intrinsic.value;
+        var skipFurtherCaching = false;
+        var alias = intrinsic.alias;
+        if (alias) {
+          intrinsicBaseName = alias[0];
+          $spliceApply(parts, $concat([0, 1], alias));
+        }
+        for (var i2 = 1, isOwn = true; i2 < parts.length; i2 += 1) {
+          var part = parts[i2];
+          var first = $strSlice(part, 0, 1);
+          var last = $strSlice(part, -1);
+          if ((first === '"' || first === "'" || first === "`" || (last === '"' || last === "'" || last === "`")) && first !== last) {
+            throw new $SyntaxError("property names with quotes must have matching quotes");
+          }
+          if (part === "constructor" || !isOwn) {
+            skipFurtherCaching = true;
+          }
+          intrinsicBaseName += "." + part;
+          intrinsicRealName = "%" + intrinsicBaseName + "%";
+          if (hasOwn(INTRINSICS, intrinsicRealName)) {
+            value = INTRINSICS[intrinsicRealName];
+          } else if (value != null) {
+            if (!(part in value)) {
+              if (!allowMissing) {
+                throw new $TypeError("base intrinsic for " + name + " exists, but the property is not available.");
+              }
+              return void 0;
+            }
+            if ($gOPD && i2 + 1 >= parts.length) {
+              var desc = $gOPD(value, part);
+              isOwn = !!desc;
+              if (isOwn && "get" in desc && !("originalValue" in desc.get)) {
+                value = desc.get;
+              } else {
+                value = value[part];
+              }
+            } else {
+              isOwn = hasOwn(value, part);
+              value = value[part];
+            }
+            if (isOwn && !skipFurtherCaching) {
+              INTRINSICS[intrinsicRealName] = value;
+            }
+          }
+        }
+        return value;
+      };
+    }
+  });
+
+  // node_modules/call-bind/index.js
+  var require_call_bind = __commonJS({
+    "node_modules/call-bind/index.js"(exports, module) {
+      "use strict";
+      var bind = require_function_bind();
+      var GetIntrinsic = require_get_intrinsic();
+      var $apply = GetIntrinsic("%Function.prototype.apply%");
+      var $call = GetIntrinsic("%Function.prototype.call%");
+      var $reflectApply = GetIntrinsic("%Reflect.apply%", true) || bind.call($call, $apply);
+      var $gOPD = GetIntrinsic("%Object.getOwnPropertyDescriptor%", true);
+      var $defineProperty = GetIntrinsic("%Object.defineProperty%", true);
+      var $max = GetIntrinsic("%Math.max%");
+      if ($defineProperty) {
+        try {
+          $defineProperty({}, "a", { value: 1 });
+        } catch (e2) {
+          $defineProperty = null;
+        }
+      }
+      module.exports = function callBind(originalFunction) {
+        var func = $reflectApply(bind, $call, arguments);
+        if ($gOPD && $defineProperty) {
+          var desc = $gOPD(func, "length");
+          if (desc.configurable) {
+            $defineProperty(
+              func,
+              "length",
+              { value: 1 + $max(0, originalFunction.length - (arguments.length - 1)) }
+            );
+          }
+        }
+        return func;
+      };
+      var applyBind = function applyBind2() {
+        return $reflectApply(bind, $apply, arguments);
+      };
+      if ($defineProperty) {
+        $defineProperty(module.exports, "apply", { value: applyBind });
+      } else {
+        module.exports.apply = applyBind;
+      }
+    }
+  });
+
+  // node_modules/call-bind/callBound.js
+  var require_callBound = __commonJS({
+    "node_modules/call-bind/callBound.js"(exports, module) {
+      "use strict";
+      var GetIntrinsic = require_get_intrinsic();
+      var callBind = require_call_bind();
+      var $indexOf = callBind(GetIntrinsic("String.prototype.indexOf"));
+      module.exports = function callBoundIntrinsic(name, allowMissing) {
+        var intrinsic = GetIntrinsic(name, !!allowMissing);
+        if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
+          return callBind(intrinsic);
+        }
+        return intrinsic;
+      };
+    }
+  });
+
+  // (disabled):node_modules/object-inspect/util.inspect
+  var require_util = __commonJS({
+    "(disabled):node_modules/object-inspect/util.inspect"() {
+    }
+  });
+
+  // node_modules/object-inspect/index.js
+  var require_object_inspect = __commonJS({
+    "node_modules/object-inspect/index.js"(exports, module) {
+      var hasMap = typeof Map === "function" && Map.prototype;
+      var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, "size") : null;
+      var mapSize2 = hasMap && mapSizeDescriptor && typeof mapSizeDescriptor.get === "function" ? mapSizeDescriptor.get : null;
+      var mapForEach = hasMap && Map.prototype.forEach;
+      var hasSet = typeof Set === "function" && Set.prototype;
+      var setSizeDescriptor = Object.getOwnPropertyDescriptor && hasSet ? Object.getOwnPropertyDescriptor(Set.prototype, "size") : null;
+      var setSize = hasSet && setSizeDescriptor && typeof setSizeDescriptor.get === "function" ? setSizeDescriptor.get : null;
+      var setForEach = hasSet && Set.prototype.forEach;
+      var hasWeakMap = typeof WeakMap === "function" && WeakMap.prototype;
+      var weakMapHas = hasWeakMap ? WeakMap.prototype.has : null;
+      var hasWeakSet = typeof WeakSet === "function" && WeakSet.prototype;
+      var weakSetHas = hasWeakSet ? WeakSet.prototype.has : null;
+      var hasWeakRef = typeof WeakRef === "function" && WeakRef.prototype;
+      var weakRefDeref = hasWeakRef ? WeakRef.prototype.deref : null;
+      var booleanValueOf = Boolean.prototype.valueOf;
+      var objectToString = Object.prototype.toString;
+      var functionToString = Function.prototype.toString;
+      var $match = String.prototype.match;
+      var $slice = String.prototype.slice;
+      var $replace = String.prototype.replace;
+      var $toUpperCase = String.prototype.toUpperCase;
+      var $toLowerCase = String.prototype.toLowerCase;
+      var $test = RegExp.prototype.test;
+      var $concat = Array.prototype.concat;
+      var $join = Array.prototype.join;
+      var $arrSlice = Array.prototype.slice;
+      var $floor = Math.floor;
+      var bigIntValueOf = typeof BigInt === "function" ? BigInt.prototype.valueOf : null;
+      var gOPS = Object.getOwnPropertySymbols;
+      var symToString = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? Symbol.prototype.toString : null;
+      var hasShammedSymbols = typeof Symbol === "function" && typeof Symbol.iterator === "object";
+      var toStringTag = typeof Symbol === "function" && Symbol.toStringTag && (typeof Symbol.toStringTag === hasShammedSymbols ? "object" : "symbol") ? Symbol.toStringTag : null;
+      var isEnumerable = Object.prototype.propertyIsEnumerable;
+      var gPO = (typeof Reflect === "function" ? Reflect.getPrototypeOf : Object.getPrototypeOf) || ([].__proto__ === Array.prototype ? function(O) {
+        return O.__proto__;
+      } : null);
+      function addNumericSeparator(num, str) {
+        if (num === Infinity || num === -Infinity || num !== num || num && num > -1e3 && num < 1e3 || $test.call(/e/, str)) {
+          return str;
+        }
+        var sepRegex = /[0-9](?=(?:[0-9]{3})+(?![0-9]))/g;
+        if (typeof num === "number") {
+          var int = num < 0 ? -$floor(-num) : $floor(num);
+          if (int !== num) {
+            var intStr = String(int);
+            var dec = $slice.call(str, intStr.length + 1);
+            return $replace.call(intStr, sepRegex, "$&_") + "." + $replace.call($replace.call(dec, /([0-9]{3})/g, "$&_"), /_$/, "");
+          }
+        }
+        return $replace.call(str, sepRegex, "$&_");
+      }
+      var utilInspect = require_util();
+      var inspectCustom = utilInspect.custom;
+      var inspectSymbol = isSymbol(inspectCustom) ? inspectCustom : null;
+      module.exports = function inspect_(obj, options, depth, seen) {
+        var opts = options || {};
+        if (has(opts, "quoteStyle") && (opts.quoteStyle !== "single" && opts.quoteStyle !== "double")) {
+          throw new TypeError('option "quoteStyle" must be "single" or "double"');
+        }
+        if (has(opts, "maxStringLength") && (typeof opts.maxStringLength === "number" ? opts.maxStringLength < 0 && opts.maxStringLength !== Infinity : opts.maxStringLength !== null)) {
+          throw new TypeError('option "maxStringLength", if provided, must be a positive integer, Infinity, or `null`');
+        }
+        var customInspect = has(opts, "customInspect") ? opts.customInspect : true;
+        if (typeof customInspect !== "boolean" && customInspect !== "symbol") {
+          throw new TypeError("option \"customInspect\", if provided, must be `true`, `false`, or `'symbol'`");
+        }
+        if (has(opts, "indent") && opts.indent !== null && opts.indent !== "	" && !(parseInt(opts.indent, 10) === opts.indent && opts.indent > 0)) {
+          throw new TypeError('option "indent" must be "\\t", an integer > 0, or `null`');
+        }
+        if (has(opts, "numericSeparator") && typeof opts.numericSeparator !== "boolean") {
+          throw new TypeError('option "numericSeparator", if provided, must be `true` or `false`');
+        }
+        var numericSeparator = opts.numericSeparator;
+        if (typeof obj === "undefined") {
+          return "undefined";
+        }
+        if (obj === null) {
+          return "null";
+        }
+        if (typeof obj === "boolean") {
+          return obj ? "true" : "false";
+        }
+        if (typeof obj === "string") {
+          return inspectString(obj, opts);
+        }
+        if (typeof obj === "number") {
+          if (obj === 0) {
+            return Infinity / obj > 0 ? "0" : "-0";
+          }
+          var str = String(obj);
+          return numericSeparator ? addNumericSeparator(obj, str) : str;
+        }
+        if (typeof obj === "bigint") {
+          var bigIntStr = String(obj) + "n";
+          return numericSeparator ? addNumericSeparator(obj, bigIntStr) : bigIntStr;
+        }
+        var maxDepth = typeof opts.depth === "undefined" ? 5 : opts.depth;
+        if (typeof depth === "undefined") {
+          depth = 0;
+        }
+        if (depth >= maxDepth && maxDepth > 0 && typeof obj === "object") {
+          return isArray(obj) ? "[Array]" : "[Object]";
+        }
+        var indent = getIndent(opts, depth);
+        if (typeof seen === "undefined") {
+          seen = [];
+        } else if (indexOf(seen, obj) >= 0) {
+          return "[Circular]";
+        }
+        function inspect(value, from, noIndent) {
+          if (from) {
+            seen = $arrSlice.call(seen);
+            seen.push(from);
+          }
+          if (noIndent) {
+            var newOpts = {
+              depth: opts.depth
+            };
+            if (has(opts, "quoteStyle")) {
+              newOpts.quoteStyle = opts.quoteStyle;
+            }
+            return inspect_(value, newOpts, depth + 1, seen);
+          }
+          return inspect_(value, opts, depth + 1, seen);
+        }
+        if (typeof obj === "function" && !isRegExp(obj)) {
+          var name = nameOf(obj);
+          var keys = arrObjKeys(obj, inspect);
+          return "[Function" + (name ? ": " + name : " (anonymous)") + "]" + (keys.length > 0 ? " { " + $join.call(keys, ", ") + " }" : "");
+        }
+        if (isSymbol(obj)) {
+          var symString = hasShammedSymbols ? $replace.call(String(obj), /^(Symbol\(.*\))_[^)]*$/, "$1") : symToString.call(obj);
+          return typeof obj === "object" && !hasShammedSymbols ? markBoxed(symString) : symString;
+        }
+        if (isElement(obj)) {
+          var s2 = "<" + $toLowerCase.call(String(obj.nodeName));
+          var attrs = obj.attributes || [];
+          for (var i2 = 0; i2 < attrs.length; i2++) {
+            s2 += " " + attrs[i2].name + "=" + wrapQuotes(quote(attrs[i2].value), "double", opts);
+          }
+          s2 += ">";
+          if (obj.childNodes && obj.childNodes.length) {
+            s2 += "...";
+          }
+          s2 += "</" + $toLowerCase.call(String(obj.nodeName)) + ">";
+          return s2;
+        }
+        if (isArray(obj)) {
+          if (obj.length === 0) {
+            return "[]";
+          }
+          var xs = arrObjKeys(obj, inspect);
+          if (indent && !singleLineValues(xs)) {
+            return "[" + indentedJoin(xs, indent) + "]";
+          }
+          return "[ " + $join.call(xs, ", ") + " ]";
+        }
+        if (isError(obj)) {
+          var parts = arrObjKeys(obj, inspect);
+          if (!("cause" in Error.prototype) && "cause" in obj && !isEnumerable.call(obj, "cause")) {
+            return "{ [" + String(obj) + "] " + $join.call($concat.call("[cause]: " + inspect(obj.cause), parts), ", ") + " }";
+          }
+          if (parts.length === 0) {
+            return "[" + String(obj) + "]";
+          }
+          return "{ [" + String(obj) + "] " + $join.call(parts, ", ") + " }";
+        }
+        if (typeof obj === "object" && customInspect) {
+          if (inspectSymbol && typeof obj[inspectSymbol] === "function" && utilInspect) {
+            return utilInspect(obj, { depth: maxDepth - depth });
+          } else if (customInspect !== "symbol" && typeof obj.inspect === "function") {
+            return obj.inspect();
+          }
+        }
+        if (isMap(obj)) {
+          var mapParts = [];
+          if (mapForEach) {
+            mapForEach.call(obj, function(value, key) {
+              mapParts.push(inspect(key, obj, true) + " => " + inspect(value, obj));
+            });
+          }
+          return collectionOf("Map", mapSize2.call(obj), mapParts, indent);
+        }
+        if (isSet(obj)) {
+          var setParts = [];
+          if (setForEach) {
+            setForEach.call(obj, function(value) {
+              setParts.push(inspect(value, obj));
+            });
+          }
+          return collectionOf("Set", setSize.call(obj), setParts, indent);
+        }
+        if (isWeakMap(obj)) {
+          return weakCollectionOf("WeakMap");
+        }
+        if (isWeakSet(obj)) {
+          return weakCollectionOf("WeakSet");
+        }
+        if (isWeakRef(obj)) {
+          return weakCollectionOf("WeakRef");
+        }
+        if (isNumber(obj)) {
+          return markBoxed(inspect(Number(obj)));
+        }
+        if (isBigInt(obj)) {
+          return markBoxed(inspect(bigIntValueOf.call(obj)));
+        }
+        if (isBoolean(obj)) {
+          return markBoxed(booleanValueOf.call(obj));
+        }
+        if (isString(obj)) {
+          return markBoxed(inspect(String(obj)));
+        }
+        if (!isDate(obj) && !isRegExp(obj)) {
+          var ys = arrObjKeys(obj, inspect);
+          var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
+          var protoTag = obj instanceof Object ? "" : "null prototype";
+          var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? "Object" : "";
+          var constructorTag = isPlainObject || typeof obj.constructor !== "function" ? "" : obj.constructor.name ? obj.constructor.name + " " : "";
+          var tag = constructorTag + (stringTag || protoTag ? "[" + $join.call($concat.call([], stringTag || [], protoTag || []), ": ") + "] " : "");
+          if (ys.length === 0) {
+            return tag + "{}";
+          }
+          if (indent) {
+            return tag + "{" + indentedJoin(ys, indent) + "}";
+          }
+          return tag + "{ " + $join.call(ys, ", ") + " }";
+        }
+        return String(obj);
+      };
+      function wrapQuotes(s2, defaultStyle, opts) {
+        var quoteChar = (opts.quoteStyle || defaultStyle) === "double" ? '"' : "'";
+        return quoteChar + s2 + quoteChar;
+      }
+      function quote(s2) {
+        return $replace.call(String(s2), /"/g, "&quot;");
+      }
+      function isArray(obj) {
+        return toStr(obj) === "[object Array]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+      }
+      function isDate(obj) {
+        return toStr(obj) === "[object Date]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+      }
+      function isRegExp(obj) {
+        return toStr(obj) === "[object RegExp]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+      }
+      function isError(obj) {
+        return toStr(obj) === "[object Error]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+      }
+      function isString(obj) {
+        return toStr(obj) === "[object String]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+      }
+      function isNumber(obj) {
+        return toStr(obj) === "[object Number]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+      }
+      function isBoolean(obj) {
+        return toStr(obj) === "[object Boolean]" && (!toStringTag || !(typeof obj === "object" && toStringTag in obj));
+      }
+      function isSymbol(obj) {
+        if (hasShammedSymbols) {
+          return obj && typeof obj === "object" && obj instanceof Symbol;
+        }
+        if (typeof obj === "symbol") {
+          return true;
+        }
+        if (!obj || typeof obj !== "object" || !symToString) {
+          return false;
+        }
+        try {
+          symToString.call(obj);
+          return true;
+        } catch (e2) {
+        }
+        return false;
+      }
+      function isBigInt(obj) {
+        if (!obj || typeof obj !== "object" || !bigIntValueOf) {
+          return false;
+        }
+        try {
+          bigIntValueOf.call(obj);
+          return true;
+        } catch (e2) {
+        }
+        return false;
+      }
+      var hasOwn = Object.prototype.hasOwnProperty || function(key) {
+        return key in this;
+      };
+      function has(obj, key) {
+        return hasOwn.call(obj, key);
+      }
+      function toStr(obj) {
+        return objectToString.call(obj);
+      }
+      function nameOf(f2) {
+        if (f2.name) {
+          return f2.name;
+        }
+        var m2 = $match.call(functionToString.call(f2), /^function\s*([\w$]+)/);
+        if (m2) {
+          return m2[1];
+        }
+        return null;
+      }
+      function indexOf(xs, x2) {
+        if (xs.indexOf) {
+          return xs.indexOf(x2);
+        }
+        for (var i2 = 0, l2 = xs.length; i2 < l2; i2++) {
+          if (xs[i2] === x2) {
+            return i2;
+          }
+        }
+        return -1;
+      }
+      function isMap(x2) {
+        if (!mapSize2 || !x2 || typeof x2 !== "object") {
+          return false;
+        }
+        try {
+          mapSize2.call(x2);
+          try {
+            setSize.call(x2);
+          } catch (s2) {
+            return true;
+          }
+          return x2 instanceof Map;
+        } catch (e2) {
+        }
+        return false;
+      }
+      function isWeakMap(x2) {
+        if (!weakMapHas || !x2 || typeof x2 !== "object") {
+          return false;
+        }
+        try {
+          weakMapHas.call(x2, weakMapHas);
+          try {
+            weakSetHas.call(x2, weakSetHas);
+          } catch (s2) {
+            return true;
+          }
+          return x2 instanceof WeakMap;
+        } catch (e2) {
+        }
+        return false;
+      }
+      function isWeakRef(x2) {
+        if (!weakRefDeref || !x2 || typeof x2 !== "object") {
+          return false;
+        }
+        try {
+          weakRefDeref.call(x2);
+          return true;
+        } catch (e2) {
+        }
+        return false;
+      }
+      function isSet(x2) {
+        if (!setSize || !x2 || typeof x2 !== "object") {
+          return false;
+        }
+        try {
+          setSize.call(x2);
+          try {
+            mapSize2.call(x2);
+          } catch (m2) {
+            return true;
+          }
+          return x2 instanceof Set;
+        } catch (e2) {
+        }
+        return false;
+      }
+      function isWeakSet(x2) {
+        if (!weakSetHas || !x2 || typeof x2 !== "object") {
+          return false;
+        }
+        try {
+          weakSetHas.call(x2, weakSetHas);
+          try {
+            weakMapHas.call(x2, weakMapHas);
+          } catch (s2) {
+            return true;
+          }
+          return x2 instanceof WeakSet;
+        } catch (e2) {
+        }
+        return false;
+      }
+      function isElement(x2) {
+        if (!x2 || typeof x2 !== "object") {
+          return false;
+        }
+        if (typeof HTMLElement !== "undefined" && x2 instanceof HTMLElement) {
+          return true;
+        }
+        return typeof x2.nodeName === "string" && typeof x2.getAttribute === "function";
+      }
+      function inspectString(str, opts) {
+        if (str.length > opts.maxStringLength) {
+          var remaining = str.length - opts.maxStringLength;
+          var trailer = "... " + remaining + " more character" + (remaining > 1 ? "s" : "");
+          return inspectString($slice.call(str, 0, opts.maxStringLength), opts) + trailer;
+        }
+        var s2 = $replace.call($replace.call(str, /(['\\])/g, "\\$1"), /[\x00-\x1f]/g, lowbyte);
+        return wrapQuotes(s2, "single", opts);
+      }
+      function lowbyte(c2) {
+        var n2 = c2.charCodeAt(0);
+        var x2 = {
+          8: "b",
+          9: "t",
+          10: "n",
+          12: "f",
+          13: "r"
+        }[n2];
+        if (x2) {
+          return "\\" + x2;
+        }
+        return "\\x" + (n2 < 16 ? "0" : "") + $toUpperCase.call(n2.toString(16));
+      }
+      function markBoxed(str) {
+        return "Object(" + str + ")";
+      }
+      function weakCollectionOf(type) {
+        return type + " { ? }";
+      }
+      function collectionOf(type, size, entries, indent) {
+        var joinedEntries = indent ? indentedJoin(entries, indent) : $join.call(entries, ", ");
+        return type + " (" + size + ") {" + joinedEntries + "}";
+      }
+      function singleLineValues(xs) {
+        for (var i2 = 0; i2 < xs.length; i2++) {
+          if (indexOf(xs[i2], "\n") >= 0) {
+            return false;
+          }
+        }
+        return true;
+      }
+      function getIndent(opts, depth) {
+        var baseIndent;
+        if (opts.indent === "	") {
+          baseIndent = "	";
+        } else if (typeof opts.indent === "number" && opts.indent > 0) {
+          baseIndent = $join.call(Array(opts.indent + 1), " ");
+        } else {
+          return null;
+        }
+        return {
+          base: baseIndent,
+          prev: $join.call(Array(depth + 1), baseIndent)
+        };
+      }
+      function indentedJoin(xs, indent) {
+        if (xs.length === 0) {
+          return "";
+        }
+        var lineJoiner = "\n" + indent.prev + indent.base;
+        return lineJoiner + $join.call(xs, "," + lineJoiner) + "\n" + indent.prev;
+      }
+      function arrObjKeys(obj, inspect) {
+        var isArr = isArray(obj);
+        var xs = [];
+        if (isArr) {
+          xs.length = obj.length;
+          for (var i2 = 0; i2 < obj.length; i2++) {
+            xs[i2] = has(obj, i2) ? inspect(obj[i2], obj) : "";
+          }
+        }
+        var syms = typeof gOPS === "function" ? gOPS(obj) : [];
+        var symMap;
+        if (hasShammedSymbols) {
+          symMap = {};
+          for (var k2 = 0; k2 < syms.length; k2++) {
+            symMap["$" + syms[k2]] = syms[k2];
+          }
+        }
+        for (var key in obj) {
+          if (!has(obj, key)) {
+            continue;
+          }
+          if (isArr && String(Number(key)) === key && key < obj.length) {
+            continue;
+          }
+          if (hasShammedSymbols && symMap["$" + key] instanceof Symbol) {
+            continue;
+          } else if ($test.call(/[^\w$]/, key)) {
+            xs.push(inspect(key, obj) + ": " + inspect(obj[key], obj));
           } else {
-            obj[k2] = [obj[k2], v2];
+            xs.push(key + ": " + inspect(obj[key], obj));
+          }
+        }
+        if (typeof gOPS === "function") {
+          for (var j2 = 0; j2 < syms.length; j2++) {
+            if (isEnumerable.call(obj, syms[j2])) {
+              xs.push("[" + inspect(syms[j2]) + "]: " + inspect(obj[syms[j2]], obj));
+            }
+          }
+        }
+        return xs;
+      }
+    }
+  });
+
+  // node_modules/side-channel/index.js
+  var require_side_channel = __commonJS({
+    "node_modules/side-channel/index.js"(exports, module) {
+      "use strict";
+      var GetIntrinsic = require_get_intrinsic();
+      var callBound = require_callBound();
+      var inspect = require_object_inspect();
+      var $TypeError = GetIntrinsic("%TypeError%");
+      var $WeakMap = GetIntrinsic("%WeakMap%", true);
+      var $Map = GetIntrinsic("%Map%", true);
+      var $weakMapGet = callBound("WeakMap.prototype.get", true);
+      var $weakMapSet = callBound("WeakMap.prototype.set", true);
+      var $weakMapHas = callBound("WeakMap.prototype.has", true);
+      var $mapGet = callBound("Map.prototype.get", true);
+      var $mapSet = callBound("Map.prototype.set", true);
+      var $mapHas = callBound("Map.prototype.has", true);
+      var listGetNode = function(list, key) {
+        for (var prev = list, curr; (curr = prev.next) !== null; prev = curr) {
+          if (curr.key === key) {
+            prev.next = curr.next;
+            curr.next = list.next;
+            list.next = curr;
+            return curr;
+          }
+        }
+      };
+      var listGet = function(objects, key) {
+        var node = listGetNode(objects, key);
+        return node && node.value;
+      };
+      var listSet = function(objects, key, value) {
+        var node = listGetNode(objects, key);
+        if (node) {
+          node.value = value;
+        } else {
+          objects.next = {
+            // eslint-disable-line no-param-reassign
+            key,
+            next: objects.next,
+            value
+          };
+        }
+      };
+      var listHas = function(objects, key) {
+        return !!listGetNode(objects, key);
+      };
+      module.exports = function getSideChannel() {
+        var $wm;
+        var $m;
+        var $o;
+        var channel = {
+          assert: function(key) {
+            if (!channel.has(key)) {
+              throw new $TypeError("Side channel does not contain " + inspect(key));
+            }
+          },
+          get: function(key) {
+            if ($WeakMap && key && (typeof key === "object" || typeof key === "function")) {
+              if ($wm) {
+                return $weakMapGet($wm, key);
+              }
+            } else if ($Map) {
+              if ($m) {
+                return $mapGet($m, key);
+              }
+            } else {
+              if ($o) {
+                return listGet($o, key);
+              }
+            }
+          },
+          has: function(key) {
+            if ($WeakMap && key && (typeof key === "object" || typeof key === "function")) {
+              if ($wm) {
+                return $weakMapHas($wm, key);
+              }
+            } else if ($Map) {
+              if ($m) {
+                return $mapHas($m, key);
+              }
+            } else {
+              if ($o) {
+                return listHas($o, key);
+              }
+            }
+            return false;
+          },
+          set: function(key, value) {
+            if ($WeakMap && key && (typeof key === "object" || typeof key === "function")) {
+              if (!$wm) {
+                $wm = new $WeakMap();
+              }
+              $weakMapSet($wm, key, value);
+            } else if ($Map) {
+              if (!$m) {
+                $m = new $Map();
+              }
+              $mapSet($m, key, value);
+            } else {
+              if (!$o) {
+                $o = { key: {}, next: null };
+              }
+              listSet($o, key, value);
+            }
+          }
+        };
+        return channel;
+      };
+    }
+  });
+
+  // node_modules/qs/lib/formats.js
+  var require_formats = __commonJS({
+    "node_modules/qs/lib/formats.js"(exports, module) {
+      "use strict";
+      var replace = String.prototype.replace;
+      var percentTwenties = /%20/g;
+      var Format = {
+        RFC1738: "RFC1738",
+        RFC3986: "RFC3986"
+      };
+      module.exports = {
+        "default": Format.RFC3986,
+        formatters: {
+          RFC1738: function(value) {
+            return replace.call(value, percentTwenties, "+");
+          },
+          RFC3986: function(value) {
+            return String(value);
+          }
+        },
+        RFC1738: Format.RFC1738,
+        RFC3986: Format.RFC3986
+      };
+    }
+  });
+
+  // node_modules/qs/lib/utils.js
+  var require_utils = __commonJS({
+    "node_modules/qs/lib/utils.js"(exports, module) {
+      "use strict";
+      var formats2 = require_formats();
+      var has = Object.prototype.hasOwnProperty;
+      var isArray = Array.isArray;
+      var hexTable = function() {
+        var array = [];
+        for (var i2 = 0; i2 < 256; ++i2) {
+          array.push("%" + ((i2 < 16 ? "0" : "") + i2.toString(16)).toUpperCase());
+        }
+        return array;
+      }();
+      var compactQueue = function compactQueue2(queue) {
+        while (queue.length > 1) {
+          var item = queue.pop();
+          var obj = item.obj[item.prop];
+          if (isArray(obj)) {
+            var compacted = [];
+            for (var j2 = 0; j2 < obj.length; ++j2) {
+              if (typeof obj[j2] !== "undefined") {
+                compacted.push(obj[j2]);
+              }
+            }
+            item.obj[item.prop] = compacted;
+          }
+        }
+      };
+      var arrayToObject = function arrayToObject2(source, options) {
+        var obj = options && options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
+        for (var i2 = 0; i2 < source.length; ++i2) {
+          if (typeof source[i2] !== "undefined") {
+            obj[i2] = source[i2];
           }
         }
         return obj;
       };
-    }
-  });
-
-  // node_modules/querystring/encode.js
-  var require_encode = __commonJS({
-    "node_modules/querystring/encode.js"(exports, module) {
-      "use strict";
-      var stringifyPrimitive = function(v2) {
-        switch (typeof v2) {
-          case "string":
-            return v2;
-          case "boolean":
-            return v2 ? "true" : "false";
-          case "number":
-            return isFinite(v2) ? v2 : "";
-          default:
-            return "";
+      var merge = function merge2(target, source, options) {
+        if (!source) {
+          return target;
         }
-      };
-      module.exports = function(obj, sep, eq, name) {
-        sep = sep || "&";
-        eq = eq || "=";
-        if (obj === null) {
-          obj = void 0;
-        }
-        if (typeof obj === "object") {
-          return Object.keys(obj).map(function(k2) {
-            var ks = encodeURIComponent(stringifyPrimitive(k2)) + eq;
-            if (Array.isArray(obj[k2])) {
-              return obj[k2].map(function(v2) {
-                return ks + encodeURIComponent(stringifyPrimitive(v2));
-              }).join(sep);
-            } else {
-              return ks + encodeURIComponent(stringifyPrimitive(obj[k2]));
+        if (typeof source !== "object") {
+          if (isArray(target)) {
+            target.push(source);
+          } else if (target && typeof target === "object") {
+            if (options && (options.plainObjects || options.allowPrototypes) || !has.call(Object.prototype, source)) {
+              target[source] = true;
             }
-          }).join(sep);
+          } else {
+            return [target, source];
+          }
+          return target;
         }
-        if (!name)
-          return "";
-        return encodeURIComponent(stringifyPrimitive(name)) + eq + encodeURIComponent(stringifyPrimitive(obj));
+        if (!target || typeof target !== "object") {
+          return [target].concat(source);
+        }
+        var mergeTarget = target;
+        if (isArray(target) && !isArray(source)) {
+          mergeTarget = arrayToObject(target, options);
+        }
+        if (isArray(target) && isArray(source)) {
+          source.forEach(function(item, i2) {
+            if (has.call(target, i2)) {
+              var targetItem = target[i2];
+              if (targetItem && typeof targetItem === "object" && item && typeof item === "object") {
+                target[i2] = merge2(targetItem, item, options);
+              } else {
+                target.push(item);
+              }
+            } else {
+              target[i2] = item;
+            }
+          });
+          return target;
+        }
+        return Object.keys(source).reduce(function(acc, key) {
+          var value = source[key];
+          if (has.call(acc, key)) {
+            acc[key] = merge2(acc[key], value, options);
+          } else {
+            acc[key] = value;
+          }
+          return acc;
+        }, mergeTarget);
+      };
+      var assign = function assignSingleSource(target, source) {
+        return Object.keys(source).reduce(function(acc, key) {
+          acc[key] = source[key];
+          return acc;
+        }, target);
+      };
+      var decode = function(str, decoder, charset) {
+        var strWithoutPlus = str.replace(/\+/g, " ");
+        if (charset === "iso-8859-1") {
+          return strWithoutPlus.replace(/%[0-9a-f]{2}/gi, unescape);
+        }
+        try {
+          return decodeURIComponent(strWithoutPlus);
+        } catch (e2) {
+          return strWithoutPlus;
+        }
+      };
+      var encode = function encode2(str, defaultEncoder, charset, kind, format2) {
+        if (str.length === 0) {
+          return str;
+        }
+        var string = str;
+        if (typeof str === "symbol") {
+          string = Symbol.prototype.toString.call(str);
+        } else if (typeof str !== "string") {
+          string = String(str);
+        }
+        if (charset === "iso-8859-1") {
+          return escape(string).replace(/%u[0-9a-f]{4}/gi, function($0) {
+            return "%26%23" + parseInt($0.slice(2), 16) + "%3B";
+          });
+        }
+        var out = "";
+        for (var i2 = 0; i2 < string.length; ++i2) {
+          var c2 = string.charCodeAt(i2);
+          if (c2 === 45 || c2 === 46 || c2 === 95 || c2 === 126 || c2 >= 48 && c2 <= 57 || c2 >= 65 && c2 <= 90 || c2 >= 97 && c2 <= 122 || format2 === formats2.RFC1738 && (c2 === 40 || c2 === 41)) {
+            out += string.charAt(i2);
+            continue;
+          }
+          if (c2 < 128) {
+            out = out + hexTable[c2];
+            continue;
+          }
+          if (c2 < 2048) {
+            out = out + (hexTable[192 | c2 >> 6] + hexTable[128 | c2 & 63]);
+            continue;
+          }
+          if (c2 < 55296 || c2 >= 57344) {
+            out = out + (hexTable[224 | c2 >> 12] + hexTable[128 | c2 >> 6 & 63] + hexTable[128 | c2 & 63]);
+            continue;
+          }
+          i2 += 1;
+          c2 = 65536 + ((c2 & 1023) << 10 | string.charCodeAt(i2) & 1023);
+          out += hexTable[240 | c2 >> 18] + hexTable[128 | c2 >> 12 & 63] + hexTable[128 | c2 >> 6 & 63] + hexTable[128 | c2 & 63];
+        }
+        return out;
+      };
+      var compact = function compact2(value) {
+        var queue = [{ obj: { o: value }, prop: "o" }];
+        var refs = [];
+        for (var i2 = 0; i2 < queue.length; ++i2) {
+          var item = queue[i2];
+          var obj = item.obj[item.prop];
+          var keys = Object.keys(obj);
+          for (var j2 = 0; j2 < keys.length; ++j2) {
+            var key = keys[j2];
+            var val = obj[key];
+            if (typeof val === "object" && val !== null && refs.indexOf(val) === -1) {
+              queue.push({ obj, prop: key });
+              refs.push(val);
+            }
+          }
+        }
+        compactQueue(queue);
+        return value;
+      };
+      var isRegExp = function isRegExp2(obj) {
+        return Object.prototype.toString.call(obj) === "[object RegExp]";
+      };
+      var isBuffer = function isBuffer2(obj) {
+        if (!obj || typeof obj !== "object") {
+          return false;
+        }
+        return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
+      };
+      var combine = function combine2(a2, b2) {
+        return [].concat(a2, b2);
+      };
+      var maybeMap = function maybeMap2(val, fn) {
+        if (isArray(val)) {
+          var mapped = [];
+          for (var i2 = 0; i2 < val.length; i2 += 1) {
+            mapped.push(fn(val[i2]));
+          }
+          return mapped;
+        }
+        return fn(val);
+      };
+      module.exports = {
+        arrayToObject,
+        assign,
+        combine,
+        compact,
+        decode,
+        encode,
+        isBuffer,
+        isRegExp,
+        maybeMap,
+        merge
       };
     }
   });
 
-  // node_modules/querystring/index.js
-  var require_querystring = __commonJS({
-    "node_modules/querystring/index.js"(exports) {
+  // node_modules/qs/lib/stringify.js
+  var require_stringify = __commonJS({
+    "node_modules/qs/lib/stringify.js"(exports, module) {
       "use strict";
-      exports.decode = exports.parse = require_decode();
-      exports.encode = exports.stringify = require_encode();
+      var getSideChannel = require_side_channel();
+      var utils = require_utils();
+      var formats2 = require_formats();
+      var has = Object.prototype.hasOwnProperty;
+      var arrayPrefixGenerators = {
+        brackets: function brackets(prefix) {
+          return prefix + "[]";
+        },
+        comma: "comma",
+        indices: function indices2(prefix, key) {
+          return prefix + "[" + key + "]";
+        },
+        repeat: function repeat(prefix) {
+          return prefix;
+        }
+      };
+      var isArray = Array.isArray;
+      var push = Array.prototype.push;
+      var pushToArray = function(arr, valueOrArray) {
+        push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray]);
+      };
+      var toISO = Date.prototype.toISOString;
+      var defaultFormat = formats2["default"];
+      var defaults2 = {
+        addQueryPrefix: false,
+        allowDots: false,
+        charset: "utf-8",
+        charsetSentinel: false,
+        delimiter: "&",
+        encode: true,
+        encoder: utils.encode,
+        encodeValuesOnly: false,
+        format: defaultFormat,
+        formatter: formats2.formatters[defaultFormat],
+        // deprecated
+        indices: false,
+        serializeDate: function serializeDate(date) {
+          return toISO.call(date);
+        },
+        skipNulls: false,
+        strictNullHandling: false
+      };
+      var isNonNullishPrimitive = function isNonNullishPrimitive2(v2) {
+        return typeof v2 === "string" || typeof v2 === "number" || typeof v2 === "boolean" || typeof v2 === "symbol" || typeof v2 === "bigint";
+      };
+      var sentinel = {};
+      var stringify = function stringify2(object, prefix, generateArrayPrefix, commaRoundTrip, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, format2, formatter, encodeValuesOnly, charset, sideChannel) {
+        var obj = object;
+        var tmpSc = sideChannel;
+        var step = 0;
+        var findFlag = false;
+        while ((tmpSc = tmpSc.get(sentinel)) !== void 0 && !findFlag) {
+          var pos = tmpSc.get(object);
+          step += 1;
+          if (typeof pos !== "undefined") {
+            if (pos === step) {
+              throw new RangeError("Cyclic object value");
+            } else {
+              findFlag = true;
+            }
+          }
+          if (typeof tmpSc.get(sentinel) === "undefined") {
+            step = 0;
+          }
+        }
+        if (typeof filter === "function") {
+          obj = filter(prefix, obj);
+        } else if (obj instanceof Date) {
+          obj = serializeDate(obj);
+        } else if (generateArrayPrefix === "comma" && isArray(obj)) {
+          obj = utils.maybeMap(obj, function(value2) {
+            if (value2 instanceof Date) {
+              return serializeDate(value2);
+            }
+            return value2;
+          });
+        }
+        if (obj === null) {
+          if (strictNullHandling) {
+            return encoder && !encodeValuesOnly ? encoder(prefix, defaults2.encoder, charset, "key", format2) : prefix;
+          }
+          obj = "";
+        }
+        if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
+          if (encoder) {
+            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults2.encoder, charset, "key", format2);
+            return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults2.encoder, charset, "value", format2))];
+          }
+          return [formatter(prefix) + "=" + formatter(String(obj))];
+        }
+        var values = [];
+        if (typeof obj === "undefined") {
+          return values;
+        }
+        var objKeys;
+        if (generateArrayPrefix === "comma" && isArray(obj)) {
+          if (encodeValuesOnly && encoder) {
+            obj = utils.maybeMap(obj, encoder);
+          }
+          objKeys = [{ value: obj.length > 0 ? obj.join(",") || null : void 0 }];
+        } else if (isArray(filter)) {
+          objKeys = filter;
+        } else {
+          var keys = Object.keys(obj);
+          objKeys = sort ? keys.sort(sort) : keys;
+        }
+        var adjustedPrefix = commaRoundTrip && isArray(obj) && obj.length === 1 ? prefix + "[]" : prefix;
+        for (var j2 = 0; j2 < objKeys.length; ++j2) {
+          var key = objKeys[j2];
+          var value = typeof key === "object" && typeof key.value !== "undefined" ? key.value : obj[key];
+          if (skipNulls && value === null) {
+            continue;
+          }
+          var keyPrefix = isArray(obj) ? typeof generateArrayPrefix === "function" ? generateArrayPrefix(adjustedPrefix, key) : adjustedPrefix : adjustedPrefix + (allowDots ? "." + key : "[" + key + "]");
+          sideChannel.set(object, step);
+          var valueSideChannel = getSideChannel();
+          valueSideChannel.set(sentinel, sideChannel);
+          pushToArray(values, stringify2(
+            value,
+            keyPrefix,
+            generateArrayPrefix,
+            commaRoundTrip,
+            strictNullHandling,
+            skipNulls,
+            generateArrayPrefix === "comma" && encodeValuesOnly && isArray(obj) ? null : encoder,
+            filter,
+            sort,
+            allowDots,
+            serializeDate,
+            format2,
+            formatter,
+            encodeValuesOnly,
+            charset,
+            valueSideChannel
+          ));
+        }
+        return values;
+      };
+      var normalizeStringifyOptions = function normalizeStringifyOptions2(opts) {
+        if (!opts) {
+          return defaults2;
+        }
+        if (opts.encoder !== null && typeof opts.encoder !== "undefined" && typeof opts.encoder !== "function") {
+          throw new TypeError("Encoder has to be a function.");
+        }
+        var charset = opts.charset || defaults2.charset;
+        if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
+          throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
+        }
+        var format2 = formats2["default"];
+        if (typeof opts.format !== "undefined") {
+          if (!has.call(formats2.formatters, opts.format)) {
+            throw new TypeError("Unknown format option provided.");
+          }
+          format2 = opts.format;
+        }
+        var formatter = formats2.formatters[format2];
+        var filter = defaults2.filter;
+        if (typeof opts.filter === "function" || isArray(opts.filter)) {
+          filter = opts.filter;
+        }
+        return {
+          addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults2.addQueryPrefix,
+          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
+          charset,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
+          delimiter: typeof opts.delimiter === "undefined" ? defaults2.delimiter : opts.delimiter,
+          encode: typeof opts.encode === "boolean" ? opts.encode : defaults2.encode,
+          encoder: typeof opts.encoder === "function" ? opts.encoder : defaults2.encoder,
+          encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults2.encodeValuesOnly,
+          filter,
+          format: format2,
+          formatter,
+          serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults2.serializeDate,
+          skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults2.skipNulls,
+          sort: typeof opts.sort === "function" ? opts.sort : null,
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
+        };
+      };
+      module.exports = function(object, opts) {
+        var obj = object;
+        var options = normalizeStringifyOptions(opts);
+        var objKeys;
+        var filter;
+        if (typeof options.filter === "function") {
+          filter = options.filter;
+          obj = filter("", obj);
+        } else if (isArray(options.filter)) {
+          filter = options.filter;
+          objKeys = filter;
+        }
+        var keys = [];
+        if (typeof obj !== "object" || obj === null) {
+          return "";
+        }
+        var arrayFormat;
+        if (opts && opts.arrayFormat in arrayPrefixGenerators) {
+          arrayFormat = opts.arrayFormat;
+        } else if (opts && "indices" in opts) {
+          arrayFormat = opts.indices ? "indices" : "repeat";
+        } else {
+          arrayFormat = "indices";
+        }
+        var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
+        if (opts && "commaRoundTrip" in opts && typeof opts.commaRoundTrip !== "boolean") {
+          throw new TypeError("`commaRoundTrip` must be a boolean, or absent");
+        }
+        var commaRoundTrip = generateArrayPrefix === "comma" && opts && opts.commaRoundTrip;
+        if (!objKeys) {
+          objKeys = Object.keys(obj);
+        }
+        if (options.sort) {
+          objKeys.sort(options.sort);
+        }
+        var sideChannel = getSideChannel();
+        for (var i2 = 0; i2 < objKeys.length; ++i2) {
+          var key = objKeys[i2];
+          if (options.skipNulls && obj[key] === null) {
+            continue;
+          }
+          pushToArray(keys, stringify(
+            obj[key],
+            key,
+            generateArrayPrefix,
+            commaRoundTrip,
+            options.strictNullHandling,
+            options.skipNulls,
+            options.encode ? options.encoder : null,
+            options.filter,
+            options.sort,
+            options.allowDots,
+            options.serializeDate,
+            options.format,
+            options.formatter,
+            options.encodeValuesOnly,
+            options.charset,
+            sideChannel
+          ));
+        }
+        var joined = keys.join(options.delimiter);
+        var prefix = options.addQueryPrefix === true ? "?" : "";
+        if (options.charsetSentinel) {
+          if (options.charset === "iso-8859-1") {
+            prefix += "utf8=%26%2310003%3B&";
+          } else {
+            prefix += "utf8=%E2%9C%93&";
+          }
+        }
+        return joined.length > 0 ? prefix + joined : "";
+      };
+    }
+  });
+
+  // node_modules/qs/lib/parse.js
+  var require_parse = __commonJS({
+    "node_modules/qs/lib/parse.js"(exports, module) {
+      "use strict";
+      var utils = require_utils();
+      var has = Object.prototype.hasOwnProperty;
+      var isArray = Array.isArray;
+      var defaults2 = {
+        allowDots: false,
+        allowPrototypes: false,
+        allowSparse: false,
+        arrayLimit: 20,
+        charset: "utf-8",
+        charsetSentinel: false,
+        comma: false,
+        decoder: utils.decode,
+        delimiter: "&",
+        depth: 5,
+        ignoreQueryPrefix: false,
+        interpretNumericEntities: false,
+        parameterLimit: 1e3,
+        parseArrays: true,
+        plainObjects: false,
+        strictNullHandling: false
+      };
+      var interpretNumericEntities = function(str) {
+        return str.replace(/&#(\d+);/g, function($0, numberStr) {
+          return String.fromCharCode(parseInt(numberStr, 10));
+        });
+      };
+      var parseArrayValue = function(val, options) {
+        if (val && typeof val === "string" && options.comma && val.indexOf(",") > -1) {
+          return val.split(",");
+        }
+        return val;
+      };
+      var isoSentinel = "utf8=%26%2310003%3B";
+      var charsetSentinel = "utf8=%E2%9C%93";
+      var parseValues = function parseQueryStringValues(str, options) {
+        var obj = { __proto__: null };
+        var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, "") : str;
+        var limit = options.parameterLimit === Infinity ? void 0 : options.parameterLimit;
+        var parts = cleanStr.split(options.delimiter, limit);
+        var skipIndex = -1;
+        var i2;
+        var charset = options.charset;
+        if (options.charsetSentinel) {
+          for (i2 = 0; i2 < parts.length; ++i2) {
+            if (parts[i2].indexOf("utf8=") === 0) {
+              if (parts[i2] === charsetSentinel) {
+                charset = "utf-8";
+              } else if (parts[i2] === isoSentinel) {
+                charset = "iso-8859-1";
+              }
+              skipIndex = i2;
+              i2 = parts.length;
+            }
+          }
+        }
+        for (i2 = 0; i2 < parts.length; ++i2) {
+          if (i2 === skipIndex) {
+            continue;
+          }
+          var part = parts[i2];
+          var bracketEqualsPos = part.indexOf("]=");
+          var pos = bracketEqualsPos === -1 ? part.indexOf("=") : bracketEqualsPos + 1;
+          var key, val;
+          if (pos === -1) {
+            key = options.decoder(part, defaults2.decoder, charset, "key");
+            val = options.strictNullHandling ? null : "";
+          } else {
+            key = options.decoder(part.slice(0, pos), defaults2.decoder, charset, "key");
+            val = utils.maybeMap(
+              parseArrayValue(part.slice(pos + 1), options),
+              function(encodedVal) {
+                return options.decoder(encodedVal, defaults2.decoder, charset, "value");
+              }
+            );
+          }
+          if (val && options.interpretNumericEntities && charset === "iso-8859-1") {
+            val = interpretNumericEntities(val);
+          }
+          if (part.indexOf("[]=") > -1) {
+            val = isArray(val) ? [val] : val;
+          }
+          if (has.call(obj, key)) {
+            obj[key] = utils.combine(obj[key], val);
+          } else {
+            obj[key] = val;
+          }
+        }
+        return obj;
+      };
+      var parseObject = function(chain, val, options, valuesParsed) {
+        var leaf = valuesParsed ? val : parseArrayValue(val, options);
+        for (var i2 = chain.length - 1; i2 >= 0; --i2) {
+          var obj;
+          var root = chain[i2];
+          if (root === "[]" && options.parseArrays) {
+            obj = [].concat(leaf);
+          } else {
+            obj = options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
+            var cleanRoot = root.charAt(0) === "[" && root.charAt(root.length - 1) === "]" ? root.slice(1, -1) : root;
+            var index = parseInt(cleanRoot, 10);
+            if (!options.parseArrays && cleanRoot === "") {
+              obj = { 0: leaf };
+            } else if (!isNaN(index) && root !== cleanRoot && String(index) === cleanRoot && index >= 0 && (options.parseArrays && index <= options.arrayLimit)) {
+              obj = [];
+              obj[index] = leaf;
+            } else if (cleanRoot !== "__proto__") {
+              obj[cleanRoot] = leaf;
+            }
+          }
+          leaf = obj;
+        }
+        return leaf;
+      };
+      var parseKeys = function parseQueryStringKeys(givenKey, val, options, valuesParsed) {
+        if (!givenKey) {
+          return;
+        }
+        var key = options.allowDots ? givenKey.replace(/\.([^.[]+)/g, "[$1]") : givenKey;
+        var brackets = /(\[[^[\]]*])/;
+        var child = /(\[[^[\]]*])/g;
+        var segment = options.depth > 0 && brackets.exec(key);
+        var parent = segment ? key.slice(0, segment.index) : key;
+        var keys = [];
+        if (parent) {
+          if (!options.plainObjects && has.call(Object.prototype, parent)) {
+            if (!options.allowPrototypes) {
+              return;
+            }
+          }
+          keys.push(parent);
+        }
+        var i2 = 0;
+        while (options.depth > 0 && (segment = child.exec(key)) !== null && i2 < options.depth) {
+          i2 += 1;
+          if (!options.plainObjects && has.call(Object.prototype, segment[1].slice(1, -1))) {
+            if (!options.allowPrototypes) {
+              return;
+            }
+          }
+          keys.push(segment[1]);
+        }
+        if (segment) {
+          keys.push("[" + key.slice(segment.index) + "]");
+        }
+        return parseObject(keys, val, options, valuesParsed);
+      };
+      var normalizeParseOptions = function normalizeParseOptions2(opts) {
+        if (!opts) {
+          return defaults2;
+        }
+        if (opts.decoder !== null && opts.decoder !== void 0 && typeof opts.decoder !== "function") {
+          throw new TypeError("Decoder has to be a function.");
+        }
+        if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
+          throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
+        }
+        var charset = typeof opts.charset === "undefined" ? defaults2.charset : opts.charset;
+        return {
+          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
+          allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults2.allowPrototypes,
+          allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults2.allowSparse,
+          arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults2.arrayLimit,
+          charset,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
+          comma: typeof opts.comma === "boolean" ? opts.comma : defaults2.comma,
+          decoder: typeof opts.decoder === "function" ? opts.decoder : defaults2.decoder,
+          delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults2.delimiter,
+          // eslint-disable-next-line no-implicit-coercion, no-extra-parens
+          depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults2.depth,
+          ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
+          interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults2.interpretNumericEntities,
+          parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults2.parameterLimit,
+          parseArrays: opts.parseArrays !== false,
+          plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults2.plainObjects,
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
+        };
+      };
+      module.exports = function(str, opts) {
+        var options = normalizeParseOptions(opts);
+        if (str === "" || str === null || typeof str === "undefined") {
+          return options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
+        }
+        var tempObj = typeof str === "string" ? parseValues(str, options) : str;
+        var obj = options.plainObjects ? /* @__PURE__ */ Object.create(null) : {};
+        var keys = Object.keys(tempObj);
+        for (var i2 = 0; i2 < keys.length; ++i2) {
+          var key = keys[i2];
+          var newObj = parseKeys(key, tempObj[key], options, typeof str === "string");
+          obj = utils.merge(obj, newObj, options);
+        }
+        if (options.allowSparse === true) {
+          return obj;
+        }
+        return utils.compact(obj);
+      };
+    }
+  });
+
+  // node_modules/qs/lib/index.js
+  var require_lib = __commonJS({
+    "node_modules/qs/lib/index.js"(exports, module) {
+      "use strict";
+      var stringify = require_stringify();
+      var parse2 = require_parse();
+      var formats2 = require_formats();
+      module.exports = {
+        formats: formats2,
+        parse: parse2,
+        stringify
+      };
     }
   });
 
@@ -1048,12 +2780,6 @@
     "node_modules/url/url.js"(exports) {
       "use strict";
       var punycode = require_punycode();
-      var util = require_util();
-      exports.parse = urlParse;
-      exports.resolve = urlResolve;
-      exports.resolveObject = urlResolveObject;
-      exports.format = urlFormat;
-      exports.Url = Url;
       function Url() {
         this.protocol = null;
         this.slashes = null;
@@ -1070,45 +2796,72 @@
       }
       var protocolPattern = /^([a-z0-9.+-]+:)/i;
       var portPattern = /:[0-9]*$/;
-      var simplePathPattern = /^(\/\/?(?!\/)[^\?\s]*)(\?[^\s]*)?$/;
-      var delims = ["<", ">", '"', "`", " ", "\r", "\n", "	"];
-      var unwise = ["{", "}", "|", "\\", "^", "`"].concat(delims);
+      var simplePathPattern = /^(\/\/?(?!\/)[^?\s]*)(\?[^\s]*)?$/;
+      var delims = [
+        "<",
+        ">",
+        '"',
+        "`",
+        " ",
+        "\r",
+        "\n",
+        "	"
+      ];
+      var unwise = [
+        "{",
+        "}",
+        "|",
+        "\\",
+        "^",
+        "`"
+      ].concat(delims);
       var autoEscape = ["'"].concat(unwise);
-      var nonHostChars = ["%", "/", "?", ";", "#"].concat(autoEscape);
-      var hostEndingChars = ["/", "?", "#"];
+      var nonHostChars = [
+        "%",
+        "/",
+        "?",
+        ";",
+        "#"
+      ].concat(autoEscape);
+      var hostEndingChars = [
+        "/",
+        "?",
+        "#"
+      ];
       var hostnameMaxLen = 255;
       var hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/;
       var hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/;
       var unsafeProtocol = {
-        "javascript": true,
+        javascript: true,
         "javascript:": true
       };
       var hostlessProtocol = {
-        "javascript": true,
+        javascript: true,
         "javascript:": true
       };
       var slashedProtocol = {
-        "http": true,
-        "https": true,
-        "ftp": true,
-        "gopher": true,
-        "file": true,
+        http: true,
+        https: true,
+        ftp: true,
+        gopher: true,
+        file: true,
         "http:": true,
         "https:": true,
         "ftp:": true,
         "gopher:": true,
         "file:": true
       };
-      var querystring = require_querystring();
+      var querystring = require_lib();
       function urlParse(url2, parseQueryString, slashesDenoteHost) {
-        if (url2 && util.isObject(url2) && url2 instanceof Url)
+        if (url2 && typeof url2 === "object" && url2 instanceof Url) {
           return url2;
+        }
         var u2 = new Url();
         u2.parse(url2, parseQueryString, slashesDenoteHost);
         return u2;
       }
       Url.prototype.parse = function(url2, parseQueryString, slashesDenoteHost) {
-        if (!util.isString(url2)) {
+        if (typeof url2 !== "string") {
           throw new TypeError("Parameter 'url' must be a string, not " + typeof url2);
         }
         var queryIndex = url2.indexOf("?"), splitter = queryIndex !== -1 && queryIndex < url2.indexOf("#") ? "?" : "#", uSplit = url2.split(splitter), slashRegex = /\\/g;
@@ -1143,7 +2896,7 @@
           this.protocol = lowerProto;
           rest = rest.substr(proto.length);
         }
-        if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
+        if (slashesDenoteHost || proto || rest.match(/^\/\/[^@/]+@[^@/]+/)) {
           var slashes = rest.substr(0, 2) === "//";
           if (slashes && !(proto && hostlessProtocol[proto])) {
             rest = rest.substr(2);
@@ -1154,8 +2907,9 @@
           var hostEnd = -1;
           for (var i2 = 0; i2 < hostEndingChars.length; i2++) {
             var hec = rest.indexOf(hostEndingChars[i2]);
-            if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+            if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) {
               hostEnd = hec;
+            }
           }
           var auth, atSign;
           if (hostEnd === -1) {
@@ -1171,11 +2925,13 @@
           hostEnd = -1;
           for (var i2 = 0; i2 < nonHostChars.length; i2++) {
             var hec = rest.indexOf(nonHostChars[i2]);
-            if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+            if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) {
               hostEnd = hec;
+            }
           }
-          if (hostEnd === -1)
+          if (hostEnd === -1) {
             hostEnd = rest.length;
+          }
           this.host = rest.slice(0, hostEnd);
           rest = rest.slice(hostEnd);
           this.parseHost();
@@ -1185,8 +2941,9 @@
             var hostparts = this.hostname.split(/\./);
             for (var i2 = 0, l2 = hostparts.length; i2 < l2; i2++) {
               var part = hostparts[i2];
-              if (!part)
+              if (!part) {
                 continue;
+              }
               if (!part.match(hostnamePartPattern)) {
                 var newpart = "";
                 for (var j2 = 0, k2 = part.length; j2 < k2; j2++) {
@@ -1235,8 +2992,9 @@
         if (!unsafeProtocol[lowerProto]) {
           for (var i2 = 0, l2 = autoEscape.length; i2 < l2; i2++) {
             var ae = autoEscape[i2];
-            if (rest.indexOf(ae) === -1)
+            if (rest.indexOf(ae) === -1) {
               continue;
+            }
             var esc = encodeURIComponent(ae);
             if (esc === ae) {
               esc = escape(ae);
@@ -1261,8 +3019,9 @@
           this.search = "";
           this.query = {};
         }
-        if (rest)
+        if (rest) {
           this.pathname = rest;
+        }
         if (slashedProtocol[lowerProto] && this.hostname && !this.pathname) {
           this.pathname = "/";
         }
@@ -1275,10 +3034,12 @@
         return this;
       };
       function urlFormat(obj) {
-        if (util.isString(obj))
+        if (typeof obj === "string") {
           obj = urlParse(obj);
-        if (!(obj instanceof Url))
+        }
+        if (!(obj instanceof Url)) {
           return Url.prototype.format.call(obj);
+        }
         return obj.format();
       }
       Url.prototype.format = function() {
@@ -1297,23 +3058,27 @@
             host += ":" + this.port;
           }
         }
-        if (this.query && util.isObject(this.query) && Object.keys(this.query).length) {
+        if (this.query && typeof this.query === "object" && Object.keys(this.query).length) {
           query = querystring.stringify(this.query);
         }
         var search = this.search || query && "?" + query || "";
-        if (protocol && protocol.substr(-1) !== ":")
+        if (protocol && protocol.substr(-1) !== ":") {
           protocol += ":";
+        }
         if (this.slashes || (!protocol || slashedProtocol[protocol]) && host !== false) {
           host = "//" + (host || "");
-          if (pathname && pathname.charAt(0) !== "/")
+          if (pathname && pathname.charAt(0) !== "/") {
             pathname = "/" + pathname;
+          }
         } else if (!host) {
           host = "";
         }
-        if (hash && hash.charAt(0) !== "#")
+        if (hash && hash.charAt(0) !== "#") {
           hash = "#" + hash;
-        if (search && search.charAt(0) !== "?")
+        }
+        if (search && search.charAt(0) !== "?") {
           search = "?" + search;
+        }
         pathname = pathname.replace(/[?#]/g, function(match) {
           return encodeURIComponent(match);
         });
@@ -1327,12 +3092,13 @@
         return this.resolveObject(urlParse(relative, false, true)).format();
       };
       function urlResolveObject(source, relative) {
-        if (!source)
+        if (!source) {
           return relative;
+        }
         return urlParse(source, false, true).resolveObject(relative);
       }
       Url.prototype.resolveObject = function(relative) {
-        if (util.isString(relative)) {
+        if (typeof relative === "string") {
           var rel = new Url();
           rel.parse(relative, false, true);
           relative = rel;
@@ -1352,11 +3118,13 @@
           var rkeys = Object.keys(relative);
           for (var rk = 0; rk < rkeys.length; rk++) {
             var rkey = rkeys[rk];
-            if (rkey !== "protocol")
+            if (rkey !== "protocol") {
               result[rkey] = relative[rkey];
+            }
           }
           if (slashedProtocol[result.protocol] && result.hostname && !result.pathname) {
-            result.path = result.pathname = "/";
+            result.pathname = "/";
+            result.path = result.pathname;
           }
           result.href = result.format();
           return result;
@@ -1374,16 +3142,20 @@
           result.protocol = relative.protocol;
           if (!relative.host && !hostlessProtocol[relative.protocol]) {
             var relPath = (relative.pathname || "").split("/");
-            while (relPath.length && !(relative.host = relPath.shift()))
-              ;
-            if (!relative.host)
+            while (relPath.length && !(relative.host = relPath.shift())) {
+            }
+            if (!relative.host) {
               relative.host = "";
-            if (!relative.hostname)
+            }
+            if (!relative.hostname) {
               relative.hostname = "";
-            if (relPath[0] !== "")
+            }
+            if (relPath[0] !== "") {
               relPath.unshift("");
-            if (relPath.length < 2)
+            }
+            if (relPath.length < 2) {
               relPath.unshift("");
+            }
             result.pathname = relPath.join("/");
           } else {
             result.pathname = relative.pathname;
@@ -1408,20 +3180,22 @@
           result.hostname = "";
           result.port = null;
           if (result.host) {
-            if (srcPath[0] === "")
+            if (srcPath[0] === "") {
               srcPath[0] = result.host;
-            else
+            } else {
               srcPath.unshift(result.host);
+            }
           }
           result.host = "";
           if (relative.protocol) {
             relative.hostname = null;
             relative.port = null;
             if (relative.host) {
-              if (relPath[0] === "")
+              if (relPath[0] === "") {
                 relPath[0] = relative.host;
-              else
+              } else {
                 relPath.unshift(relative.host);
+              }
             }
             relative.host = null;
           }
@@ -1434,24 +3208,27 @@
           result.query = relative.query;
           srcPath = relPath;
         } else if (relPath.length) {
-          if (!srcPath)
+          if (!srcPath) {
             srcPath = [];
+          }
           srcPath.pop();
           srcPath = srcPath.concat(relPath);
           result.search = relative.search;
           result.query = relative.query;
-        } else if (!util.isNullOrUndefined(relative.search)) {
+        } else if (relative.search != null) {
           if (psychotic) {
-            result.hostname = result.host = srcPath.shift();
+            result.host = srcPath.shift();
+            result.hostname = result.host;
             var authInHost = result.host && result.host.indexOf("@") > 0 ? result.host.split("@") : false;
             if (authInHost) {
               result.auth = authInHost.shift();
-              result.host = result.hostname = authInHost.shift();
+              result.hostname = authInHost.shift();
+              result.host = result.hostname;
             }
           }
           result.search = relative.search;
           result.query = relative.query;
-          if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+          if (result.pathname !== null || result.search !== null) {
             result.path = (result.pathname ? result.pathname : "") + (result.search ? result.search : "");
           }
           result.href = result.format();
@@ -1495,24 +3272,26 @@
         }
         var isAbsolute = srcPath[0] === "" || srcPath[0] && srcPath[0].charAt(0) === "/";
         if (psychotic) {
-          result.hostname = result.host = isAbsolute ? "" : srcPath.length ? srcPath.shift() : "";
+          result.hostname = isAbsolute ? "" : srcPath.length ? srcPath.shift() : "";
+          result.host = result.hostname;
           var authInHost = result.host && result.host.indexOf("@") > 0 ? result.host.split("@") : false;
           if (authInHost) {
             result.auth = authInHost.shift();
-            result.host = result.hostname = authInHost.shift();
+            result.hostname = authInHost.shift();
+            result.host = result.hostname;
           }
         }
         mustEndAbs = mustEndAbs || result.host && srcPath.length;
         if (mustEndAbs && !isAbsolute) {
           srcPath.unshift("");
         }
-        if (!srcPath.length) {
+        if (srcPath.length > 0) {
+          result.pathname = srcPath.join("/");
+        } else {
           result.pathname = null;
           result.path = null;
-        } else {
-          result.pathname = srcPath.join("/");
         }
-        if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
+        if (result.pathname !== null || result.search !== null) {
           result.path = (result.pathname ? result.pathname : "") + (result.search ? result.search : "");
         }
         result.auth = relative.auth || result.auth;
@@ -1530,138 +3309,213 @@
           }
           host = host.substr(0, host.length - port.length);
         }
-        if (host)
+        if (host) {
           this.hostname = host;
+        }
       };
+      exports.parse = urlParse;
+      exports.resolve = urlResolve;
+      exports.resolveObject = urlResolveObject;
+      exports.format = urlFormat;
+      exports.Url = Url;
     }
   });
 
-  // node_modules/@adrianlafond/geom/dist/geom.js
-  var require_geom = __commonJS({
-    "node_modules/@adrianlafond/geom/dist/geom.js"(exports, module) {
-      !function(t2, e2) {
-        "object" == typeof exports && "object" == typeof module ? module.exports = e2() : "function" == typeof define && define.amd ? define("Geom", [], e2) : "object" == typeof exports ? exports.Geom = e2() : t2.Geom = e2();
-      }(window, function() {
-        return function(t2) {
-          var e2 = {};
-          function n2(r2) {
-            if (e2[r2])
-              return e2[r2].exports;
-            var o2 = e2[r2] = { i: r2, l: false, exports: {} };
-            return t2[r2].call(o2.exports, o2, o2.exports, n2), o2.l = true, o2.exports;
+  // node_modules/@adrianlafond/geom/dist/angle.js
+  var require_angle = __commonJS({
+    "node_modules/@adrianlafond/geom/dist/angle.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      var Angle3 = (
+        /** @class */
+        function() {
+          function Angle4() {
           }
-          return n2.m = t2, n2.c = e2, n2.d = function(t3, e3, r2) {
-            n2.o(t3, e3) || Object.defineProperty(t3, e3, { enumerable: true, get: r2 });
-          }, n2.r = function(t3) {
-            "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(t3, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(t3, "__esModule", { value: true });
-          }, n2.t = function(t3, e3) {
-            if (1 & e3 && (t3 = n2(t3)), 8 & e3)
-              return t3;
-            if (4 & e3 && "object" == typeof t3 && t3 && t3.__esModule)
-              return t3;
-            var r2 = /* @__PURE__ */ Object.create(null);
-            if (n2.r(r2), Object.defineProperty(r2, "default", { enumerable: true, value: t3 }), 2 & e3 && "string" != typeof t3)
-              for (var o2 in t3)
-                n2.d(r2, o2, function(e4) {
-                  return t3[e4];
-                }.bind(null, o2));
-            return r2;
-          }, n2.n = function(t3) {
-            var e3 = t3 && t3.__esModule ? function() {
-              return t3.default;
-            } : function() {
-              return t3;
-            };
-            return n2.d(e3, "a", e3), e3;
-          }, n2.o = function(t3, e3) {
-            return Object.prototype.hasOwnProperty.call(t3, e3);
-          }, n2.p = "", n2(n2.s = 1);
-        }([function(t2, e2, n2) {
-          "use strict";
-          Object.defineProperty(e2, "__esModule", { value: true });
-          var r2 = function() {
-            function t3(t4, e3) {
-              void 0 === t4 && (t4 = 0), void 0 === e3 && (e3 = 0), this.x = t4, this.y = e3;
+          Angle4.toRadians = function(value) {
+            return value * Math.PI / 180;
+          };
+          Angle4.toDegrees = function(value) {
+            return value * 180 / Math.PI;
+          };
+          Angle4.delta = function(r1, r2) {
+            return Angle4.normalize(r1 - r2);
+          };
+          Angle4.interpolate = function(r1, r2, progress) {
+            var a1 = Angle4.normalize(r1);
+            var a2 = Angle4.normalize(r2);
+            var delta = a2 - a1;
+            if (Math.abs(delta) > Math.PI) {
+              var circumference = Math.PI * 2 * (a2 > a1 ? -1 : 1);
+              delta = a2 + circumference - a1;
             }
-            return Object.defineProperty(t3.prototype, "data", { get: function() {
+            return Angle4.normalize(a1 + delta * progress);
+          };
+          Angle4.normalize = function(value) {
+            var result = value % (Math.PI * 2);
+            if (result < 0) {
+              result += Math.PI * 2;
+            }
+            return result;
+          };
+          return Angle4;
+        }()
+      );
+      exports.default = Angle3;
+    }
+  });
+
+  // node_modules/@adrianlafond/geom/dist/point.js
+  var require_point = __commonJS({
+    "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      var Point9 = (
+        /** @class */
+        function() {
+          function Point10(x2, y2) {
+            if (x2 === void 0) {
+              x2 = 0;
+            }
+            if (y2 === void 0) {
+              y2 = 0;
+            }
+            this.x = x2;
+            this.y = y2;
+          }
+          Object.defineProperty(Point10.prototype, "data", {
+            get: function() {
               return { x: this.x, y: this.y };
-            }, enumerable: true, configurable: true }), t3.prototype.clone = function() {
-              return new t3(this.x, this.y);
-            }, t3.prototype.add = function(t4) {
-              return this.x += t4.x, this.y += t4.y, this;
-            }, t3.prototype.subtract = function(t4) {
-              return this.x -= t4.x, this.y -= t4.y, this;
-            }, t3.prototype.toString = function() {
-              return JSON.stringify(this.data);
-            }, t3.distance = function(t4, e3) {
-              return Math.sqrt((t4.x - e3.x) * (t4.x - e3.x) + (t4.y - e3.y) * (t4.y - e3.y));
-            }, t3.radians = function(t4, e3) {
-              return Math.atan2(e3.y - t4.y, e3.x - t4.x);
-            }, t3;
-          }();
-          e2.default = r2;
-        }, function(t2, e2, n2) {
-          "use strict";
-          Object.defineProperty(e2, "__esModule", { value: true });
-          var r2 = n2(2);
-          e2.Angle = r2.default;
-          var o2 = n2(0);
-          e2.Point = o2.default;
-          var i2 = n2(3);
-          e2.Vector = i2.default;
-        }, function(t2, e2, n2) {
-          "use strict";
-          Object.defineProperty(e2, "__esModule", { value: true });
-          var r2 = function() {
-            function t3() {
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Point10.prototype.clone = function() {
+            return new Point10(this.x, this.y);
+          };
+          Point10.prototype.add = function(point) {
+            this.x += point.x;
+            this.y += point.y;
+            return this;
+          };
+          Point10.prototype.subtract = function(point) {
+            this.x -= point.x;
+            this.y -= point.y;
+            return this;
+          };
+          Point10.prototype.toString = function() {
+            return JSON.stringify(this.data);
+          };
+          Point10.distance = function(p1, p2) {
+            return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+          };
+          Point10.radians = function(p1, p2) {
+            return Math.atan2(p2.y - p1.y, p2.x - p1.x);
+          };
+          return Point10;
+        }()
+      );
+      exports.default = Point9;
+    }
+  });
+
+  // node_modules/@adrianlafond/geom/dist/vector.js
+  var require_vector = __commonJS({
+    "node_modules/@adrianlafond/geom/dist/vector.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      var point_1 = require_point();
+      var Vector3 = (
+        /** @class */
+        function() {
+          function Vector4(x_point, y_point, radians2) {
+            if (x_point === void 0) {
+              x_point = 0;
             }
-            return t3.toRadians = function(t4) {
-              return t4 * Math.PI / 180;
-            }, t3.toDegrees = function(t4) {
-              return 180 * t4 / Math.PI;
-            }, t3.interpolate = function(e3, n3, r3) {
-              return t3.normalize(e3 + t3.delta(e3, n3) * r3);
-            }, t3.delta = function(e3, n3) {
-              var r3 = t3.normalize(e3), o2 = t3.normalize(n3), i2 = o2 - r3;
-              return Math.abs(i2) > Math.PI && (i2 = o2 - 2 * Math.PI - r3), i2;
-            }, t3.normalize = function(t4) {
-              var e3 = t4 % (2 * Math.PI);
-              return e3 < 0 && (e3 += 2 * Math.PI), e3;
-            }, t3;
-          }();
-          e2.default = r2;
-        }, function(t2, e2, n2) {
-          "use strict";
-          Object.defineProperty(e2, "__esModule", { value: true });
-          var r2 = n2(0), o2 = function() {
-            function t3(t4, e3, n3) {
-              void 0 === t4 && (t4 = 0), void 0 === e3 && (e3 = 0), void 0 === n3 && (n3 = 0), this.model = {}, t4 instanceof r2.default ? (this.model.point = t4.clone(), this.model.radians = e3) : (this.model.point = new r2.default(t4, e3), this.model.radians = n3);
+            if (y_point === void 0) {
+              y_point = 0;
             }
-            return Object.defineProperty(t3.prototype, "point", { get: function() {
+            if (radians2 === void 0) {
+              radians2 = 0;
+            }
+            this.model = {};
+            if (x_point instanceof point_1.default) {
+              this.model.point = x_point.clone();
+              this.model.radians = y_point;
+            } else {
+              this.model.point = new point_1.default(x_point, y_point);
+              this.model.radians = radians2;
+            }
+          }
+          Object.defineProperty(Vector4.prototype, "point", {
+            get: function() {
               return this.model.point.clone();
-            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "x", { get: function() {
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(Vector4.prototype, "x", {
+            get: function() {
               return this.model.point.x;
-            }, set: function(t4) {
-              this.model.point.x = t4;
-            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "y", { get: function() {
+            },
+            set: function(value) {
+              this.model.point.x = value;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(Vector4.prototype, "y", {
+            get: function() {
               return this.model.point.y;
-            }, set: function(t4) {
-              this.model.point.y = t4;
-            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "radians", { get: function() {
+            },
+            set: function(value) {
+              this.model.point.y = value;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(Vector4.prototype, "radians", {
+            get: function() {
               return this.model.radians;
-            }, set: function(t4) {
-              this.model.radians = t4;
-            }, enumerable: true, configurable: true }), Object.defineProperty(t3.prototype, "data", { get: function() {
-              return { x: this.x, y: this.y, radians: this.radians };
-            }, enumerable: true, configurable: true }), t3.prototype.clone = function() {
-              return new t3(this.point, this.radians);
-            }, t3.prototype.toString = function() {
-              return JSON.stringify(this.data);
-            }, t3;
-          }();
-          e2.default = o2;
-        }]);
-      });
+            },
+            set: function(value) {
+              this.model.radians = value;
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Object.defineProperty(Vector4.prototype, "data", {
+            get: function() {
+              var _a = this, x2 = _a.x, y2 = _a.y, radians2 = _a.radians;
+              return { x: x2, y: y2, radians: radians2 };
+            },
+            enumerable: false,
+            configurable: true
+          });
+          Vector4.prototype.clone = function() {
+            return new Vector4(this.point, this.radians);
+          };
+          Vector4.prototype.toString = function() {
+            return JSON.stringify(this.data);
+          };
+          return Vector4;
+        }()
+      );
+      exports.default = Vector3;
+    }
+  });
+
+  // node_modules/@adrianlafond/geom/dist/index.js
+  var require_dist = __commonJS({
+    "node_modules/@adrianlafond/geom/dist/index.js"(exports) {
+      "use strict";
+      Object.defineProperty(exports, "__esModule", { value: true });
+      exports.Vector = exports.Point = exports.Angle = void 0;
+      var angle_1 = require_angle();
+      exports.Angle = angle_1.default;
+      var point_1 = require_point();
+      exports.Point = point_1.default;
+      var vector_1 = require_vector();
+      exports.Vector = vector_1.default;
     }
   });
 
@@ -4332,9 +6186,9 @@ Deprecated since v${version}`);
       if (geometry.indexBuffer) {
         geometryOut.indexBuffer = geometryOut.buffers[geometry.buffers.indexOf(geometry.indexBuffer)];
         geometryOut.indexBuffer.type = BUFFER_TYPE.ELEMENT_ARRAY_BUFFER;
-        let offset = 0;
+        let offset4 = 0;
         let stride = 0;
-        let offset2 = 0;
+        let offset22 = 0;
         let bufferIndexToCount = 0;
         for (let i2 = 0; i2 < geometry.buffers.length; i2++) {
           if (geometry.buffers[i2] !== geometry.indexBuffer) {
@@ -4351,10 +6205,10 @@ Deprecated since v${version}`);
         for (let i2 = 0; i2 < geometries.length; i2++) {
           const indexBufferData = geometries[i2].indexBuffer.data;
           for (let j2 = 0; j2 < indexBufferData.length; j2++) {
-            geometryOut.indexBuffer.data[j2 + offset2] += offset;
+            geometryOut.indexBuffer.data[j2 + offset22] += offset4;
           }
-          offset += geometries[i2].buffers[bufferIndexToCount].data.length / stride;
-          offset2 += indexBufferData.length;
+          offset4 += geometries[i2].buffers[bufferIndexToCount].data.length / stride;
+          offset22 += indexBufferData.length;
         }
       }
       return geometryOut;
@@ -4570,10 +6424,10 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/math/lib/shapes/Circle.mjs
   var Circle = class {
-    constructor(x2 = 0, y2 = 0, radius = 0) {
+    constructor(x2 = 0, y2 = 0, radius2 = 0) {
       this.x = x2;
       this.y = y2;
-      this.radius = radius;
+      this.radius = radius2;
       this.type = SHAPES.CIRC;
     }
     clone() {
@@ -4671,12 +6525,12 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/math/lib/shapes/RoundedRectangle.mjs
   var RoundedRectangle = class {
-    constructor(x2 = 0, y2 = 0, width = 0, height = 0, radius = 20) {
+    constructor(x2 = 0, y2 = 0, width = 0, height = 0, radius2 = 20) {
       this.x = x2;
       this.y = y2;
       this.width = width;
       this.height = height;
-      this.radius = radius;
+      this.radius = radius2;
       this.type = SHAPES.RREC;
     }
     clone() {
@@ -4688,26 +6542,26 @@ Deprecated since v${version}`);
       }
       if (x2 >= this.x && x2 <= this.x + this.width) {
         if (y2 >= this.y && y2 <= this.y + this.height) {
-          const radius = Math.max(0, Math.min(this.radius, Math.min(this.width, this.height) / 2));
-          if (y2 >= this.y + radius && y2 <= this.y + this.height - radius || x2 >= this.x + radius && x2 <= this.x + this.width - radius) {
+          const radius2 = Math.max(0, Math.min(this.radius, Math.min(this.width, this.height) / 2));
+          if (y2 >= this.y + radius2 && y2 <= this.y + this.height - radius2 || x2 >= this.x + radius2 && x2 <= this.x + this.width - radius2) {
             return true;
           }
-          let dx = x2 - (this.x + radius);
-          let dy = y2 - (this.y + radius);
-          const radius2 = radius * radius;
-          if (dx * dx + dy * dy <= radius2) {
+          let dx = x2 - (this.x + radius2);
+          let dy = y2 - (this.y + radius2);
+          const radius22 = radius2 * radius2;
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
-          dx = x2 - (this.x + this.width - radius);
-          if (dx * dx + dy * dy <= radius2) {
+          dx = x2 - (this.x + this.width - radius2);
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
-          dy = y2 - (this.y + this.height - radius);
-          if (dx * dx + dy * dy <= radius2) {
+          dy = y2 - (this.y + this.height - radius2);
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
-          dx = x2 - (this.x + radius);
-          if (dx * dx + dy * dy <= radius2) {
+          dx = x2 - (this.x + radius2);
+          if (dx * dx + dy * dy <= radius22) {
             return true;
           }
         }
@@ -6576,9 +8430,9 @@ ${this.fragmentSrc}`;
       }
     }
     boundArray(texArray, boundTextures, batchId, maxTextures) {
-      const { elements, ids, count } = texArray;
+      const { elements, ids, count: count4 } = texArray;
       let j2 = 0;
-      for (let i2 = 0; i2 < count; i2++) {
+      for (let i2 = 0; i2 < count4; i2++) {
         const tex = elements[i2];
         const loc = tex._batchLocation;
         if (loc >= 0 && loc < maxTextures && boundTextures[loc] === tex) {
@@ -8120,11 +9974,11 @@ ${this.fragmentSrc}`;
         }
       }
       const colorTextures = framebuffer.colorTextures;
-      let count = colorTextures.length;
+      let count4 = colorTextures.length;
       if (!gl.drawBuffers) {
-        count = Math.min(count, 1);
+        count4 = Math.min(count4, 1);
       }
-      for (let i2 = 0; i2 < count; i2++) {
+      for (let i2 = 0; i2 < count4; i2++) {
         const texture = colorTextures[i2];
         const parentTexture = texture.parentTextureArray || texture;
         this.renderer.texture.bind(parentTexture, 0);
@@ -8141,9 +9995,9 @@ ${this.fragmentSrc}`;
       const { gl } = this;
       const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
       const colorTextures = framebuffer.colorTextures;
-      let count = colorTextures.length;
+      let count4 = colorTextures.length;
       if (!gl.drawBuffers) {
-        count = Math.min(count, 1);
+        count4 = Math.min(count4, 1);
       }
       if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer)) {
         fbo.msaaBuffer = fbo.msaaBuffer || gl.createRenderbuffer();
@@ -8156,7 +10010,7 @@ ${this.fragmentSrc}`;
         }
       }
       const activeTextures = [];
-      for (let i2 = 0; i2 < count; i2++) {
+      for (let i2 = 0; i2 < count4; i2++) {
         const texture = colorTextures[i2];
         const parentTexture = texture.parentTextureArray || texture;
         this.renderer.texture.bind(parentTexture, 0);
@@ -8663,13 +10517,13 @@ ${this.fragmentSrc}`;
       const texBase = tex.baseTexture;
       const frame = this.uClampFrame;
       const margin = this.clampMargin / texBase.resolution;
-      const offset = this.clampOffset;
-      frame[0] = (tex._frame.x + margin + offset) / texBase.width;
-      frame[1] = (tex._frame.y + margin + offset) / texBase.height;
-      frame[2] = (tex._frame.x + tex._frame.width - margin + offset) / texBase.width;
-      frame[3] = (tex._frame.y + tex._frame.height - margin + offset) / texBase.height;
-      this.uClampOffset[0] = offset / texBase.realWidth;
-      this.uClampOffset[1] = offset / texBase.realHeight;
+      const offset4 = this.clampOffset;
+      frame[0] = (tex._frame.x + margin + offset4) / texBase.width;
+      frame[1] = (tex._frame.y + margin + offset4) / texBase.height;
+      frame[2] = (tex._frame.x + tex._frame.width - margin + offset4) / texBase.width;
+      frame[3] = (tex._frame.y + tex._frame.height - margin + offset4) / texBase.height;
+      this.uClampOffset[0] = offset4 / texBase.realWidth;
+      this.uClampOffset[1] = offset4 / texBase.realHeight;
       this.isSimple = tex._frame.width === texBase.width && tex._frame.height === texBase.height && tex.rotate === 0;
       return true;
     }
@@ -9595,7 +11449,7 @@ ${this.fragmentSrc}`;
     }));
     let size = 0;
     let chunkSize = 0;
-    let offset = 0;
+    let offset4 = 0;
     for (let i2 = 0; i2 < uboElements.length; i2++) {
       const uboElement = uboElements[i2];
       size = GLSL_TO_STD40_SIZE[uboElement.data.type];
@@ -9606,21 +11460,21 @@ ${this.fragmentSrc}`;
       if (chunkSize % size !== 0 && chunkSize < 16) {
         const lineUpValue = chunkSize % size % 16;
         chunkSize += lineUpValue;
-        offset += lineUpValue;
+        offset4 += lineUpValue;
       }
       if (chunkSize + size > 16) {
-        offset = Math.ceil(offset / 16) * 16;
-        uboElement.offset = offset;
-        offset += size;
+        offset4 = Math.ceil(offset4 / 16) * 16;
+        uboElement.offset = offset4;
+        offset4 += size;
         chunkSize = size;
       } else {
-        uboElement.offset = offset;
+        uboElement.offset = offset4;
         chunkSize += size;
-        offset += size;
+        offset4 += size;
       }
     }
-    offset = Math.ceil(offset / 16) * 16;
-    return { uboElements, size: offset };
+    offset4 = Math.ceil(offset4 / 16) * 16;
+    return { uboElements, size: offset4 };
   }
   function getUBOData(uniforms, uniformData) {
     const usedUniformDatas = [];
@@ -10938,12 +12792,12 @@ ${this.fragmentSrc}`;
       if (!this._head) {
         return 0;
       }
-      let count = 0;
+      let count4 = 0;
       let current = this._head;
       while (current = current.next) {
-        count++;
+        count4++;
       }
-      return count;
+      return count4;
     }
     start() {
       if (!this.started) {
@@ -11201,11 +13055,11 @@ ${this.fragmentSrc}`;
         gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
       }
     }
-    bindBufferRange(buffer, index, offset) {
+    bindBufferRange(buffer, index, offset4) {
       const { gl, CONTEXT_UID } = this;
-      offset = offset || 0;
+      offset4 = offset4 || 0;
       const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
-      gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset * 256, 256);
+      gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset4 * 256, 256);
     }
     update(buffer) {
       const { gl, CONTEXT_UID } = this;
@@ -16600,7 +18454,7 @@ void main() {
       if (!this._parsersValidated) {
         this._validateParsers();
       }
-      let count = 0;
+      let count4 = 0;
       const assets = {};
       const singleAsset = isSingleItem(assetsToLoadIn);
       const assetsToLoad = convertToList(assetsToLoadIn, (item) => ({
@@ -16616,7 +18470,7 @@ void main() {
             }
             assets[asset.src] = await this.promiseCache[url2].promise;
             if (onProgress)
-              onProgress(++count / total);
+              onProgress(++count4 / total);
           } catch (e2) {
             delete this.promiseCache[url2];
             delete assets[asset.src];
@@ -17384,10 +19238,10 @@ ${e2}`);
       const resolveResults = this.resolver.resolveBundle(bundleIds);
       const out = {};
       const keys = Object.keys(resolveResults);
-      let count = 0;
+      let count4 = 0;
       let total = 0;
       const _onProgress = () => {
-        onProgress?.(++count / total);
+        onProgress?.(++count4 / total);
       };
       const promises = keys.map((bundleId) => {
         const resolveResult = resolveResults[bundleId];
@@ -17862,7 +19716,7 @@ ${e2}`);
     }
     static _createLevelBuffers(buffer, format2, levels, blockWidth, blockHeight, imageWidth, imageHeight) {
       const buffers = new Array(levels);
-      let offset = buffer.byteOffset;
+      let offset4 = buffer.byteOffset;
       let levelWidth = imageWidth;
       let levelHeight = imageHeight;
       let alignedLevelWidth = levelWidth + blockWidth - 1 & ~(blockWidth - 1);
@@ -17873,9 +19727,9 @@ ${e2}`);
           levelID: i2,
           levelWidth: levels > 1 ? levelWidth : alignedLevelWidth,
           levelHeight: levels > 1 ? levelHeight : alignedLevelHeight,
-          levelBuffer: new Uint8Array(buffer.buffer, offset, levelSize)
+          levelBuffer: new Uint8Array(buffer.buffer, offset4, levelSize)
         };
-        offset += levelSize;
+        offset4 += levelSize;
         levelWidth = levelWidth >> 1 || 1;
         levelHeight = levelHeight >> 1 || 1;
         alignedLevelWidth = levelWidth + blockWidth - 1 & ~(blockWidth - 1);
@@ -18809,7 +20663,7 @@ ${e2}`);
 
   // node_modules/@pixi/graphics/lib/utils/ArcUtils.mjs
   var ArcUtils = class {
-    static curveTo(x1, y1, x2, y2, radius, points) {
+    static curveTo(x1, y1, x2, y2, radius2, points) {
       const fromX = points[points.length - 2];
       const fromY = points[points.length - 1];
       const a1 = fromY - y1;
@@ -18817,7 +20671,7 @@ ${e2}`);
       const a2 = y2 - y1;
       const b2 = x2 - x1;
       const mm = Math.abs(a1 * b2 - b1 * a2);
-      if (mm < 1e-8 || radius === 0) {
+      if (mm < 1e-8 || radius2 === 0) {
         if (points[points.length - 2] !== x1 || points[points.length - 1] !== y1) {
           points.push(x1, y1);
         }
@@ -18826,8 +20680,8 @@ ${e2}`);
       const dd = a1 * a1 + b1 * b1;
       const cc = a2 * a2 + b2 * b2;
       const tt = a1 * a2 + b1 * b2;
-      const k1 = radius * Math.sqrt(dd) / mm;
-      const k2 = radius * Math.sqrt(cc) / mm;
+      const k1 = radius2 * Math.sqrt(dd) / mm;
+      const k2 = radius2 * Math.sqrt(cc) / mm;
       const j1 = k1 * tt / dd;
       const j2 = k2 * tt / cc;
       const cx = k1 * b2 + k2 * b1;
@@ -18841,15 +20695,15 @@ ${e2}`);
       return {
         cx: cx + x1,
         cy: cy + y1,
-        radius,
+        radius: radius2,
         startAngle,
         endAngle,
         anticlockwise: b1 * a2 > b2 * a1
       };
     }
-    static arc(_startX, _startY, cx, cy, radius, startAngle, endAngle, _anticlockwise, points) {
+    static arc(_startX, _startY, cx, cy, radius2, startAngle, endAngle, _anticlockwise, points) {
       const sweep = endAngle - startAngle;
-      const n2 = curves._segmentsCount(Math.abs(sweep) * radius, Math.ceil(Math.abs(sweep) / PI_2) * 40);
+      const n2 = curves._segmentsCount(Math.abs(sweep) * radius2, Math.ceil(Math.abs(sweep) / PI_2) * 40);
       const theta = sweep / (n2 * 2);
       const theta2 = theta * 2;
       const cTheta = Math.cos(theta);
@@ -18861,7 +20715,7 @@ ${e2}`);
         const angle = theta + startAngle + theta2 * real;
         const c2 = Math.cos(angle);
         const s2 = -Math.sin(angle);
-        points.push((cTheta * c2 + sTheta * s2) * radius + cx, (cTheta * -s2 + sTheta * c2) * radius + cy);
+        points.push((cTheta * c2 + sTheta * s2) * radius2 + cx, (cTheta * -s2 + sTheta * c2) * radius2 + cy);
       }
     }
   };
@@ -18982,20 +20836,20 @@ ${e2}`);
     let startAngle = angle0;
     const angleDiff = angle1 - angle0;
     const absAngleDiff = Math.abs(angleDiff);
-    const radius = Math.sqrt(cx2p0x * cx2p0x + cy2p0y * cy2p0y);
-    const segCount = (15 * absAngleDiff * Math.sqrt(radius) / Math.PI >> 0) + 1;
+    const radius2 = Math.sqrt(cx2p0x * cx2p0x + cy2p0y * cy2p0y);
+    const segCount = (15 * absAngleDiff * Math.sqrt(radius2) / Math.PI >> 0) + 1;
     const angleInc = angleDiff / segCount;
     startAngle += angleInc;
     if (clockwise) {
       verts.push(cx, cy, sx, sy);
       for (let i2 = 1, angle = startAngle; i2 < segCount; i2++, angle += angleInc) {
-        verts.push(cx, cy, cx + Math.sin(angle) * radius, cy + Math.cos(angle) * radius);
+        verts.push(cx, cy, cx + Math.sin(angle) * radius2, cy + Math.cos(angle) * radius2);
       }
       verts.push(cx, cy, ex, ey);
     } else {
       verts.push(sx, sy, cx, cy);
       for (let i2 = 1, angle = startAngle; i2 < segCount; i2++, angle += angleInc) {
-        verts.push(cx + Math.sin(angle) * radius, cy + Math.cos(angle) * radius, cx, cy);
+        verts.push(cx + Math.sin(angle) * radius2, cy + Math.cos(angle) * radius2, cx, cy);
       }
       verts.push(ex, ey, cx, cy);
     }
@@ -19702,18 +21556,18 @@ ${e2}`);
         points[i2 * 2 + 1] = matrix.b * x2 + matrix.d * y2 + matrix.ty;
       }
     }
-    addColors(colors, color, alpha, size, offset = 0) {
+    addColors(colors, color, alpha, size, offset4 = 0) {
       const bgr = Color.shared.setValue(color).toLittleEndianNumber();
       const result = Color.shared.setValue(bgr).toPremultiplied(alpha);
-      colors.length = Math.max(colors.length, offset + size);
+      colors.length = Math.max(colors.length, offset4 + size);
       for (let i2 = 0; i2 < size; i2++) {
-        colors[offset + i2] = result;
+        colors[offset4 + i2] = result;
       }
     }
-    addTextureIds(textureIds, id, size, offset = 0) {
-      textureIds.length = Math.max(textureIds.length, offset + size);
+    addTextureIds(textureIds, id, size, offset4 = 0) {
+      textureIds.length = Math.max(textureIds.length, offset4 + size);
       for (let i2 = 0; i2 < size; i2++) {
-        textureIds[offset + i2] = id;
+        textureIds[offset4 + i2] = id;
       }
     }
     addUvs(verts, uvs, texture, start2, size, matrix = null) {
@@ -19978,17 +21832,17 @@ ${e2}`);
       BezierUtils.curveTo(cpX, cpY, cpX2, cpY2, toX, toY, this.currentPath.points);
       return this;
     }
-    arcTo(x1, y1, x2, y2, radius) {
+    arcTo(x1, y1, x2, y2, radius2) {
       this._initCurve(x1, y1);
       const points = this.currentPath.points;
-      const result = ArcUtils.curveTo(x1, y1, x2, y2, radius, points);
+      const result = ArcUtils.curveTo(x1, y1, x2, y2, radius2, points);
       if (result) {
-        const { cx, cy, radius: radius2, startAngle, endAngle, anticlockwise } = result;
-        this.arc(cx, cy, radius2, startAngle, endAngle, anticlockwise);
+        const { cx, cy, radius: radius22, startAngle, endAngle, anticlockwise } = result;
+        this.arc(cx, cy, radius22, startAngle, endAngle, anticlockwise);
       }
       return this;
     }
-    arc(cx, cy, radius, startAngle, endAngle, anticlockwise = false) {
+    arc(cx, cy, radius2, startAngle, endAngle, anticlockwise = false) {
       if (startAngle === endAngle) {
         return this;
       }
@@ -20001,8 +21855,8 @@ ${e2}`);
       if (sweep === 0) {
         return this;
       }
-      const startX = cx + Math.cos(startAngle) * radius;
-      const startY = cy + Math.sin(startAngle) * radius;
+      const startX = cx + Math.cos(startAngle) * radius2;
+      const startY = cy + Math.sin(startAngle) * radius2;
       const eps = this._geometry.closePointEps;
       let points = this.currentPath ? this.currentPath.points : null;
       if (points) {
@@ -20016,7 +21870,7 @@ ${e2}`);
         this.moveTo(startX, startY);
         points = this.currentPath.points;
       }
-      ArcUtils.arc(startX, startY, cx, cy, radius, startAngle, endAngle, anticlockwise, points);
+      ArcUtils.arc(startX, startY, cx, cy, radius2, startAngle, endAngle, anticlockwise, points);
       return this;
     }
     beginFill(color = 0, alpha) {
@@ -20058,11 +21912,11 @@ ${e2}`);
     drawRect(x2, y2, width, height) {
       return this.drawShape(new Rectangle(x2, y2, width, height));
     }
-    drawRoundedRect(x2, y2, width, height, radius) {
-      return this.drawShape(new RoundedRectangle(x2, y2, width, height, radius));
+    drawRoundedRect(x2, y2, width, height, radius2) {
+      return this.drawShape(new RoundedRectangle(x2, y2, width, height, radius2));
     }
-    drawCircle(x2, y2, radius) {
-      return this.drawShape(new Circle(x2, y2, radius));
+    drawCircle(x2, y2, radius2) {
+      return this.drawShape(new Circle(x2, y2, radius2));
     }
     drawEllipse(x2, y2, width, height) {
       return this.drawShape(new Ellipse(x2, y2, width, height));
@@ -20244,12 +22098,12 @@ ${e2}`);
       const ty = wt.ty;
       const data = this._geometry.points;
       const vertexData = this.vertexData;
-      let count = 0;
+      let count4 = 0;
       for (let i2 = 0; i2 < data.length; i2 += 2) {
         const x2 = data[i2];
         const y2 = data[i2 + 1];
-        vertexData[count++] = a2 * x2 + c2 * y2 + tx;
-        vertexData[count++] = d2 * y2 + b2 * x2 + ty;
+        vertexData[count4++] = a2 * x2 + c2 * y2 + tx;
+        vertexData[count4++] = d2 * y2 + b2 * x2 + ty;
       }
     }
     closePath() {
@@ -20839,7 +22693,7 @@ ${e2}`);
       const dynamicPropertyFlags = container._properties;
       return new ParticleBuffer(this.properties, dynamicPropertyFlags, batchSize);
     }
-    uploadVertices(children, startIndex, amount, array, stride, offset) {
+    uploadVertices(children, startIndex, amount, array, stride, offset4) {
       let w0 = 0;
       let w1 = 0;
       let h0 = 0;
@@ -20862,76 +22716,76 @@ ${e2}`);
           h0 = orig.height * (1 - sprite.anchor.y);
           h1 = orig.height * -sprite.anchor.y;
         }
-        array[offset] = w1 * sx;
-        array[offset + 1] = h1 * sy;
-        array[offset + stride] = w0 * sx;
-        array[offset + stride + 1] = h1 * sy;
-        array[offset + stride * 2] = w0 * sx;
-        array[offset + stride * 2 + 1] = h0 * sy;
-        array[offset + stride * 3] = w1 * sx;
-        array[offset + stride * 3 + 1] = h0 * sy;
-        offset += stride * 4;
+        array[offset4] = w1 * sx;
+        array[offset4 + 1] = h1 * sy;
+        array[offset4 + stride] = w0 * sx;
+        array[offset4 + stride + 1] = h1 * sy;
+        array[offset4 + stride * 2] = w0 * sx;
+        array[offset4 + stride * 2 + 1] = h0 * sy;
+        array[offset4 + stride * 3] = w1 * sx;
+        array[offset4 + stride * 3 + 1] = h0 * sy;
+        offset4 += stride * 4;
       }
     }
-    uploadPosition(children, startIndex, amount, array, stride, offset) {
+    uploadPosition(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; i2++) {
         const spritePosition = children[startIndex + i2].position;
-        array[offset] = spritePosition.x;
-        array[offset + 1] = spritePosition.y;
-        array[offset + stride] = spritePosition.x;
-        array[offset + stride + 1] = spritePosition.y;
-        array[offset + stride * 2] = spritePosition.x;
-        array[offset + stride * 2 + 1] = spritePosition.y;
-        array[offset + stride * 3] = spritePosition.x;
-        array[offset + stride * 3 + 1] = spritePosition.y;
-        offset += stride * 4;
+        array[offset4] = spritePosition.x;
+        array[offset4 + 1] = spritePosition.y;
+        array[offset4 + stride] = spritePosition.x;
+        array[offset4 + stride + 1] = spritePosition.y;
+        array[offset4 + stride * 2] = spritePosition.x;
+        array[offset4 + stride * 2 + 1] = spritePosition.y;
+        array[offset4 + stride * 3] = spritePosition.x;
+        array[offset4 + stride * 3 + 1] = spritePosition.y;
+        offset4 += stride * 4;
       }
     }
-    uploadRotation(children, startIndex, amount, array, stride, offset) {
+    uploadRotation(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; i2++) {
         const spriteRotation = children[startIndex + i2].rotation;
-        array[offset] = spriteRotation;
-        array[offset + stride] = spriteRotation;
-        array[offset + stride * 2] = spriteRotation;
-        array[offset + stride * 3] = spriteRotation;
-        offset += stride * 4;
+        array[offset4] = spriteRotation;
+        array[offset4 + stride] = spriteRotation;
+        array[offset4 + stride * 2] = spriteRotation;
+        array[offset4 + stride * 3] = spriteRotation;
+        offset4 += stride * 4;
       }
     }
-    uploadUvs(children, startIndex, amount, array, stride, offset) {
+    uploadUvs(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; ++i2) {
         const textureUvs = children[startIndex + i2]._texture._uvs;
         if (textureUvs) {
-          array[offset] = textureUvs.x0;
-          array[offset + 1] = textureUvs.y0;
-          array[offset + stride] = textureUvs.x1;
-          array[offset + stride + 1] = textureUvs.y1;
-          array[offset + stride * 2] = textureUvs.x2;
-          array[offset + stride * 2 + 1] = textureUvs.y2;
-          array[offset + stride * 3] = textureUvs.x3;
-          array[offset + stride * 3 + 1] = textureUvs.y3;
-          offset += stride * 4;
+          array[offset4] = textureUvs.x0;
+          array[offset4 + 1] = textureUvs.y0;
+          array[offset4 + stride] = textureUvs.x1;
+          array[offset4 + stride + 1] = textureUvs.y1;
+          array[offset4 + stride * 2] = textureUvs.x2;
+          array[offset4 + stride * 2 + 1] = textureUvs.y2;
+          array[offset4 + stride * 3] = textureUvs.x3;
+          array[offset4 + stride * 3 + 1] = textureUvs.y3;
+          offset4 += stride * 4;
         } else {
-          array[offset] = 0;
-          array[offset + 1] = 0;
-          array[offset + stride] = 0;
-          array[offset + stride + 1] = 0;
-          array[offset + stride * 2] = 0;
-          array[offset + stride * 2 + 1] = 0;
-          array[offset + stride * 3] = 0;
-          array[offset + stride * 3 + 1] = 0;
-          offset += stride * 4;
+          array[offset4] = 0;
+          array[offset4 + 1] = 0;
+          array[offset4 + stride] = 0;
+          array[offset4 + stride + 1] = 0;
+          array[offset4 + stride * 2] = 0;
+          array[offset4 + stride * 2 + 1] = 0;
+          array[offset4 + stride * 3] = 0;
+          array[offset4 + stride * 3 + 1] = 0;
+          offset4 += stride * 4;
         }
       }
     }
-    uploadTint(children, startIndex, amount, array, stride, offset) {
+    uploadTint(children, startIndex, amount, array, stride, offset4) {
       for (let i2 = 0; i2 < amount; ++i2) {
         const sprite = children[startIndex + i2];
         const result = Color.shared.setValue(sprite._tintRGB).toPremultiplied(sprite.alpha, sprite.texture.baseTexture.alphaMode > 0);
-        array[offset] = result;
-        array[offset + stride] = result;
-        array[offset + stride * 2] = result;
-        array[offset + stride * 3] = result;
-        offset += stride * 4;
+        array[offset4] = result;
+        array[offset4 + stride] = result;
+        array[offset4 + stride * 2] = result;
+        array[offset4 + stride * 3] = result;
+        offset4 += stride * 4;
       }
     }
     destroy() {
@@ -23387,11 +25241,11 @@ ${e2}`);
       }
       for (let i2 = 0; i2 < lenChars; i2++) {
         const char = chars[i2];
-        let offset = char.position.x + lineAlignOffsets[char.line] * (this._align === "justify" ? char.prevSpaces : 1);
+        let offset4 = char.position.x + lineAlignOffsets[char.line] * (this._align === "justify" ? char.prevSpaces : 1);
         if (this._roundPixels) {
-          offset = Math.round(offset);
+          offset4 = Math.round(offset4);
         }
-        const xPos = offset * scale;
+        const xPos = offset4 * scale;
         const yPos = char.position.y * scale;
         const texture = char.texture;
         const pageMesh = pagesMeshData[texture.baseTexture.uid];
@@ -24178,17 +26032,23 @@ ${e2}`);
 
   // src/demo/grid.ts
   var instance;
-  var LINE_COLOR = 14544639;
+  var LINE_COLOR = 1122867;
   var Grid = class {
     constructor(app) {
       this.app = app;
+      this.pointerDownHandler = () => void 0;
+      this.handlePointerDown = (event) => {
+        this.pointerDownHandler(event);
+      };
     }
     udpateApp(app) {
       this.app = app;
     }
     render(px) {
       const background = new Graphics();
-      background.beginFill(16777215);
+      background.eventMode = "static";
+      background.on("pointerdown", this.handlePointerDown);
+      background.beginFill(0);
       background.drawRect(0, 0, this.app.view.width, this.app.view.height);
       this.app.stage.addChild(background);
       let n2 = px;
@@ -24208,18 +26068,26 @@ ${e2}`);
         n2 += px;
       }
     }
+    onPointerDown(handler) {
+      this.pointerDownHandler = handler;
+    }
   };
   function render(app, px = 10) {
     instance = instance != null ? instance : new Grid(app);
     instance.udpateApp(app);
     instance.render(px);
   }
+  function onPointerDown(handler) {
+    if (instance != null) {
+      instance.onPointerDown(handler);
+    }
+  }
 
   // src/bug/bug.ts
-  var import_geom2 = __toESM(require_geom());
+  var import_geom2 = __toESM(require_dist());
 
   // src/bug/leg.ts
-  var import_geom = __toESM(require_geom());
+  var import_geom = __toESM(require_dist());
   var Leg = class {
     constructor(model, live) {
       this.joints = [];
@@ -24230,6 +26098,15 @@ ${e2}`);
           live: live != null ? live[index] : new import_geom.Vector(point.clone())
         };
       });
+    }
+    get socketIndex() {
+      return 0;
+    }
+    get jointIndex() {
+      return this.joints.length > 2 ? 1 : -1;
+    }
+    get clawIndex() {
+      return this.joints.length - 1;
     }
     getModel(index) {
       return this.joints[index].model;
@@ -24260,80 +26137,114 @@ ${e2}`);
   };
 
   // src/bug/bug.ts
+  var defaults = {
+    activeSide: "left",
+    millisecondsPerStep: 250,
+    maxStepPx: 16,
+    position: new import_geom2.Vector(),
+    legs: {
+      left: [[
+        new import_geom2.Point(-3, 5),
+        new import_geom2.Point(-12, -10)
+      ], [
+        new import_geom2.Point(-3, 8),
+        new import_geom2.Point(-14, 4)
+      ], [
+        new import_geom2.Point(-3, 15),
+        new import_geom2.Point(-10, 16)
+      ]],
+      right: [[
+        new import_geom2.Point(3, 5),
+        new import_geom2.Point(12, -10)
+      ], [
+        new import_geom2.Point(3, 8),
+        new import_geom2.Point(14, 4)
+      ], [
+        new import_geom2.Point(3, 15),
+        new import_geom2.Point(10, 16)
+      ]]
+    },
+    jointOffset: 0.25,
+    repulsionPx: 0,
+    maxJigglePx: 3,
+    maxDistractionPx: 24,
+    target: new import_geom2.Vector()
+  };
   var Bug = class {
-    constructor() {
-      this.activeSide = "left";
+    constructor(options) {
       this.stepProgress = 0;
       this.stepMs = 0;
-      this.maxStepMs = 150;
-      this.maxStepPx = 12;
-      this.head = new import_geom2.Vector(100, 100);
       this.legs = {
-        left: [new Leg([
-          new import_geom2.Point(-3, 5),
-          new import_geom2.Point(-12, -10)
-        ]), new Leg([
-          new import_geom2.Point(-3, 8),
-          new import_geom2.Point(-14, 4)
-        ]), new Leg([
-          new import_geom2.Point(-3, 15),
-          new import_geom2.Point(-10, 16)
-        ])],
-        right: [new Leg([
-          new import_geom2.Point(3, 5),
-          new import_geom2.Point(12, -10)
-        ]), new Leg([
-          new import_geom2.Point(3, 8),
-          new import_geom2.Point(14, 4)
-        ]), new Leg([
-          new import_geom2.Point(3, 15),
-          new import_geom2.Point(10, 16)
-        ])]
+        left: [],
+        right: []
       };
-      this.target = new import_geom2.Vector(this.head.point);
+      this.stepTarget = new import_geom2.Vector();
+      this.listeners = {
+        targetReached: []
+      };
+      this.updateLeg = (leg, currentLeg, index, stageRect) => {
+        const joint = leg.getModel(index);
+        const radius2 = import_geom2.Point.distance(this.head.point, this.head.point.subtract(joint));
+        const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians;
+        const radians2 = import_geom2.Angle.interpolate(
+          currentLeg.getLive(index).radians,
+          targetRadians,
+          Math.min(1, this.stepProgress)
+        );
+        const updatedPoint = new import_geom2.Point(
+          Math.cos(radians2) * radius2 + this.head.x,
+          Math.sin(radians2) * radius2 + this.head.y
+        );
+        if (stageRect != null) {
+          updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x));
+          updatedPoint.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, updatedPoint.y));
+        }
+        leg.updateLive(index, new import_geom2.Vector(updatedPoint, radians2));
+      };
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
+      this.activeSide = (_a = options == null ? void 0 : options.activeSide) != null ? _a : defaults.activeSide;
+      this.millisecondsPerStep = (_b = options == null ? void 0 : options.millisecondsPerStep) != null ? _b : defaults.millisecondsPerStep;
+      this.maxStepPx = (_c = options == null ? void 0 : options.maxStepPx) != null ? _c : defaults.maxStepPx;
+      this.jointOffset = (_d = options == null ? void 0 : options.jointOffset) != null ? _d : defaults.jointOffset;
+      this.repulsionPx = (_e = options == null ? void 0 : options.repulsionPx) != null ? _e : defaults.repulsionPx;
+      this.maxJigglePx = (_f = options == null ? void 0 : options.maxJigglePx) != null ? _f : defaults.maxJigglePx;
+      this.maxDistractionPx = (_g = options == null ? void 0 : options.maxDistractionPx) != null ? _g : defaults.maxDistractionPx;
+      this.head = (_h = options == null ? void 0 : options.position) != null ? _h : defaults.position;
+      this.target = (_i = options == null ? void 0 : options.target) != null ? _i : defaults.target;
       this.current = {
         head: this.head,
         legs: this.legs,
         target: this.target.point
       };
-      this.listeners = {
-        targetReached: []
-      };
-      this.updateLeg = (leg, currentLeg, index) => {
-        const joint = leg.getModel(index);
-        const radius = import_geom2.Point.distance(this.head.point, this.head.point.subtract(joint));
-        const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians;
-        const radians = this.interpolateRadians(
-          currentLeg.getLive(index).radians,
-          targetRadians,
-          Math.min(1, this.stepProgress)
-        );
-        const updatedSocket = new import_geom2.Point(
-          Math.cos(radians) * radius + this.head.x,
-          Math.sin(radians) * radius + this.head.y
-        );
-        leg.updateLive(index, new import_geom2.Vector(updatedSocket, radians));
-      };
-      this.updateBug(this.maxStepMs);
+      this.createLegs((_j = options == null ? void 0 : options.legs) != null ? _j : defaults.legs);
+      this.updateBug({ deltaMs: this.millisecondsPerStep });
     }
     /**
      * Commands the bug to move. Takes one arg, the number of milliseconds that
      * have passed since the last movement, so that progress can be calculated.
      */
-    tick(deltaMs = 0) {
-      this.stepProgress = this.stepMs / this.maxStepMs;
-      this.updateBug(deltaMs);
-      if (import_geom2.Point.distance(this.target.point, this.head.point) < this.maxStepPx) {
+    tick({
+      deltaMs = 0,
+      stageRect
+    }) {
+      this.stepProgress = this.stepMs / this.millisecondsPerStep;
+      this.updateBug({ deltaMs, stageRect });
+      if (import_geom2.Point.distance(this.target.point, this.head.point) < this.maxStepPx + this.repulsionPx) {
         const bugRender = this.getRender();
         this.listeners.targetReached.forEach((fn) => fn(bugRender));
       }
       return this.getRender();
     }
-    // TODO: finish pub/sub
     on(event, fn) {
-      this.listeners[event].push(fn);
+      if (!this.listeners[event].includes(fn)) {
+        this.listeners[event].push(fn);
+      }
     }
     off(event, fn) {
+      const index = this.listeners[event].findIndex((item) => item === fn);
+      if (index !== -1) {
+        this.listeners[event].splice(index, 1);
+      }
     }
     /**
      * Allows the target Point that the bug walks towards to be updated.
@@ -24349,9 +26260,34 @@ ${e2}`);
         target: this.target.point
       };
     }
-    updateBug(deltaMs) {
-      this.updateHead();
-      this.updateLegs();
+    createLegs(legsModel) {
+      legsModel.left.forEach((joints, index) => {
+        joints.splice(1, 0, new import_geom2.Point(
+          (joints[0].x + joints[1].x) * 0.5,
+          (joints[0].y + joints[1].y) * 0.5
+        ));
+        this.legs.left[index] = new Leg(joints);
+      });
+      legsModel.right.forEach((joints, index) => {
+        joints.splice(1, 0, new import_geom2.Point(
+          (joints[0].x + joints[1].x) * 0.5,
+          (joints[0].y + joints[1].y) * 0.5
+        ));
+        this.legs.right[index] = new Leg(joints);
+      });
+    }
+    updateBug({
+      deltaMs,
+      stageRect
+    }) {
+      const repulusionRect = stageRect != null ? {
+        x: stageRect.x + this.repulsionPx,
+        y: stageRect.y + this.repulsionPx,
+        width: stageRect.width - this.repulsionPx * 2,
+        height: stageRect.height - this.repulsionPx * 2
+      } : stageRect;
+      this.updateHead(repulusionRect);
+      this.updateLegs(repulusionRect);
       this.updateStepProgress(deltaMs);
     }
     /**
@@ -24362,8 +26298,8 @@ ${e2}`);
      * copied for use in calculations.
      */
     updateStepProgress(deltaMs) {
-      this.stepMs = Math.min(this.maxStepMs, this.stepMs + deltaMs);
-      if (this.stepMs >= this.maxStepMs) {
+      this.stepMs = Math.min(this.millisecondsPerStep, this.stepMs + deltaMs);
+      if (this.stepMs >= this.millisecondsPerStep) {
         this.stepMs = 0;
         this.activeSide = this.activeSide === "left" ? "right" : "left";
         this.current.head = this.head.clone();
@@ -24373,54 +26309,153 @@ ${e2}`);
         };
         this.legs[this.activeSide].forEach((leg) => leg.startMoving());
         this.legs[this.activeSide === "left" ? "right" : "left"].forEach((leg) => leg.stopMoving());
+        this.updateTargetRadians();
       }
     }
-    updateHead() {
-      this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5;
-      const delta = import_geom2.Angle.delta(this.target.radians, this.current.head.radians);
+    /**
+     * Calculates the angle towards which bug should take during the next step.
+     */
+    updateTargetRadians() {
+      this.stepTarget.x = this.target.x + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5;
+      this.stepTarget.y = this.target.y + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5;
+      this.stepTarget.radians = Math.atan2(this.stepTarget.y - this.current.head.y, this.stepTarget.x - this.current.head.x) + Math.PI * 0.5;
+      this.stepTarget.radians = import_geom2.Angle.normalize(this.stepTarget.radians);
       const maxTurnRadians = Math.PI * 0.25;
-      if (delta > maxTurnRadians) {
-        this.target.radians = import_geom2.Angle.normalize(this.current.head.radians - maxTurnRadians);
-      } else if (delta < -maxTurnRadians) {
-        this.target.radians = import_geom2.Angle.normalize(this.current.head.radians + maxTurnRadians);
+      let delta = import_geom2.Angle.normalize(this.stepTarget.radians) - import_geom2.Angle.normalize(this.current.head.radians);
+      if (Math.abs(delta) > Math.PI) {
+        delta = import_geom2.Angle.normalize(this.current.head.radians) - import_geom2.Angle.normalize(this.stepTarget.radians);
       }
-      this.head.radians = this.interpolateRadians(
+      const fullCircle = Math.PI * 2;
+      if (Math.abs(delta) > Math.PI) {
+        if (delta < 0) {
+          const cr = this.current.head.radians + fullCircle;
+          delta = this.stepTarget.radians - cr;
+        } else if (delta > 0) {
+          const tr = this.stepTarget.radians + fullCircle;
+          delta = tr - this.current.head.radians;
+        }
+      }
+      if (delta > maxTurnRadians) {
+        this.stepTarget.radians = this.current.head.radians + maxTurnRadians;
+      } else if (delta < -maxTurnRadians) {
+        this.stepTarget.radians = this.current.head.radians - maxTurnRadians;
+      }
+    }
+    updateHead(stageRect) {
+      this.head.radians = import_geom2.Angle.interpolate(
         this.current.head.radians,
-        this.target.radians,
+        this.stepTarget.radians,
         Math.min(1, this.stepProgress)
       );
-      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress + Math.random() * 2 - 1;
-      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress + Math.random() * 2 - 1;
+      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.x - this.current.head.x)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
+      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.y - this.current.head.y)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
+      if (stageRect != null) {
+        this.head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, this.head.x));
+        this.head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, this.head.y));
+      }
     }
-    updateLegs() {
+    updateLegs(stageRect) {
       ["left", "right"].forEach((side) => {
         this.legs[side].forEach((leg, legIndex) => {
-          this.updateLeg(leg, this.current.legs[side][legIndex], 0);
+          this.updateLeg(leg, this.current.legs[side][legIndex], leg.socketIndex, stageRect);
           if (side === this.activeSide) {
-            this.updateLeg(leg, this.current.legs[side][legIndex], 1);
+            this.updateLeg(leg, this.current.legs[side][legIndex], leg.clawIndex, stageRect);
+          }
+          if (leg.jointIndex !== -1) {
+            const socketPoint = leg.getLive(leg.socketIndex).point;
+            const clawPoint = leg.getLive(leg.clawIndex).point;
+            const radians2 = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2;
+            const length = import_geom2.Point.distance(leg.getModel(0), leg.getModel(2));
+            const offset4 = length * this.jointOffset;
+            leg.updateLive(leg.jointIndex, new import_geom2.Vector(
+              (socketPoint.x + clawPoint.x) * 0.5 - Math.cos(radians2) * offset4,
+              (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians2) * offset4
+            ));
           }
         });
       });
     }
-    /**
-     * Returns an interpolated radians value between two other radians according
-     * to a progress value.
-     * TODO: update this @adrianlafond/geom/Angle
-     */
-    interpolateRadians(r1, r2, progress) {
-      const a1 = import_geom2.Angle.normalize(r1);
-      const a2 = import_geom2.Angle.normalize(r2);
-      let delta = a2 - a1;
-      if (Math.abs(delta) > Math.PI) {
-        const circumference = Math.PI * 2 * (a2 > a1 ? -1 : 1);
-        delta = a2 + circumference - a1;
-      }
-      return import_geom2.Angle.normalize(a1 + delta * progress);
+  };
+
+  // src/demo/patterns/spiral.ts
+  var import_geom3 = __toESM(require_dist());
+  var radians = 0;
+  var radius = 0;
+  var direction = 1;
+  var calculateSpiralPattern = (maxRadius) => {
+    let complete = false;
+    if (radius >= maxRadius) {
+      radius = 0;
+      radians = 0;
+      direction *= -1;
+      complete = true;
     }
+    const x2 = Math.cos(radians) * radius;
+    const y2 = Math.sin(radians) * radius;
+    radians = import_geom3.Angle.normalize(radians - Math.PI * 0.05 * direction);
+    radius += 1;
+    return {
+      point: new import_geom3.Point(x2, y2),
+      complete
+    };
+  };
+
+  // src/demo/patterns/vertical.ts
+  var import_geom4 = __toESM(require_dist());
+  var count = 0;
+  var offset = 10;
+  var calculateVerticalPattern = (width, height) => {
+    if (count === 10) {
+      count = 0;
+    }
+    const x2 = count * width / 10 + Math.random() * offset;
+    const y2 = Math.random() * 20 + offset;
+    return {
+      point: new import_geom4.Point(
+        x2,
+        count % 2 === 0 ? y2 : height - y2
+      ),
+      complete: ++count === 10
+    };
+  };
+
+  // src/demo/patterns/horizontal.ts
+  var import_geom5 = __toESM(require_dist());
+  var count2 = 0;
+  var offset2 = 10;
+  var calculateHorizontalPattern = (width, height) => {
+    if (count2 === 10) {
+      count2 = 0;
+    }
+    const x2 = Math.random() * 20 + offset2;
+    const y2 = count2 * height / 10 + Math.random() * offset2;
+    return {
+      point: new import_geom5.Point(
+        count2 % 2 === 0 ? x2 : width - x2,
+        y2
+      ),
+      complete: ++count2 === 10
+    };
+  };
+
+  // src/demo/patterns/random.ts
+  var import_geom6 = __toESM(require_dist());
+  var count3 = 0;
+  var offset3 = 10;
+  var calculateRandomPattern = (width, height) => {
+    if (count3 === 10) {
+      count3 = 0;
+    }
+    return {
+      point: new import_geom6.Point(
+        offset3 + Math.floor(Math.random() * (width - offset3 * 2)),
+        offset3 + Math.floor(Math.random() * (height - offset3 * 2))
+      ),
+      complete: ++count3 === 10
+    };
   };
 
   // src/demo/bug-demo.ts
-  var import_geom3 = __toESM(require_geom());
   var BugDemo = class {
     constructor(app) {
       this.app = app;
@@ -24431,17 +26466,21 @@ ${e2}`);
         this.updateTarget();
       };
       this.renderLeg = (leg) => {
-        const socket = leg.getLive(0);
-        const claw = leg.getLive(1);
-        this.legs.lineStyle({ width: 1, color: 0 });
+        const socket = leg.getLive(leg.socketIndex);
+        const joint = leg.jointIndex !== -1 ? leg.getLive(leg.jointIndex) : null;
+        const claw = leg.getLive(leg.clawIndex);
+        this.legs.lineStyle({ width: 1, color: 14544639 });
         this.legs.moveTo(socket.x, socket.y);
+        if (joint != null) {
+          this.legs.lineTo(joint.x, joint.y);
+        }
         this.legs.lineTo(claw.x, claw.y);
         this.legs.lineStyle({ width: 0 });
-        this.legs.beginFill(0);
-        this.legs.drawCircle(socket.x, socket.y, 3);
-        this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 3 : 2);
+        this.legs.beginFill(14544639);
+        this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 2 : 1);
         this.legs.endFill();
       };
+      this.pattern = this.updatePattern();
       this.bug = new Bug();
       this.app.stage.addChild(this.target);
       this.app.stage.addChild(this.legs);
@@ -24449,24 +26488,35 @@ ${e2}`);
       this.updateTarget();
     }
     render(deltaMs = 0) {
-      const bug = this.bug.tick(deltaMs);
+      const bug = this.bug.tick({
+        deltaMs,
+        stageRect: {
+          x: 5,
+          y: 5,
+          width: this.app.view.width - 5,
+          height: this.app.view.height - 5
+        }
+      });
       this.bug.on("targetReached", this.handleTargetReached);
       this.renderTarget(bug.target);
       this.renderHead(bug);
       this.renderLegs(bug);
     }
+    changeTarget(point) {
+      this.bug.updateTarget(point);
+    }
     renderTarget({ x: x2, y: y2 }) {
-      const radius = 4;
+      const radius2 = 2;
       this.target.clear();
-      this.target.lineStyle({ width: 1, color: 16711680 });
-      this.target.moveTo(x2 - radius, y2 - radius);
-      this.target.lineTo(x2 + radius, y2 + radius);
-      this.target.moveTo(x2 + radius, y2 - radius);
-      this.target.lineTo(x2 - radius, y2 + radius);
+      this.target.lineStyle({ width: 1, color: 16764057 });
+      this.target.moveTo(x2 - radius2, y2 - radius2);
+      this.target.lineTo(x2 + radius2, y2 + radius2);
+      this.target.moveTo(x2 + radius2, y2 - radius2);
+      this.target.lineTo(x2 - radius2, y2 + radius2);
     }
     renderHead(bug) {
       this.head.clear();
-      this.head.beginFill(0);
+      this.head.beginFill(14544639);
       this.head.moveTo(0, -12.5);
       this.head.lineTo(5, 0);
       this.head.lineTo(0, -2.5);
@@ -24481,16 +26531,58 @@ ${e2}`);
       this.legs.clear();
       bug.legs.left.forEach(this.renderLeg);
       bug.legs.right.forEach(this.renderLeg);
+      this.legs.lineStyle({ width: 1, color: 14544639 });
+      const left0 = bug.legs.left[0].getLive(0);
+      this.legs.moveTo(left0.x, left0.y);
+      for (let i2 = 1; i2 < bug.legs.left.length; i2++) {
+        const leg = bug.legs.left[i2].getLive(0);
+        this.legs.lineTo(leg.x, leg.y);
+      }
+      const right0 = bug.legs.right[0].getLive(0);
+      this.legs.moveTo(right0.x, right0.y);
+      for (let i2 = 1; i2 < bug.legs.right.length; i2++) {
+        const leg = bug.legs.right[i2].getLive(0);
+        this.legs.lineTo(leg.x, leg.y);
+      }
     }
     updateTarget() {
-      this.bug.updateTarget(new import_geom3.Point(
-        Math.floor(Math.random() * this.app.view.width),
-        Math.floor(Math.random() * this.app.view.height)
-      ));
+      if (this.pattern === "random") {
+        const { point, complete } = calculateRandomPattern(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "vertical") {
+        const { point, complete } = calculateVerticalPattern(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "horizontal") {
+        const { point, complete } = calculateHorizontalPattern(this.app.view.width, this.app.view.height);
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "spiral") {
+        const { point, complete } = calculateSpiralPattern(Math.min(this.app.view.width, this.app.view.height) * 0.5);
+        point.x += this.app.view.width / 2;
+        point.y += this.app.view.height / 2;
+        this.bug.updateTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      }
+    }
+    updatePattern() {
+      const index = Math.floor(Math.random() * 4);
+      const patterns = ["random", "horizontal", "vertical", "spiral"];
+      return this.pattern = patterns[index];
     }
   };
 
   // src/demo/index.ts
+  var import_geom7 = __toESM(require_dist());
   var instance2;
   var DemoApp = class {
     constructor(containerElement) {
@@ -24510,12 +26602,16 @@ ${e2}`);
     start() {
       render(this.app);
       const bugDemo = new BugDemo(this.app);
+      onPointerDown((event) => {
+        const viewRect = this.app.view.getBoundingClientRect();
+        bugDemo.changeTarget(new import_geom7.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+      });
       bugDemo.render();
       this.app.ticker.add(() => {
         bugDemo.render(this.app.ticker.deltaMS);
       });
       this.playing = true;
-      this.containerElement.addEventListener("mousedown", this.togglePlaying);
+      this.containerElement.addEventListener("dblclick", this.togglePlaying);
     }
   };
   function start() {
@@ -24529,6 +26625,6 @@ ${e2}`);
 /*! Bundled license information:
 
 punycode/punycode.js:
-  (*! https://mths.be/punycode v1.3.2 by @mathias *)
+  (*! https://mths.be/punycode v1.4.1 by @mathias *)
 */
 //# sourceMappingURL=bugs.js.map

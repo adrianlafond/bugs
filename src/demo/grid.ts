@@ -2,9 +2,11 @@ import * as PIXI from 'pixi.js'
 
 let instance: Grid
 
-const LINE_COLOR = 0xddeeff
+const LINE_COLOR = 0x112233
 
 class Grid {
+  pointerDownHandler: (event: PIXI.FederatedPointerEvent) => void = () => undefined
+
   constructor (private app: PIXI.Application) {}
 
   udpateApp (app: PIXI.Application): void {
@@ -13,7 +15,10 @@ class Grid {
 
   render (px: number): void {
     const background = new PIXI.Graphics()
-    background.beginFill(0xffffff)
+    background.eventMode = 'static'
+    background.on('pointerdown', this.handlePointerDown)
+
+    background.beginFill(0x000000)
     background.drawRect(0, 0, this.app.view.width, this.app.view.height)
     this.app.stage.addChild(background)
 
@@ -35,10 +40,24 @@ class Grid {
       n += px
     }
   }
+
+  onPointerDown (handler: (event: PIXI.FederatedPointerEvent) => void): void {
+    this.pointerDownHandler = handler
+  }
+
+  private readonly handlePointerDown = (event: PIXI.FederatedPointerEvent): void => {
+    this.pointerDownHandler(event)
+  }
 }
 
 export function render (app: PIXI.Application, px = 10): void {
   instance = instance ?? new Grid(app)
   instance.udpateApp(app)
   instance.render(px)
+}
+
+export function onPointerDown (handler: (event: PIXI.FederatedPointerEvent) => void): void {
+  if (instance != null) {
+    instance.onPointerDown(handler)
+  }
 }

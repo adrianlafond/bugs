@@ -233,12 +233,12 @@ export class Bug {
   /**
    * Calculates the angle towards which bug should take during the next step.
    */
-  private updateTargetRadians() {
+  private updateTargetRadians (): void {
     this.stepTarget.x = this.target.x + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5
     this.stepTarget.y = this.target.y + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5
 
-    this.stepTarget.radians = Math.atan2(this.stepTarget.y - this.current.head.y, this.stepTarget.x - this.current.head.x)
-      + Math.PI * 0.5
+    this.stepTarget.radians = Math.atan2(this.stepTarget.y - this.current.head.y, this.stepTarget.x - this.current.head.x) +
+      Math.PI * 0.5
     this.stepTarget.radians = Angle.normalize(this.stepTarget.radians)
     const maxTurnRadians = Math.PI * 0.25
 

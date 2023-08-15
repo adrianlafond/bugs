@@ -26167,6 +26167,7 @@ ${e2}`);
     jointOffset: 0.25,
     repulsionPx: 0,
     maxJigglePx: 3,
+    maxDistractionPx: 24,
     target: new import_geom2.Vector()
   };
   var Bug = class {
@@ -26177,6 +26178,7 @@ ${e2}`);
         left: [],
         right: []
       };
+      this.stepTarget = new import_geom2.Vector();
       this.listeners = {
         targetReached: []
       };
@@ -26199,21 +26201,22 @@ ${e2}`);
         }
         leg.updateLive(index, new import_geom2.Vector(updatedPoint, radians2));
       };
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
       this.activeSide = (_a = options == null ? void 0 : options.activeSide) != null ? _a : defaults.activeSide;
       this.millisecondsPerStep = (_b = options == null ? void 0 : options.millisecondsPerStep) != null ? _b : defaults.millisecondsPerStep;
       this.maxStepPx = (_c = options == null ? void 0 : options.maxStepPx) != null ? _c : defaults.maxStepPx;
       this.jointOffset = (_d = options == null ? void 0 : options.jointOffset) != null ? _d : defaults.jointOffset;
       this.repulsionPx = (_e = options == null ? void 0 : options.repulsionPx) != null ? _e : defaults.repulsionPx;
       this.maxJigglePx = (_f = options == null ? void 0 : options.maxJigglePx) != null ? _f : defaults.maxJigglePx;
-      this.head = (_g = options == null ? void 0 : options.position) != null ? _g : defaults.position;
-      this.target = (_h = options == null ? void 0 : options.target) != null ? _h : defaults.target;
+      this.maxDistractionPx = (_g = options == null ? void 0 : options.maxDistractionPx) != null ? _g : defaults.maxDistractionPx;
+      this.head = (_h = options == null ? void 0 : options.position) != null ? _h : defaults.position;
+      this.target = (_i = options == null ? void 0 : options.target) != null ? _i : defaults.target;
       this.current = {
         head: this.head,
         legs: this.legs,
         target: this.target.point
       };
-      this.createLegs((_i = options == null ? void 0 : options.legs) != null ? _i : defaults.legs);
+      this.createLegs((_j = options == null ? void 0 : options.legs) != null ? _j : defaults.legs);
       this.updateBug({ deltaMs: this.millisecondsPerStep });
     }
     /**
@@ -26306,38 +26309,46 @@ ${e2}`);
         };
         this.legs[this.activeSide].forEach((leg) => leg.startMoving());
         this.legs[this.activeSide === "left" ? "right" : "left"].forEach((leg) => leg.stopMoving());
-        this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x) + Math.PI * 0.5;
-        this.target.radians = import_geom2.Angle.normalize(this.target.radians);
-        const maxTurnRadians = Math.PI * 0.25;
-        let delta = import_geom2.Angle.normalize(this.target.radians) - import_geom2.Angle.normalize(this.current.head.radians);
-        if (Math.abs(delta) > Math.PI) {
-          delta = import_geom2.Angle.normalize(this.current.head.radians) - import_geom2.Angle.normalize(this.target.radians);
+        this.updateTargetRadians();
+      }
+    }
+    /**
+     * Calculates the angle towards which bug should take during the next step.
+     */
+    updateTargetRadians() {
+      this.stepTarget.x = this.target.x + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5;
+      this.stepTarget.y = this.target.y + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5;
+      this.stepTarget.radians = Math.atan2(this.stepTarget.y - this.current.head.y, this.stepTarget.x - this.current.head.x) + Math.PI * 0.5;
+      this.stepTarget.radians = import_geom2.Angle.normalize(this.stepTarget.radians);
+      const maxTurnRadians = Math.PI * 0.25;
+      let delta = import_geom2.Angle.normalize(this.stepTarget.radians) - import_geom2.Angle.normalize(this.current.head.radians);
+      if (Math.abs(delta) > Math.PI) {
+        delta = import_geom2.Angle.normalize(this.current.head.radians) - import_geom2.Angle.normalize(this.stepTarget.radians);
+      }
+      const fullCircle = Math.PI * 2;
+      if (Math.abs(delta) > Math.PI) {
+        if (delta < 0) {
+          const cr = this.current.head.radians + fullCircle;
+          delta = this.stepTarget.radians - cr;
+        } else if (delta > 0) {
+          const tr = this.stepTarget.radians + fullCircle;
+          delta = tr - this.current.head.radians;
         }
-        const fullCircle = Math.PI * 2;
-        if (Math.abs(delta) > Math.PI) {
-          if (delta < 0) {
-            const cr = this.current.head.radians + fullCircle;
-            delta = this.target.radians - cr;
-          } else if (delta > 0) {
-            const tr = this.target.radians + fullCircle;
-            delta = tr - this.current.head.radians;
-          }
-        }
-        if (delta > maxTurnRadians) {
-          this.target.radians = this.current.head.radians + maxTurnRadians;
-        } else if (delta < -maxTurnRadians) {
-          this.target.radians = this.current.head.radians - maxTurnRadians;
-        }
+      }
+      if (delta > maxTurnRadians) {
+        this.stepTarget.radians = this.current.head.radians + maxTurnRadians;
+      } else if (delta < -maxTurnRadians) {
+        this.stepTarget.radians = this.current.head.radians - maxTurnRadians;
       }
     }
     updateHead(stageRect) {
       this.head.radians = import_geom2.Angle.interpolate(
         this.current.head.radians,
-        this.target.radians,
+        this.stepTarget.radians,
         Math.min(1, this.stepProgress)
       );
-      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
-      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
+      this.head.x = this.current.head.x + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.x - this.current.head.x)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
+      this.head.y = this.current.head.y + Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.y - this.current.head.y)) * this.stepProgress + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5;
       if (stageRect != null) {
         this.head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, this.head.x));
         this.head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, this.head.y));

@@ -31,6 +31,7 @@ export interface BugOptions {
   jointOffset?: number
   repulsionPx?: number
   maxJigglePx?: number
+  maxDistractionPx?: number
   target?: Vector
 }
 
@@ -64,6 +65,7 @@ const defaults: Required<BugOptions> = {
   jointOffset: 0.25,
   repulsionPx: 0,
   maxJigglePx: 3,
+  maxDistractionPx: 24,
   target: new Vector()
 }
 
@@ -85,8 +87,10 @@ export class Bug {
   private readonly target: Vector
   private readonly repulsionPx: number
   private readonly maxJigglePx: number
+  private readonly maxDistractionPx: number
 
   private readonly current: BugRender
+  private readonly stepTarget: Vector = new Vector()
 
   private readonly listeners: {
     targetReached: Array<(bugRender: BugRender) => void>
@@ -101,6 +105,7 @@ export class Bug {
     this.jointOffset = options?.jointOffset ?? defaults.jointOffset
     this.repulsionPx = options?.repulsionPx ?? defaults.repulsionPx
     this.maxJigglePx = options?.maxJigglePx ?? defaults.maxJigglePx
+    this.maxDistractionPx = options?.maxDistractionPx ?? defaults.maxDistractionPx
     this.head = options?.position ?? defaults.position
     this.target = options?.target ?? defaults.target
     this.current = {
@@ -220,57 +225,67 @@ export class Bug {
       this.legs[this.activeSide].forEach(leg => leg.startMoving())
       this.legs[this.activeSide === 'left' ? 'right' : 'left'].forEach(leg => leg.stopMoving())
 
-      this.target.radians = Math.atan2(this.target.y - this.current.head.y, this.target.x - this.current.head.x)
-        + Math.PI * 0.5
-      this.target.radians = Angle.normalize(this.target.radians)
-      const maxTurnRadians = Math.PI * 0.25
+      // Set the target for the next step:
+      this.updateTargetRadians()
+    }
+  }
 
-      // Calculate the delta between the bug's current angle and the target
-      // angle so that it can be constrained; i.e., prevent the bug from turning
-      // too far in a single step.
-      let delta = Angle.normalize(this.target.radians) - Angle.normalize(this.current.head.radians)
+  /**
+   * Calculates the angle towards which bug should take during the next step.
+   */
+  private updateTargetRadians() {
+    this.stepTarget.x = this.target.x + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5
+    this.stepTarget.y = this.target.y + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5
 
-      if (Math.abs(delta) > Math.PI) {
-        // If delta is > half a semi-circle, then the shortest turn is in the
-        // opposite direction.
-        delta = Angle.normalize(this.current.head.radians) - Angle.normalize(this.target.radians)
+    this.stepTarget.radians = Math.atan2(this.stepTarget.y - this.current.head.y, this.stepTarget.x - this.current.head.x)
+      + Math.PI * 0.5
+    this.stepTarget.radians = Angle.normalize(this.stepTarget.radians)
+    const maxTurnRadians = Math.PI * 0.25
+
+    // Calculate the delta between the bug's current angle and the target
+    // angle so that it can be constrained; i.e., prevent the bug from turning
+    // too far in a single step.
+    let delta = Angle.normalize(this.stepTarget.radians) - Angle.normalize(this.current.head.radians)
+
+    if (Math.abs(delta) > Math.PI) {
+      // If delta is > half a semi-circle, then the shortest turn is in the
+      // opposite direction.
+      delta = Angle.normalize(this.current.head.radians) - Angle.normalize(this.stepTarget.radians)
+    }
+
+    const fullCircle = Math.PI * 2
+    if (Math.abs(delta) > Math.PI) {
+      // If delta is still > Math.PI then it is because delta is flipping back
+      // and forth over zero/6.28.
+      if (delta < 0) {
+        const cr = this.current.head.radians + fullCircle
+        delta = this.stepTarget.radians - cr
+      } else if (delta > 0) {
+        const tr = this.stepTarget.radians + fullCircle
+        delta = tr - this.current.head.radians
       }
+    }
 
-      const fullCircle = Math.PI * 2
-      if (Math.abs(delta) > Math.PI) {
-        // If delta is still > Math.PI then it is because delta is flipping back
-        // and forth over zero/6.28.
-        if (delta < 0) {
-          // const tr = this.target.radians
-          const cr = this.current.head.radians + fullCircle
-          delta = this.target.radians - cr
-        } else if (delta > 0) {
-          const tr = this.target.radians + fullCircle
-          delta = tr - this.current.head.radians
-        }
-      }
-
-      if (delta > maxTurnRadians) {
-        this.target.radians = this.current.head.radians + maxTurnRadians
-      } else if (delta < -maxTurnRadians) {
-        this.target.radians = this.current.head.radians - maxTurnRadians
-      }
+    if (delta > maxTurnRadians) {
+      this.stepTarget.radians = this.current.head.radians + maxTurnRadians
+    } else if (delta < -maxTurnRadians) {
+      this.stepTarget.radians = this.current.head.radians - maxTurnRadians
     }
   }
 
   private updateHead (stageRect?: StageRect): void {
     this.head.radians = Angle.interpolate(
       this.current.head.radians,
-      this.target.radians,
+      this.stepTarget.radians,
       Math.min(1, this.stepProgress)
     )
 
     this.head.x = this.current.head.x +
-      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.x - this.current.head.x)) *
+      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.x - this.current.head.x)) *
       this.stepProgress +
       Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
     this.head.y = this.current.head.y +
-      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.target.y - this.current.head.y)) *
+      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.y - this.current.head.y)) *
       this.stepProgress +
       Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
 

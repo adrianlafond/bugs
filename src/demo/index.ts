@@ -5,8 +5,6 @@ import { Point } from '@adrianlafond/geom'
 
 let instance: DemoApp
 
-export type DemoType = 'bug' | 'leg'
-
 class DemoApp {
   private readonly containerElement: HTMLElement
   private readonly app: PIXI.Application<HTMLCanvasElement>

@@ -26032,7 +26032,7 @@ ${e2}`);
 
   // src/demo/grid.ts
   var instance;
-  var LINE_COLOR = 1122867;
+  var LINE_COLOR = 1127253;
   var Grid = class {
     constructor(app) {
       this.app = app;

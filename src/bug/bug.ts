@@ -20,18 +20,64 @@ export interface StageRect {
 }
 
 export interface BugOptions {
+  /**
+   * Whether the bug starts its left legs moving or its right. Default is left.
+   */
   activeSide?: 'left' | 'right'
+
+  /**
+   * Milliseconds each step takes to complete. Default is 250.
+   */
   millisecondsPerStep?: number
+
+  /**
+   * The maximum distance in pixels that the bug can progress per step. Default
+   * is 16.
+   */
   maxStepPx?: number
+
+  /**
+   * Position and direction on the stage where bug starts. Default is 0, 0, 0.
+   */
   position?: Vector
+
+  /**
+   * Positions of each leg that the bug strives to reach on each step for the
+   * active side.
+   */
   legs?: {
     left: Point[][]
     right: Point[][]
   }
+
+  /**
+   * Percent offset from distance between socket and claw that the joint
+   * (comparable to an elbow or knee) should offset (or bent). Default is 0.25.
+   */
   jointOffset?: number
+
+  /**
+   * The distance the bug stays away from the target and the edges of the stage.
+   * Useful if the bug's skin is wide. Default is 0.
+   */
   repulsionPx?: number
+
+  /**
+   * Random jiggling applied on each time tick. A small number will make the bug
+   * look smooth; a large number is will make it look like a spaz. Default is 3.
+   */
   maxJigglePx?: number
+
+  /**
+   * Random distraction in the target per each step. A large number will lead
+   * the bug in strange directions with each step, although the end target will
+   * not be forgotten. Default is 24.
+   */
   maxDistractionPx?: number
+
+  /**
+   * The target coordinates towards which the bug should direct itself.
+   */
   target?: Vector
 }
 
@@ -40,6 +86,7 @@ const defaults: Required<BugOptions> = {
   millisecondsPerStep: 250,
   maxStepPx: 16,
   position: new Vector(),
+
   legs: {
     left: [[
       new Point(-3, 5),

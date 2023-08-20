@@ -19,7 +19,7 @@ export class BugDemo {
 
   constructor (private readonly app: PIXI.Application) {
     this.pattern = this.updatePattern()
-    this.bug = new Bug()
+    this.bug = new Bug({ maxDistractionPx: 0, maxJigglePx: 0, timingFunction: 'easeOutSine' })
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
     this.app.stage.addChild(this.segmentsGfx)

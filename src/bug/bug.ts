@@ -1,8 +1,40 @@
 import { Angle, Point, Vector } from '@adrianlafond/geom'
+import easings from 'easings.net'
 import { Leg } from './leg'
 import { Segment, SegmentData } from './segment';
 
 export type BugSide = 'left' | 'right'
+export type BugTimingFunction =
+  | 'linear'
+	| 'easeInQuad'
+	| 'easeOutQuad'
+	| 'easeInOutQuad'
+	| 'easeInCubic'
+	| 'easeOutCubic'
+	| 'easeInOutCubic'
+	| 'easeInQuart'
+	| 'easeOutQuart'
+	| 'easeInOutQuart'
+	| 'easeInQuint'
+	| 'easeOutQuint'
+	| 'easeInOutQuint'
+	| 'easeInSine'
+	| 'easeOutSine'
+	| 'easeInOutSine'
+	| 'easeInExpo'
+	| 'easeOutExpo'
+	| 'easeInOutExpo'
+	| 'easeInCirc'
+	| 'easeOutCirc'
+	| 'easeInOutCirc'
+	| 'easeInBack'
+	| 'easeOutBack'
+	| 'easeInOutBack'
+	| 'easeInElastic'
+	| 'easeOutElastic'
+	| 'easeInOutElastic'
+	| 'easeInBounce'
+	| 'easeOutBounce'
 
 export { SegmentData }
 export interface BugRender {
@@ -84,6 +116,11 @@ export interface BugOptions {
   maxDistractionPx?: number
 
   /**
+   * Timing function to ease the step motion. Default is easeOutCubic.
+   */
+  timingFunction?: BugTimingFunction
+
+  /**
    * The target coordinates towards which the bug should direct itself.
    */
   target?: Vector
@@ -123,6 +160,7 @@ const defaults: Required<BugOptions> = {
   repulsionPx: 0,
   maxJigglePx: 3,
   maxDistractionPx: 24,
+  timingFunction: 'easeOutCubic',
   target: new Vector()
 }
 
@@ -144,6 +182,7 @@ export class Bug {
 
   private readonly current: BugRender
   private readonly stepTarget: Vector = new Vector()
+  private readonly timingFunction: Required<BugOptions>['timingFunction']
 
   private readonly listeners: {
     targetReached: Array<(bugRender: BugRender) => void>
@@ -159,6 +198,7 @@ export class Bug {
     this.repulsionPx = options?.repulsionPx ?? defaults.repulsionPx
     this.maxJigglePx = options?.maxJigglePx ?? defaults.maxJigglePx
     this.maxDistractionPx = options?.maxDistractionPx ?? defaults.maxDistractionPx
+    this.timingFunction = options?.timingFunction ?? defaults.timingFunction
     this.segments = this.createSegments(options?.position, options?.segments)
     this.target = options?.target ?? defaults.target
     this.current = {
@@ -180,7 +220,9 @@ export class Bug {
     deltaMs?: number
     stageRect?: StageRect
   }): BugRender {
-    this.stepProgress = this.stepMs / this.millisecondsPerStep
+    const progress = this.stepMs / this.millisecondsPerStep
+    this.stepProgress = easings[this.timingFunction](progress)
+
     this.updateBug({ deltaMs, stageRect })
 
     if (Point.distance(this.target.point, this.segments[0].position.point) < this.maxStepPx + this.repulsionPx) {

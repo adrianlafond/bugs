@@ -315,12 +315,12 @@
         }
       }
       function isEar(ear) {
-        var a2 = ear.prev, b2 = ear, c2 = ear.next;
-        if (area(a2, b2, c2) >= 0)
+        var a2 = ear.prev, b2 = ear, c6 = ear.next;
+        if (area(a2, b2, c6) >= 0)
           return false;
-        var ax = a2.x, bx = b2.x, cx = c2.x, ay = a2.y, by = b2.y, cy = c2.y;
+        var ax = a2.x, bx = b2.x, cx = c6.x, ay = a2.y, by = b2.y, cy = c6.y;
         var x0 = ax < bx ? ax < cx ? ax : cx : bx < cx ? bx : cx, y0 = ay < by ? ay < cy ? ay : cy : by < cy ? by : cy, x1 = ax > bx ? ax > cx ? ax : cx : bx > cx ? bx : cx, y1 = ay > by ? ay > cy ? ay : cy : by > cy ? by : cy;
-        var p2 = c2.next;
+        var p2 = c6.next;
         while (p2 !== a2) {
           if (p2.x >= x0 && p2.x <= x1 && p2.y >= y0 && p2.y <= y1 && pointInTriangle(ax, ay, bx, by, cx, cy, p2.x, p2.y) && area(p2.prev, p2, p2.next) >= 0)
             return false;
@@ -329,28 +329,28 @@
         return true;
       }
       function isEarHashed(ear, minX, minY, invSize) {
-        var a2 = ear.prev, b2 = ear, c2 = ear.next;
-        if (area(a2, b2, c2) >= 0)
+        var a2 = ear.prev, b2 = ear, c6 = ear.next;
+        if (area(a2, b2, c6) >= 0)
           return false;
-        var ax = a2.x, bx = b2.x, cx = c2.x, ay = a2.y, by = b2.y, cy = c2.y;
+        var ax = a2.x, bx = b2.x, cx = c6.x, ay = a2.y, by = b2.y, cy = c6.y;
         var x0 = ax < bx ? ax < cx ? ax : cx : bx < cx ? bx : cx, y0 = ay < by ? ay < cy ? ay : cy : by < cy ? by : cy, x1 = ax > bx ? ax > cx ? ax : cx : bx > cx ? bx : cx, y1 = ay > by ? ay > cy ? ay : cy : by > cy ? by : cy;
         var minZ = zOrder(x0, y0, minX, minY, invSize), maxZ = zOrder(x1, y1, minX, minY, invSize);
         var p2 = ear.prevZ, n2 = ear.nextZ;
         while (p2 && p2.z >= minZ && n2 && n2.z <= maxZ) {
-          if (p2.x >= x0 && p2.x <= x1 && p2.y >= y0 && p2.y <= y1 && p2 !== a2 && p2 !== c2 && pointInTriangle(ax, ay, bx, by, cx, cy, p2.x, p2.y) && area(p2.prev, p2, p2.next) >= 0)
+          if (p2.x >= x0 && p2.x <= x1 && p2.y >= y0 && p2.y <= y1 && p2 !== a2 && p2 !== c6 && pointInTriangle(ax, ay, bx, by, cx, cy, p2.x, p2.y) && area(p2.prev, p2, p2.next) >= 0)
             return false;
           p2 = p2.prevZ;
-          if (n2.x >= x0 && n2.x <= x1 && n2.y >= y0 && n2.y <= y1 && n2 !== a2 && n2 !== c2 && pointInTriangle(ax, ay, bx, by, cx, cy, n2.x, n2.y) && area(n2.prev, n2, n2.next) >= 0)
+          if (n2.x >= x0 && n2.x <= x1 && n2.y >= y0 && n2.y <= y1 && n2 !== a2 && n2 !== c6 && pointInTriangle(ax, ay, bx, by, cx, cy, n2.x, n2.y) && area(n2.prev, n2, n2.next) >= 0)
             return false;
           n2 = n2.nextZ;
         }
         while (p2 && p2.z >= minZ) {
-          if (p2.x >= x0 && p2.x <= x1 && p2.y >= y0 && p2.y <= y1 && p2 !== a2 && p2 !== c2 && pointInTriangle(ax, ay, bx, by, cx, cy, p2.x, p2.y) && area(p2.prev, p2, p2.next) >= 0)
+          if (p2.x >= x0 && p2.x <= x1 && p2.y >= y0 && p2.y <= y1 && p2 !== a2 && p2 !== c6 && pointInTriangle(ax, ay, bx, by, cx, cy, p2.x, p2.y) && area(p2.prev, p2, p2.next) >= 0)
             return false;
           p2 = p2.prevZ;
         }
         while (n2 && n2.z <= maxZ) {
-          if (n2.x >= x0 && n2.x <= x1 && n2.y >= y0 && n2.y <= y1 && n2 !== a2 && n2 !== c2 && pointInTriangle(ax, ay, bx, by, cx, cy, n2.x, n2.y) && area(n2.prev, n2, n2.next) >= 0)
+          if (n2.x >= x0 && n2.x <= x1 && n2.y >= y0 && n2.y <= y1 && n2 !== a2 && n2 !== c6 && pointInTriangle(ax, ay, bx, by, cx, cy, n2.x, n2.y) && area(n2.prev, n2, n2.next) >= 0)
             return false;
           n2 = n2.nextZ;
         }
@@ -378,11 +378,11 @@
           var b2 = a2.next.next;
           while (b2 !== a2.prev) {
             if (a2.i !== b2.i && isValidDiagonal(a2, b2)) {
-              var c2 = splitPolygon(a2, b2);
+              var c6 = splitPolygon(a2, b2);
               a2 = filterPoints(a2, a2.next);
-              c2 = filterPoints(c2, c2.next);
+              c6 = filterPoints(c6, c6.next);
               earcutLinked(a2, triangles, dim, minX, minY, invSize, 0);
-              earcutLinked(c2, triangles, dim, minX, minY, invSize, 0);
+              earcutLinked(c6, triangles, dim, minX, minY, invSize, 0);
               return;
             }
             b2 = b2.next;
@@ -646,9 +646,9 @@
         for (i2 = 0; i2 < triangles.length; i2 += 3) {
           var a2 = triangles[i2] * dim;
           var b2 = triangles[i2 + 1] * dim;
-          var c2 = triangles[i2 + 2] * dim;
+          var c6 = triangles[i2 + 2] * dim;
           trianglesArea += Math.abs(
-            (data[a2] - data[c2]) * (data[b2 + 1] - data[a2 + 1]) - (data[a2] - data[b2]) * (data[c2 + 1] - data[a2 + 1])
+            (data[a2] - data[c6]) * (data[b2 + 1] - data[a2 + 1]) - (data[a2] - data[b2]) * (data[c6 + 1] - data[a2 + 1])
           );
         }
         return polygonArea === 0 && trianglesArea === 0 ? 0 : Math.abs((trianglesArea - polygonArea) / polygonArea);
@@ -1868,8 +1868,8 @@
         var s2 = $replace.call($replace.call(str, /(['\\])/g, "\\$1"), /[\x00-\x1f]/g, lowbyte);
         return wrapQuotes(s2, "single", opts);
       }
-      function lowbyte(c2) {
-        var n2 = c2.charCodeAt(0);
+      function lowbyte(c6) {
+        var n2 = c6.charCodeAt(0);
         var x2 = {
           8: "b",
           9: "t",
@@ -2222,26 +2222,26 @@
         }
         var out = "";
         for (var i2 = 0; i2 < string.length; ++i2) {
-          var c2 = string.charCodeAt(i2);
-          if (c2 === 45 || c2 === 46 || c2 === 95 || c2 === 126 || c2 >= 48 && c2 <= 57 || c2 >= 65 && c2 <= 90 || c2 >= 97 && c2 <= 122 || format2 === formats2.RFC1738 && (c2 === 40 || c2 === 41)) {
+          var c6 = string.charCodeAt(i2);
+          if (c6 === 45 || c6 === 46 || c6 === 95 || c6 === 126 || c6 >= 48 && c6 <= 57 || c6 >= 65 && c6 <= 90 || c6 >= 97 && c6 <= 122 || format2 === formats2.RFC1738 && (c6 === 40 || c6 === 41)) {
             out += string.charAt(i2);
             continue;
           }
-          if (c2 < 128) {
-            out = out + hexTable[c2];
+          if (c6 < 128) {
+            out = out + hexTable[c6];
             continue;
           }
-          if (c2 < 2048) {
-            out = out + (hexTable[192 | c2 >> 6] + hexTable[128 | c2 & 63]);
+          if (c6 < 2048) {
+            out = out + (hexTable[192 | c6 >> 6] + hexTable[128 | c6 & 63]);
             continue;
           }
-          if (c2 < 55296 || c2 >= 57344) {
-            out = out + (hexTable[224 | c2 >> 12] + hexTable[128 | c2 >> 6 & 63] + hexTable[128 | c2 & 63]);
+          if (c6 < 55296 || c6 >= 57344) {
+            out = out + (hexTable[224 | c6 >> 12] + hexTable[128 | c6 >> 6 & 63] + hexTable[128 | c6 & 63]);
             continue;
           }
           i2 += 1;
-          c2 = 65536 + ((c2 & 1023) << 10 | string.charCodeAt(i2) & 1023);
-          out += hexTable[240 | c2 >> 18] + hexTable[128 | c2 >> 12 & 63] + hexTable[128 | c2 >> 6 & 63] + hexTable[128 | c2 & 63];
+          c6 = 65536 + ((c6 & 1023) << 10 | string.charCodeAt(i2) & 1023);
+          out += hexTable[240 | c6 >> 18] + hexTable[128 | c6 >> 12 & 63] + hexTable[128 | c6 >> 6 & 63] + hexTable[128 | c6 & 63];
         }
         return out;
       };
@@ -4530,8 +4530,8 @@ Deprecated since v${version}`);
       if (null == f3 ? void 0 : f3.closest) {
         var o2 = this.toRgb(), t2 = 1 / 0, b2 = "black";
         if (!l2.length)
-          for (var c2 in a2)
-            l2[c2] = new e2(a2[c2]).toRgb();
+          for (var c6 in a2)
+            l2[c6] = new e2(a2[c6]).toRgb();
         for (var g2 in a2) {
           var u2 = (d3 = o2, i2 = l2[g2], Math.pow(d3.r - i2.r, 2) + Math.pow(d3.g - i2.g, 2) + Math.pow(d3.b - i2.b, 2));
           u2 < t2 && (t2 = u2, b2 = g2);
@@ -6575,11 +6575,11 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/math/lib/Matrix.mjs
   var Matrix = class {
-    constructor(a2 = 1, b2 = 0, c2 = 0, d2 = 1, tx = 0, ty = 0) {
+    constructor(a2 = 1, b2 = 0, c6 = 0, d2 = 1, tx = 0, ty = 0) {
       this.array = null;
       this.a = a2;
       this.b = b2;
-      this.c = c2;
+      this.c = c6;
       this.d = d2;
       this.tx = tx;
       this.ty = ty;
@@ -6592,10 +6592,10 @@ Deprecated since v${version}`);
       this.tx = array[2];
       this.ty = array[5];
     }
-    set(a2, b2, c2, d2, tx, ty) {
+    set(a2, b2, c6, d2, tx, ty) {
       this.a = a2;
       this.b = b2;
-      this.c = c2;
+      this.c = c6;
       this.d = d2;
       this.tx = tx;
       this.ty = ty;
@@ -6661,29 +6661,29 @@ Deprecated since v${version}`);
       return this;
     }
     rotate(angle) {
-      const cos = Math.cos(angle);
-      const sin = Math.sin(angle);
+      const cos2 = Math.cos(angle);
+      const sin2 = Math.sin(angle);
       const a1 = this.a;
-      const c1 = this.c;
+      const c12 = this.c;
       const tx1 = this.tx;
-      this.a = a1 * cos - this.b * sin;
-      this.b = a1 * sin + this.b * cos;
-      this.c = c1 * cos - this.d * sin;
-      this.d = c1 * sin + this.d * cos;
-      this.tx = tx1 * cos - this.ty * sin;
-      this.ty = tx1 * sin + this.ty * cos;
+      this.a = a1 * cos2 - this.b * sin2;
+      this.b = a1 * sin2 + this.b * cos2;
+      this.c = c12 * cos2 - this.d * sin2;
+      this.d = c12 * sin2 + this.d * cos2;
+      this.tx = tx1 * cos2 - this.ty * sin2;
+      this.ty = tx1 * sin2 + this.ty * cos2;
       return this;
     }
     append(matrix) {
       const a1 = this.a;
       const b1 = this.b;
-      const c1 = this.c;
+      const c12 = this.c;
       const d1 = this.d;
-      this.a = matrix.a * a1 + matrix.b * c1;
+      this.a = matrix.a * a1 + matrix.b * c12;
       this.b = matrix.a * b1 + matrix.b * d1;
-      this.c = matrix.c * a1 + matrix.d * c1;
+      this.c = matrix.c * a1 + matrix.d * c12;
       this.d = matrix.c * b1 + matrix.d * d1;
-      this.tx = matrix.tx * a1 + matrix.ty * c1 + this.tx;
+      this.tx = matrix.tx * a1 + matrix.ty * c12 + this.tx;
       this.ty = matrix.tx * b1 + matrix.ty * d1 + this.ty;
       return this;
     }
@@ -6700,11 +6700,11 @@ Deprecated since v${version}`);
       const tx1 = this.tx;
       if (matrix.a !== 1 || matrix.b !== 0 || matrix.c !== 0 || matrix.d !== 1) {
         const a1 = this.a;
-        const c1 = this.c;
+        const c12 = this.c;
         this.a = a1 * matrix.a + this.b * matrix.c;
         this.b = a1 * matrix.b + this.b * matrix.d;
-        this.c = c1 * matrix.a + this.d * matrix.c;
-        this.d = c1 * matrix.b + this.d * matrix.d;
+        this.c = c12 * matrix.a + this.d * matrix.c;
+        this.d = c12 * matrix.b + this.d * matrix.d;
       }
       this.tx = tx1 * matrix.a + this.ty * matrix.c + matrix.tx;
       this.ty = tx1 * matrix.b + this.ty * matrix.d + matrix.ty;
@@ -6713,10 +6713,10 @@ Deprecated since v${version}`);
     decompose(transform) {
       const a2 = this.a;
       const b2 = this.b;
-      const c2 = this.c;
+      const c6 = this.c;
       const d2 = this.d;
       const pivot = transform.pivot;
-      const skewX = -Math.atan2(-c2, d2);
+      const skewX = -Math.atan2(-c6, d2);
       const skewY = Math.atan2(b2, a2);
       const delta = Math.abs(skewX + skewY);
       if (delta < 1e-5 || Math.abs(PI_2 - delta) < 1e-5) {
@@ -6728,23 +6728,23 @@ Deprecated since v${version}`);
         transform.skew.y = skewY;
       }
       transform.scale.x = Math.sqrt(a2 * a2 + b2 * b2);
-      transform.scale.y = Math.sqrt(c2 * c2 + d2 * d2);
-      transform.position.x = this.tx + (pivot.x * a2 + pivot.y * c2);
+      transform.scale.y = Math.sqrt(c6 * c6 + d2 * d2);
+      transform.position.x = this.tx + (pivot.x * a2 + pivot.y * c6);
       transform.position.y = this.ty + (pivot.x * b2 + pivot.y * d2);
       return transform;
     }
     invert() {
       const a1 = this.a;
       const b1 = this.b;
-      const c1 = this.c;
+      const c12 = this.c;
       const d1 = this.d;
       const tx1 = this.tx;
-      const n2 = a1 * d1 - b1 * c1;
+      const n2 = a1 * d1 - b1 * c12;
       this.a = d1 / n2;
       this.b = -b1 / n2;
-      this.c = -c1 / n2;
+      this.c = -c12 / n2;
       this.d = a1 / n2;
-      this.tx = (c1 * this.ty - d1 * tx1) / n2;
+      this.tx = (c12 * this.ty - d1 * tx1) / n2;
       this.ty = -(a1 * this.ty - b1 * tx1) / n2;
       return this;
     }
@@ -9804,8 +9804,8 @@ ${this.fragmentSrc}`;
         return;
       }
       if (transform) {
-        const { a: a2, b: b2, c: c2, d: d2 } = transform;
-        if ((Math.abs(b2) > 1e-4 || Math.abs(c2) > 1e-4) && (Math.abs(a2) > 1e-4 || Math.abs(d2) > 1e-4)) {
+        const { a: a2, b: b2, c: c6, d: d2 } = transform;
+        if ((Math.abs(b2) > 1e-4 || Math.abs(c6) > 1e-4) && (Math.abs(a2) > 1e-4 || Math.abs(d2) > 1e-4)) {
           return;
         }
       }
@@ -10225,8 +10225,8 @@ ${this.fragmentSrc}`;
         const instanceExt = gl.getExtension("ANGLE_instanced_arrays");
         if (instanceExt) {
           gl.vertexAttribDivisor = (a2, b2) => instanceExt.vertexAttribDivisorANGLE(a2, b2);
-          gl.drawElementsInstanced = (a2, b2, c2, d2, e2) => instanceExt.drawElementsInstancedANGLE(a2, b2, c2, d2, e2);
-          gl.drawArraysInstanced = (a2, b2, c2, d2) => instanceExt.drawArraysInstancedANGLE(a2, b2, c2, d2);
+          gl.drawElementsInstanced = (a2, b2, c6, d2, e2) => instanceExt.drawElementsInstancedANGLE(a2, b2, c6, d2, e2);
+          gl.drawArraysInstanced = (a2, b2, c6, d2) => instanceExt.drawArraysInstancedANGLE(a2, b2, c6, d2);
         } else {
           this.hasInstance = false;
         }
@@ -10867,8 +10867,8 @@ ${this.fragmentSrc}`;
       if (!matrix) {
         return false;
       }
-      const { a: a2, b: b2, c: c2, d: d2 } = matrix;
-      return (Math.abs(b2) > 1e-4 || Math.abs(c2) > 1e-4) && (Math.abs(a2) > 1e-4 || Math.abs(d2) > 1e-4);
+      const { a: a2, b: b2, c: c6, d: d2 } = matrix;
+      return (Math.abs(b2) > 1e-4 || Math.abs(c6) > 1e-4) && (Math.abs(a2) > 1e-4 || Math.abs(d2) > 1e-4);
     }
     testScissor(maskData) {
       const { maskObject } = maskData;
@@ -13945,8 +13945,8 @@ ${this.fragmentSrc}`;
       this.maxY = Math.max(this.maxY, point.y);
     }
     addPointMatrix(matrix, point) {
-      const { a: a2, b: b2, c: c2, d: d2, tx, ty } = matrix;
-      const x2 = a2 * point.x + c2 * point.y + tx;
+      const { a: a2, b: b2, c: c6, d: d2, tx, ty } = matrix;
+      const x2 = a2 * point.x + c6 * point.y + tx;
       const y2 = b2 * point.x + d2 * point.y + ty;
       this.minX = Math.min(this.minX, x2);
       this.maxX = Math.max(this.maxX, x2);
@@ -13993,7 +13993,7 @@ ${this.fragmentSrc}`;
     addFrameMatrix(matrix, x0, y0, x1, y1) {
       const a2 = matrix.a;
       const b2 = matrix.b;
-      const c2 = matrix.c;
+      const c6 = matrix.c;
       const d2 = matrix.d;
       const tx = matrix.tx;
       const ty = matrix.ty;
@@ -14001,25 +14001,25 @@ ${this.fragmentSrc}`;
       let minY = this.minY;
       let maxX = this.maxX;
       let maxY = this.maxY;
-      let x2 = a2 * x0 + c2 * y0 + tx;
+      let x2 = a2 * x0 + c6 * y0 + tx;
       let y2 = b2 * x0 + d2 * y0 + ty;
       minX = x2 < minX ? x2 : minX;
       minY = y2 < minY ? y2 : minY;
       maxX = x2 > maxX ? x2 : maxX;
       maxY = y2 > maxY ? y2 : maxY;
-      x2 = a2 * x1 + c2 * y0 + tx;
+      x2 = a2 * x1 + c6 * y0 + tx;
       y2 = b2 * x1 + d2 * y0 + ty;
       minX = x2 < minX ? x2 : minX;
       minY = y2 < minY ? y2 : minY;
       maxX = x2 > maxX ? x2 : maxX;
       maxY = y2 > maxY ? y2 : maxY;
-      x2 = a2 * x0 + c2 * y1 + tx;
+      x2 = a2 * x0 + c6 * y1 + tx;
       y2 = b2 * x0 + d2 * y1 + ty;
       minX = x2 < minX ? x2 : minX;
       minY = y2 < minY ? y2 : minY;
       maxX = x2 > maxX ? x2 : maxX;
       maxY = y2 > maxY ? y2 : maxY;
-      x2 = a2 * x1 + c2 * y1 + tx;
+      x2 = a2 * x1 + c6 * y1 + tx;
       y2 = b2 * x1 + d2 * y1 + ty;
       minX = x2 < minX ? x2 : minX;
       minY = y2 < minY ? y2 : minY;
@@ -14054,7 +14054,7 @@ ${this.fragmentSrc}`;
     addVerticesMatrix(matrix, vertices, beginOffset, endOffset, padX = 0, padY = padX) {
       const a2 = matrix.a;
       const b2 = matrix.b;
-      const c2 = matrix.c;
+      const c6 = matrix.c;
       const d2 = matrix.d;
       const tx = matrix.tx;
       const ty = matrix.ty;
@@ -14065,7 +14065,7 @@ ${this.fragmentSrc}`;
       for (let i2 = beginOffset; i2 < endOffset; i2 += 2) {
         const rawX = vertices[i2];
         const rawY = vertices[i2 + 1];
-        const x2 = a2 * rawX + c2 * rawY + tx;
+        const x2 = a2 * rawX + c6 * rawY + tx;
         const y2 = d2 * rawY + b2 * rawX + ty;
         minX = Math.min(minX, x2 - padX);
         maxX = Math.max(maxX, x2 + padX);
@@ -14846,7 +14846,7 @@ ${this.fragmentSrc}`;
       const wt = this.transform.worldTransform;
       const a2 = wt.a;
       const b2 = wt.b;
-      const c2 = wt.c;
+      const c6 = wt.c;
       const d2 = wt.d;
       const tx = wt.tx;
       const ty = wt.ty;
@@ -14869,13 +14869,13 @@ ${this.fragmentSrc}`;
         h1 = -anchor._y * orig.height;
         h0 = h1 + orig.height;
       }
-      vertexData[0] = a2 * w1 + c2 * h1 + tx;
+      vertexData[0] = a2 * w1 + c6 * h1 + tx;
       vertexData[1] = d2 * h1 + b2 * w1 + ty;
-      vertexData[2] = a2 * w0 + c2 * h1 + tx;
+      vertexData[2] = a2 * w0 + c6 * h1 + tx;
       vertexData[3] = d2 * h1 + b2 * w0 + ty;
-      vertexData[4] = a2 * w0 + c2 * h0 + tx;
+      vertexData[4] = a2 * w0 + c6 * h0 + tx;
       vertexData[5] = d2 * h0 + b2 * w0 + ty;
-      vertexData[6] = a2 * w1 + c2 * h0 + tx;
+      vertexData[6] = a2 * w1 + c6 * h0 + tx;
       vertexData[7] = d2 * h0 + b2 * w1 + ty;
       if (this._roundPixels) {
         const resolution = settings.RESOLUTION;
@@ -14899,7 +14899,7 @@ ${this.fragmentSrc}`;
       const wt = this.transform.worldTransform;
       const a2 = wt.a;
       const b2 = wt.b;
-      const c2 = wt.c;
+      const c6 = wt.c;
       const d2 = wt.d;
       const tx = wt.tx;
       const ty = wt.ty;
@@ -14907,13 +14907,13 @@ ${this.fragmentSrc}`;
       const w0 = w1 + orig.width;
       const h1 = -anchor._y * orig.height;
       const h0 = h1 + orig.height;
-      vertexData[0] = a2 * w1 + c2 * h1 + tx;
+      vertexData[0] = a2 * w1 + c6 * h1 + tx;
       vertexData[1] = d2 * h1 + b2 * w1 + ty;
-      vertexData[2] = a2 * w0 + c2 * h1 + tx;
+      vertexData[2] = a2 * w0 + c6 * h1 + tx;
       vertexData[3] = d2 * h1 + b2 * w0 + ty;
-      vertexData[4] = a2 * w0 + c2 * h0 + tx;
+      vertexData[4] = a2 * w0 + c6 * h0 + tx;
       vertexData[5] = d2 * h0 + b2 * w0 + ty;
-      vertexData[6] = a2 * w1 + c2 * h0 + tx;
+      vertexData[6] = a2 * w1 + c6 * h0 + tx;
       vertexData[7] = d2 * h0 + b2 * w1 + ty;
     }
     _render(renderer) {
@@ -15749,9 +15749,9 @@ ${this.fragmentSrc}`;
       rotation = (rotation || 0) / 180 * Math.PI;
       const cosR = Math.cos(rotation);
       const sinR = Math.sin(rotation);
-      const sqrt = Math.sqrt;
+      const sqrt2 = Math.sqrt;
       const w2 = 1 / 3;
-      const sqrW = sqrt(w2);
+      const sqrW = sqrt2(w2);
       const a00 = cosR + (1 - cosR) * w2;
       const a01 = w2 * (1 - cosR) - sqrW * sinR;
       const a02 = w2 * (1 - cosR) + sqrW * sinR;
@@ -20713,9 +20713,9 @@ ${e2}`);
       for (let i2 = 0; i2 <= segMinus; ++i2) {
         const real = i2 + remainder * i2;
         const angle = theta + startAngle + theta2 * real;
-        const c2 = Math.cos(angle);
+        const c6 = Math.cos(angle);
         const s2 = -Math.sin(angle);
-        points.push((cTheta * c2 + sTheta * s2) * radius2 + cx, (cTheta * -s2 + sTheta * c2) * radius2 + cy);
+        points.push((cTheta * c6 + sTheta * s2) * radius2 + cx, (cTheta * -s2 + sTheta * c6) * radius2 + cy);
       }
     }
   };
@@ -20952,10 +20952,10 @@ ${e2}`);
         }
         continue;
       }
-      const c1 = (-perpx + x0) * (-perpy + y1) - (-perpx + x1) * (-perpy + y0);
-      const c2 = (-perp1x + x2) * (-perp1y + y1) - (-perp1x + x1) * (-perp1y + y2);
-      const px = (dx0 * c2 - dx1 * c1) / cross;
-      const py = (dy1 * c1 - dy0 * c2) / cross;
+      const c12 = (-perpx + x0) * (-perpy + y1) - (-perpx + x1) * (-perpy + y0);
+      const c22 = (-perp1x + x2) * (-perp1y + y1) - (-perp1x + x1) * (-perp1y + y2);
+      const px = (dx0 * c22 - dx1 * c12) / cross;
+      const py = (dy1 * c12 - dy0 * c22) / cross;
       const pdist = (px - x1) * (px - x1) + (py - y1) * (py - y1);
       const imx = x1 + (px - x1) * innerWeight;
       const imy = y1 + (py - y1) * innerWeight;
@@ -21095,13 +21095,13 @@ ${e2}`);
       const by = 2 * cpY - 2 * fromY;
       const a2 = 4 * (ax * ax + ay * ay);
       const b2 = 4 * (ax * bx + ay * by);
-      const c2 = bx * bx + by * by;
-      const s2 = 2 * Math.sqrt(a2 + b2 + c2);
+      const c6 = bx * bx + by * by;
+      const s2 = 2 * Math.sqrt(a2 + b2 + c6);
       const a22 = Math.sqrt(a2);
       const a32 = 2 * a2 * a22;
-      const c22 = 2 * Math.sqrt(c2);
+      const c22 = 2 * Math.sqrt(c6);
       const ba = b2 / a22;
-      return (a32 * s2 + a22 * b2 * (s2 - c22) + (4 * c2 * a2 - b2 * b2) * Math.log((2 * a22 + ba + s2) / (ba + c22))) / (4 * a32);
+      return (a32 * s2 + a22 * b2 * (s2 - c22) + (4 * c6 * a2 - b2 * b2) * Math.log((2 * a22 + ba + s2) / (ba + c22))) / (4 * a32);
     }
     static curveTo(cpX, cpY, toX, toY, points) {
       const fromX = points[points.length - 2];
@@ -22092,7 +22092,7 @@ ${e2}`);
       const wt = this.transform.worldTransform;
       const a2 = wt.a;
       const b2 = wt.b;
-      const c2 = wt.c;
+      const c6 = wt.c;
       const d2 = wt.d;
       const tx = wt.tx;
       const ty = wt.ty;
@@ -22102,7 +22102,7 @@ ${e2}`);
       for (let i2 = 0; i2 < data.length; i2 += 2) {
         const x2 = data[i2];
         const y2 = data[i2 + 1];
-        vertexData[count4++] = a2 * x2 + c2 * y2 + tx;
+        vertexData[count4++] = a2 * x2 + c6 * y2 + tx;
         vertexData[count4++] = d2 * y2 + b2 * x2 + ty;
       }
     }
@@ -22309,7 +22309,7 @@ ${e2}`);
       const wt = this.transform.worldTransform;
       const a2 = wt.a;
       const b2 = wt.b;
-      const c2 = wt.c;
+      const c6 = wt.c;
       const d2 = wt.d;
       const tx = wt.tx;
       const ty = wt.ty;
@@ -22317,7 +22317,7 @@ ${e2}`);
       for (let i2 = 0; i2 < vertexData.length / 2; i2++) {
         const x2 = vertices[i2 * 2];
         const y2 = vertices[i2 * 2 + 1];
-        vertexData[i2 * 2] = a2 * x2 + c2 * y2 + tx;
+        vertexData[i2 * 2] = a2 * x2 + c6 * y2 + tx;
         vertexData[i2 * 2 + 1] = b2 * x2 + d2 * y2 + ty;
       }
       if (this._roundPixels) {
@@ -23137,11 +23137,11 @@ ${e2}`);
       if (!_TextMetrics.__canvas) {
         let canvas;
         try {
-          const c2 = new OffscreenCanvas(0, 0);
-          const context2 = c2.getContext("2d", contextSettings);
+          const c6 = new OffscreenCanvas(0, 0);
+          const context2 = c6.getContext("2d", contextSettings);
           if (context2?.measureText) {
-            _TextMetrics.__canvas = c2;
-            return c2;
+            _TextMetrics.__canvas = c6;
+            return c6;
           }
           canvas = settings.ADAPTER.createCanvas();
         } catch (ex) {
@@ -23534,7 +23534,7 @@ ${e2}`);
     if (!Array.isArray(color)) {
       return temp.setValue(color).toHex();
     } else {
-      return color.map((c2) => temp.setValue(c2).toHex());
+      return color.map((c6) => temp.setValue(c6).toHex());
     }
   }
   function areArraysEqual(array1, array2) {
@@ -24988,10 +24988,10 @@ ${e2}`);
         const first = charsList[i2];
         for (let j2 = 0; j2 < len; j2++) {
           const second = charsList[j2];
-          const c1 = context2.measureText(first).width;
-          const c2 = context2.measureText(second).width;
+          const c12 = context2.measureText(first).width;
+          const c22 = context2.measureText(second).width;
           const total = context2.measureText(first + second).width;
-          const amount = total - (c1 + c2);
+          const amount = total - (c12 + c22);
           if (amount) {
             fontData.kerning.push({
               first: extractCharCode(first),
@@ -25322,9 +25322,9 @@ ${e2}`);
       }
       const { distanceFieldRange, distanceFieldType, size } = BitmapFont.available[this._fontName];
       if (distanceFieldType !== "none") {
-        const { a: a2, b: b2, c: c2, d: d2 } = this.worldTransform;
+        const { a: a2, b: b2, c: c6, d: d2 } = this.worldTransform;
         const dx = Math.sqrt(a2 * a2 + b2 * b2);
-        const dy = Math.sqrt(c2 * c2 + d2 * d2);
+        const dy = Math.sqrt(c6 * c6 + d2 * d2);
         const worldScale = (Math.abs(dx) + Math.abs(dy)) / 2;
         const fontScale = this.fontSize / size;
         const resolution = renderer._view.resolution;
@@ -26086,6 +26086,123 @@ ${e2}`);
   // src/bug/bug.ts
   var import_geom3 = __toESM(require_dist());
 
+  // node_modules/easings.net/lib/esm/easingsFunctions.js
+  var pow = Math.pow;
+  var sqrt = Math.sqrt;
+  var sin = Math.sin;
+  var cos = Math.cos;
+  var PI = Math.PI;
+  var c1 = 1.70158;
+  var c2 = c1 * 1.525;
+  var c3 = c1 + 1;
+  var c4 = 2 * PI / 3;
+  var c5 = 2 * PI / 4.5;
+  var bounceOut = function(x2) {
+    const n1 = 7.5625;
+    const d1 = 2.75;
+    if (x2 < 1 / d1) {
+      return n1 * x2 * x2;
+    } else if (x2 < 2 / d1) {
+      return n1 * (x2 -= 1.5 / d1) * x2 + 0.75;
+    } else if (x2 < 2.5 / d1) {
+      return n1 * (x2 -= 2.25 / d1) * x2 + 0.9375;
+    } else {
+      return n1 * (x2 -= 2.625 / d1) * x2 + 0.984375;
+    }
+  };
+  var easingsFunctions = {
+    linear: (x2) => x2,
+    easeInQuad: function(x2) {
+      return x2 * x2;
+    },
+    easeOutQuad: function(x2) {
+      return 1 - (1 - x2) * (1 - x2);
+    },
+    easeInOutQuad: function(x2) {
+      return x2 < 0.5 ? 2 * x2 * x2 : 1 - pow(-2 * x2 + 2, 2) / 2;
+    },
+    easeInCubic: function(x2) {
+      return x2 * x2 * x2;
+    },
+    easeOutCubic: function(x2) {
+      return 1 - pow(1 - x2, 3);
+    },
+    easeInOutCubic: function(x2) {
+      return x2 < 0.5 ? 4 * x2 * x2 * x2 : 1 - pow(-2 * x2 + 2, 3) / 2;
+    },
+    easeInQuart: function(x2) {
+      return x2 * x2 * x2 * x2;
+    },
+    easeOutQuart: function(x2) {
+      return 1 - pow(1 - x2, 4);
+    },
+    easeInOutQuart: function(x2) {
+      return x2 < 0.5 ? 8 * x2 * x2 * x2 * x2 : 1 - pow(-2 * x2 + 2, 4) / 2;
+    },
+    easeInQuint: function(x2) {
+      return x2 * x2 * x2 * x2 * x2;
+    },
+    easeOutQuint: function(x2) {
+      return 1 - pow(1 - x2, 5);
+    },
+    easeInOutQuint: function(x2) {
+      return x2 < 0.5 ? 16 * x2 * x2 * x2 * x2 * x2 : 1 - pow(-2 * x2 + 2, 5) / 2;
+    },
+    easeInSine: function(x2) {
+      return 1 - cos(x2 * PI / 2);
+    },
+    easeOutSine: function(x2) {
+      return sin(x2 * PI / 2);
+    },
+    easeInOutSine: function(x2) {
+      return -(cos(PI * x2) - 1) / 2;
+    },
+    easeInExpo: function(x2) {
+      return x2 === 0 ? 0 : pow(2, 10 * x2 - 10);
+    },
+    easeOutExpo: function(x2) {
+      return x2 === 1 ? 1 : 1 - pow(2, -10 * x2);
+    },
+    easeInOutExpo: function(x2) {
+      return x2 === 0 ? 0 : x2 === 1 ? 1 : x2 < 0.5 ? pow(2, 20 * x2 - 10) / 2 : (2 - pow(2, -20 * x2 + 10)) / 2;
+    },
+    easeInCirc: function(x2) {
+      return 1 - sqrt(1 - pow(x2, 2));
+    },
+    easeOutCirc: function(x2) {
+      return sqrt(1 - pow(x2 - 1, 2));
+    },
+    easeInOutCirc: function(x2) {
+      return x2 < 0.5 ? (1 - sqrt(1 - pow(2 * x2, 2))) / 2 : (sqrt(1 - pow(-2 * x2 + 2, 2)) + 1) / 2;
+    },
+    easeInBack: function(x2) {
+      return c3 * x2 * x2 * x2 - c1 * x2 * x2;
+    },
+    easeOutBack: function(x2) {
+      return 1 + c3 * pow(x2 - 1, 3) + c1 * pow(x2 - 1, 2);
+    },
+    easeInOutBack: function(x2) {
+      return x2 < 0.5 ? pow(2 * x2, 2) * ((c2 + 1) * 2 * x2 - c2) / 2 : (pow(2 * x2 - 2, 2) * ((c2 + 1) * (x2 * 2 - 2) + c2) + 2) / 2;
+    },
+    easeInElastic: function(x2) {
+      return x2 === 0 ? 0 : x2 === 1 ? 1 : -pow(2, 10 * x2 - 10) * sin((x2 * 10 - 10.75) * c4);
+    },
+    easeOutElastic: function(x2) {
+      return x2 === 0 ? 0 : x2 === 1 ? 1 : pow(2, -10 * x2) * sin((x2 * 10 - 0.75) * c4) + 1;
+    },
+    easeInOutElastic: function(x2) {
+      return x2 === 0 ? 0 : x2 === 1 ? 1 : x2 < 0.5 ? -(pow(2, 20 * x2 - 10) * sin((20 * x2 - 11.125) * c5)) / 2 : pow(2, -20 * x2 + 10) * sin((20 * x2 - 11.125) * c5) / 2 + 1;
+    },
+    easeInBounce: function(x2) {
+      return 1 - bounceOut(1 - x2);
+    },
+    easeOutBounce: bounceOut,
+    easeInOutBounce: function(x2) {
+      return x2 < 0.5 ? (1 - bounceOut(1 - 2 * x2)) / 2 : (1 + bounceOut(2 * x2 - 1)) / 2;
+    }
+  };
+  var easingsFunctions_default = easingsFunctions;
+
   // src/bug/segment.ts
   var import_geom2 = __toESM(require_dist());
 
@@ -26203,6 +26320,7 @@ ${e2}`);
     repulsionPx: 0,
     maxJigglePx: 3,
     maxDistractionPx: 24,
+    timingFunction: "easeOutCubic",
     target: new import_geom3.Vector()
   };
   var Bug = class {
@@ -26233,7 +26351,7 @@ ${e2}`);
         }
         leg.updateLiveJoint(index, new import_geom3.Vector(updatedPoint, radians2));
       };
-      var _a, _b, _c, _d, _e, _f, _g, _h;
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i;
       this.activeSide = (_a = options == null ? void 0 : options.activeSide) != null ? _a : defaults.activeSide;
       this.millisecondsPerStep = (_b = options == null ? void 0 : options.millisecondsPerStep) != null ? _b : defaults.millisecondsPerStep;
       this.maxStepPx = (_c = options == null ? void 0 : options.maxStepPx) != null ? _c : defaults.maxStepPx;
@@ -26241,8 +26359,9 @@ ${e2}`);
       this.repulsionPx = (_e = options == null ? void 0 : options.repulsionPx) != null ? _e : defaults.repulsionPx;
       this.maxJigglePx = (_f = options == null ? void 0 : options.maxJigglePx) != null ? _f : defaults.maxJigglePx;
       this.maxDistractionPx = (_g = options == null ? void 0 : options.maxDistractionPx) != null ? _g : defaults.maxDistractionPx;
+      this.timingFunction = (_h = options == null ? void 0 : options.timingFunction) != null ? _h : defaults.timingFunction;
       this.segments = this.createSegments(options == null ? void 0 : options.position, options == null ? void 0 : options.segments);
-      this.target = (_h = options == null ? void 0 : options.target) != null ? _h : defaults.target;
+      this.target = (_i = options == null ? void 0 : options.target) != null ? _i : defaults.target;
       this.current = {
         activeSide: this.activeSide,
         segments: this.segments.map((segment) => segment.data),
@@ -26258,7 +26377,8 @@ ${e2}`);
       deltaMs = 0,
       stageRect
     }) {
-      this.stepProgress = this.stepMs / this.millisecondsPerStep;
+      const progress = this.stepMs / this.millisecondsPerStep;
+      this.stepProgress = easingsFunctions_default[this.timingFunction](progress);
       this.updateBug({ deltaMs, stageRect });
       if (import_geom3.Point.distance(this.target.point, this.segments[0].position.point) < this.maxStepPx + this.repulsionPx) {
         const bugRender = this.getRender();
@@ -26494,7 +26614,7 @@ ${e2}`);
         this.updateTarget();
       };
       this.pattern = this.updatePattern();
-      this.bug = new Bug();
+      this.bug = new Bug({ maxDistractionPx: 0, maxJigglePx: 0, timingFunction: "easeOutSine" });
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);

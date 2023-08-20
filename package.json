@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@adrianlafond/geom": "^1.2.9",
+    "easings.net": "^1.0.3",
     "pixi.js": "^7.2.4"
   },
   "ts-standard": {

@@ -1,14 +1,13 @@
 import { Angle, Point, Vector } from '@adrianlafond/geom'
 import { Leg } from './leg'
+import { Segment, SegmentData } from './segment';
 
-export interface Legs {
-  left: Leg[]
-  right: Leg[]
-}
+export type BugSide = 'left' | 'right'
 
+export { SegmentData }
 export interface BugRender {
-  head: Vector
-  legs: Legs
+  activeSide: BugSide
+  segments: SegmentData[]
   target: Point
 }
 
@@ -17,6 +16,16 @@ export interface StageRect {
   y: number
   width: number
   height: number
+}
+
+export interface BugOptionsSegmentLegs {
+  left: Point[][]
+  right: Point[][]
+}
+
+export interface BugOptionsSegment {
+  position: Point
+  legs?: BugOptionsSegmentLegs
 }
 
 export interface BugOptions {
@@ -37,18 +46,17 @@ export interface BugOptions {
   maxStepPx?: number
 
   /**
-   * Position and direction on the stage where bug starts. Default is 0, 0, 0.
+   * Position and direction on the stage where the lead segment of the bug
+   * starts. Default is 0, 0, 0.
    */
   position?: Vector
 
   /**
-   * Positions of each leg that the bug strives to reach on each step for the
-   * active side.
+   * Position of the segments of the bug relative to each other. Each segment
+   * can have its own sets of legs. Default is a single segment at (0, 0) with
+   * 3 legs on each side.
    */
-  legs?: {
-    left: Point[][]
-    right: Point[][]
-  }
+  segments?:  BugOptionsSegment[]
 
   /**
    * Percent offset from distance between socket and claw that the joint
@@ -86,29 +94,31 @@ const defaults: Required<BugOptions> = {
   millisecondsPerStep: 250,
   maxStepPx: 16,
   position: new Vector(),
-
-  legs: {
-    left: [[
-      new Point(-3, 5),
-      new Point(-12, -10)
-    ], [
-      new Point(-3, 8),
-      new Point(-14, 4)
-    ], [
-      new Point(-3, 15),
-      new Point(-10, 16)
-    ]],
-    right: [[
-      new Point(3, 5),
-      new Point(12, -10)
-    ], [
-      new Point(3, 8),
-      new Point(14, 4)
-    ], [
-      new Point(3, 15),
-      new Point(10, 16)
-    ]]
-  },
+  segments: [{
+    position: new Point(),
+    legs: {
+      left: [[
+        new Point(-9, 0),
+        new Point(-18, -15)
+      ], [
+        new Point(-9, 2),
+        new Point(-20, -2)
+      ], [
+        new Point(-9, 4),
+        new Point(-16, 8)
+      ]],
+      right: [[
+        new Point(9, 0),
+        new Point(18, -15)
+      ], [
+        new Point(9, 2),
+        new Point(20, -2)
+      ], [
+        new Point(9, 4),
+        new Point(16, 8)
+      ]]
+    },
+  }],
   jointOffset: 0.25,
   repulsionPx: 0,
   maxJigglePx: 3,
@@ -117,7 +127,7 @@ const defaults: Required<BugOptions> = {
 }
 
 export class Bug {
-  private activeSide: BugOptions['activeSide']
+  private activeSide: Required<BugOptions>['activeSide']
 
   private stepProgress = 0
   private stepMs = 0
@@ -125,11 +135,7 @@ export class Bug {
   private readonly maxStepPx: number
   private readonly jointOffset: number
 
-  private readonly head: Vector
-  private readonly legs: Legs = {
-    left: [],
-    right: []
-  }
+  private readonly segments: Segment[]
 
   private readonly target: Vector
   private readonly repulsionPx: number
@@ -153,14 +159,13 @@ export class Bug {
     this.repulsionPx = options?.repulsionPx ?? defaults.repulsionPx
     this.maxJigglePx = options?.maxJigglePx ?? defaults.maxJigglePx
     this.maxDistractionPx = options?.maxDistractionPx ?? defaults.maxDistractionPx
-    this.head = options?.position ?? defaults.position
+    this.segments = this.createSegments(options?.position, options?.segments)
     this.target = options?.target ?? defaults.target
     this.current = {
-      head: this.head,
-      legs: this.legs,
+      activeSide: this.activeSide,
+      segments: this.segments.map(segment => segment.data),
       target: this.target.point
     }
-    this.createLegs(options?.legs ?? defaults.legs)
     this.updateBug({ deltaMs: this.millisecondsPerStep })
   }
 
@@ -178,7 +183,7 @@ export class Bug {
     this.stepProgress = this.stepMs / this.millisecondsPerStep
     this.updateBug({ deltaMs, stageRect })
 
-    if (Point.distance(this.target.point, this.head.point) < this.maxStepPx + this.repulsionPx) {
+    if (Point.distance(this.target.point, this.segments[0].position.point) < this.maxStepPx + this.repulsionPx) {
       const bugRender = this.getRender()
       this.listeners.targetReached.forEach(fn => fn(bugRender))
     }
@@ -207,29 +212,31 @@ export class Bug {
     this.target.y = value.y
   }
 
+  /**
+   * Returns a BugRender object with the all the data needed to draw a skin.
+   */
   private getRender (): BugRender {
     return {
-      head: this.head,
-      legs: this.legs,
+      activeSide: this.activeSide,
+      segments: this.getSegmentsData(),
       target: this.target.point
     }
   }
 
-  private createLegs (legsModel: Required<BugOptions>['legs']): void {
-    legsModel.left.forEach((joints, index) => {
-      joints.splice(1, 0, new Point(
-        (joints[0].x + joints[1].x) * 0.5,
-        (joints[0].y + joints[1].y) * 0.5
-      ))
-      this.legs.left[index] = new Leg(joints)
-    })
-    legsModel.right.forEach((joints, index) => {
-      joints.splice(1, 0, new Point(
-        (joints[0].x + joints[1].x) * 0.5,
-        (joints[0].y + joints[1].y) * 0.5
-      ))
-      this.legs.right[index] = new Leg(joints)
-    })
+  private getSegmentsData(): SegmentData[] {
+    return this.segments.map(segment => segment.data)
+  }
+
+  /**
+   * Transforms a `BugOptions['segments']` object into actual Segments, all
+   * offset by a BugOptions['position'] vector for the starting coordinates, and
+   * returns it.
+   */
+  private createSegments(positionOption?: BugOptions['position'], segmentOptions?: BugOptions['segments']): Segment[] {
+    const position = positionOption ?? new Vector()
+    const segments = segmentOptions || defaults.segments
+
+    return segments.map(segment => new Segment(position, segment))
   }
 
   private updateBug ({
@@ -248,7 +255,6 @@ export class Bug {
         }
       : stageRect
     this.updateHead(repulusionRect)
-    this.updateLegs(repulusionRect)
     this.updateStepProgress(deltaMs)
   }
 
@@ -264,13 +270,7 @@ export class Bug {
     if (this.stepMs >= this.millisecondsPerStep) {
       this.stepMs = 0
       this.activeSide = this.activeSide === 'left' ? 'right' : 'left'
-      this.current.head = this.head.clone()
-      this.current.legs = {
-        left: this.legs.left.map(item => item.clone()),
-        right: this.legs.right.map(item => item.clone())
-      }
-      this.legs[this.activeSide].forEach(leg => leg.startMoving())
-      this.legs[this.activeSide === 'left' ? 'right' : 'left'].forEach(leg => leg.stopMoving())
+      this.current.segments = this.getSegmentsData()
 
       // Set the target for the next step:
       this.updateTargetRadians()
@@ -284,7 +284,8 @@ export class Bug {
     this.stepTarget.x = this.target.x + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5
     this.stepTarget.y = this.target.y + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5
 
-    this.stepTarget.radians = Math.atan2(this.stepTarget.y - this.current.head.y, this.stepTarget.x - this.current.head.x) +
+    const currentHead = this.current.segments[0].position
+    this.stepTarget.radians = Math.atan2(this.stepTarget.y - currentHead.y, this.stepTarget.x - currentHead.x) +
       Math.PI * 0.5
     this.stepTarget.radians = Angle.normalize(this.stepTarget.radians)
     const maxTurnRadians = Math.PI * 0.25
@@ -292,12 +293,12 @@ export class Bug {
     // Calculate the delta between the bug's current angle and the target
     // angle so that it can be constrained; i.e., prevent the bug from turning
     // too far in a single step.
-    let delta = Angle.normalize(this.stepTarget.radians) - Angle.normalize(this.current.head.radians)
+    let delta = Angle.normalize(this.stepTarget.radians) - Angle.normalize(currentHead.radians)
 
     if (Math.abs(delta) > Math.PI) {
       // If delta is > half a semi-circle, then the shortest turn is in the
       // opposite direction.
-      delta = Angle.normalize(this.current.head.radians) - Angle.normalize(this.stepTarget.radians)
+      delta = Angle.normalize(currentHead.radians) - Angle.normalize(this.stepTarget.radians)
     }
 
     const fullCircle = Math.PI * 2
@@ -305,59 +306,63 @@ export class Bug {
       // If delta is still > Math.PI then it is because delta is flipping back
       // and forth over zero/6.28.
       if (delta < 0) {
-        const cr = this.current.head.radians + fullCircle
+        const cr = currentHead.radians + fullCircle
         delta = this.stepTarget.radians - cr
       } else if (delta > 0) {
         const tr = this.stepTarget.radians + fullCircle
-        delta = tr - this.current.head.radians
+        delta = tr - currentHead.radians
       }
     }
 
     if (delta > maxTurnRadians) {
-      this.stepTarget.radians = this.current.head.radians + maxTurnRadians
+      this.stepTarget.radians = currentHead.radians + maxTurnRadians
     } else if (delta < -maxTurnRadians) {
-      this.stepTarget.radians = this.current.head.radians - maxTurnRadians
+      this.stepTarget.radians = currentHead.radians - maxTurnRadians
     }
   }
 
   private updateHead (stageRect?: StageRect): void {
-    this.head.radians = Angle.interpolate(
-      this.current.head.radians,
+    const head = this.segments[0].position
+    const currentHead = this.current.segments[0].position
+    head.radians = Angle.interpolate(
+      currentHead.radians,
       this.stepTarget.radians,
       Math.min(1, this.stepProgress)
     )
 
-    this.head.x = this.current.head.x +
-      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.x - this.current.head.x)) *
+    head.x = currentHead.x +
+      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.x - currentHead.x)) *
       this.stepProgress +
       Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
-    this.head.y = this.current.head.y +
-      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.y - this.current.head.y)) *
+    head.y = currentHead.y +
+      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.y - currentHead.y)) *
       this.stepProgress +
       Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
 
     if (stageRect != null) {
-      this.head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, this.head.x))
-      this.head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, this.head.y))
+      head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, head.x))
+      head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, head.y))
     }
+
+    this.updateLegsPerSegment(this.segments[0], stageRect)
   }
 
-  private updateLegs (stageRect?: StageRect): void {
+  private updateLegsPerSegment (segment: Segment, stageRect?: StageRect): void {
     (['left', 'right'] as Array<'left' | 'right'>).forEach(side => {
-      this.legs[side].forEach((leg, legIndex) => {
-        this.updateLeg(leg, this.current.legs[side][legIndex], leg.socketIndex, stageRect)
+      segment.legs[side].forEach((leg, legIndex) => {
+        this.updateLeg(leg, this.current.segments[0].legs[side][legIndex], leg.socketIndex, stageRect)
         if (side === this.activeSide) {
-          this.updateLeg(leg, this.current.legs[side][legIndex], leg.clawIndex, stageRect)
+          this.updateLeg(leg, this.current.segments[0].legs[side][legIndex], leg.clawIndex, stageRect)
         }
-        if (leg.jointIndex !== -1) {
-          const socketPoint = leg.getLive(leg.socketIndex).point
-          const clawPoint = leg.getLive(leg.clawIndex).point
+        if (leg.clawIndex > 1) {
+          const socketPoint = leg.getLiveJoint(leg.socketIndex).point
+          const clawPoint = leg.getLiveJoint(leg.clawIndex).point
 
           const radians = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2
-          const length = Point.distance(leg.getModel(0), leg.getModel(2))
+          const length = Point.distance(leg.getModelJoint(0), leg.getModelJoint(2))
           const offset = length * this.jointOffset
 
-          leg.updateLive(leg.jointIndex, new Vector(
+          leg.updateLiveJoint(1, new Vector(
             (socketPoint.x + clawPoint.x) * 0.5 - Math.cos(radians) * offset,
             (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians) * offset
           ))
@@ -366,24 +371,25 @@ export class Bug {
     })
   }
 
-  private readonly updateLeg = (leg: Leg, currentLeg: Leg, index: number, stageRect?: StageRect): void => {
-    const joint = leg.getModel(index)
-    const radius = Point.distance(this.head.point, this.head.point.subtract(joint))
-    const targetRadians = Math.atan2(joint.y, joint.x) + this.head.radians
+  private readonly updateLeg = (leg: Leg, currentLeg: Vector[], index: number, stageRect?: StageRect): void => {
+    const head = this.segments[0].position
+    const joint = leg.getModelJoint(index)
+    const radius = Point.distance(head.point, head.point.subtract(joint))
+    const targetRadians = Math.atan2(joint.y, joint.x) + head.radians
     const radians = Angle.interpolate(
-      currentLeg.getLive(index).radians,
+      currentLeg[index].radians,
       targetRadians,
       Math.min(1, this.stepProgress)
     )
     const updatedPoint = new Point(
-      Math.cos(radians) * radius + this.head.x,
-      Math.sin(radians) * radius + this.head.y
+      Math.cos(radians) * radius + head.x,
+      Math.sin(radians) * radius + head.y
     )
     if (stageRect != null) {
       updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x))
       updatedPoint.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, updatedPoint.y))
     }
 
-    leg.updateLive(index, new Vector(updatedPoint, radians))
+    leg.updateLiveJoint(index, new Vector(updatedPoint, radians))
   }
 }

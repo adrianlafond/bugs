@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
-import { Bug, BugRender, Leg } from '../bug'
-import { Point } from '@adrianlafond/geom'
+import { Bug, BugRender, BugSide, Leg, SegmentData } from '../bug'
+import { Point, Vector } from '@adrianlafond/geom'
 import { calculateSpiralPattern } from './patterns/spiral'
 import { calculateVerticalPattern } from './patterns/vertical'
 import { calculateHorizontalPattern } from './patterns/horizontal'
@@ -9,9 +9,9 @@ import { calculateRandomPattern } from './patterns/random'
 type Pattern = 'random' | 'horizontal' | 'vertical' | 'spiral'
 
 export class BugDemo {
-  private readonly target = new PIXI.Graphics()
-  private readonly head = new PIXI.Graphics()
-  private readonly legs = new PIXI.Graphics()
+  private readonly targetGfx = new PIXI.Graphics()
+  private readonly segmentsGfx = new PIXI.Graphics()
+  private readonly legsGfx = new PIXI.Graphics()
 
   private readonly bug: Bug
 
@@ -20,9 +20,9 @@ export class BugDemo {
   constructor (private readonly app: PIXI.Application) {
     this.pattern = this.updatePattern()
     this.bug = new Bug()
-    this.app.stage.addChild(this.target)
-    this.app.stage.addChild(this.legs)
-    this.app.stage.addChild(this.head)
+    this.app.stage.addChild(this.targetGfx)
+    this.app.stage.addChild(this.legsGfx)
+    this.app.stage.addChild(this.segmentsGfx)
     this.updateTarget()
   }
 
@@ -37,9 +37,9 @@ export class BugDemo {
       }
     })
     this.bug.on('targetReached', this.handleTargetReached)
+    this.clearGfx()
     this.renderTarget(bug.target)
-    this.renderHead(bug)
-    this.renderLegs(bug)
+    this.renderAllSegments(bug)
   }
 
   changeTarget (point: Point): void {
@@ -50,66 +50,67 @@ export class BugDemo {
     this.updateTarget()
   }
 
+  private clearGfx () {
+    this.targetGfx.clear()
+    this.segmentsGfx.clear()
+    this.legsGfx.clear()
+  }
+
   private renderTarget ({ x, y }: BugRender['target']): void {
     const radius = 2
-    this.target.clear()
-    this.target.lineStyle({ width: 1, color: 0xffcc99 })
-    this.target.moveTo(x - radius, y - radius)
-    this.target.lineTo(x + radius, y + radius)
-    this.target.moveTo(x + radius, y - radius)
-    this.target.lineTo(x - radius, y + radius)
+    this.targetGfx.lineStyle({ width: 1, color: 0xffcc99 })
+    this.targetGfx.moveTo(x - radius, y - radius)
+    this.targetGfx.lineTo(x + radius, y + radius)
+    this.targetGfx.moveTo(x + radius, y - radius)
+    this.targetGfx.lineTo(x - radius, y + radius)
   }
 
-  private renderHead (bug: BugRender): void {
-    this.head.clear()
-    this.head.beginFill(0xddeeff)
-    this.head.moveTo(0, -12.5)
-    this.head.lineTo(5, 0)
-    this.head.lineTo(0, -2.5)
-    this.head.lineTo(-5, 0)
-    this.head.lineTo(0, 0)
-    this.head.rotation = bug.head.radians
-    this.head.position.x = bug.head.x
-    this.head.position.y = bug.head.y
-    this.head.endFill()
+  private renderAllSegments (bug: BugRender): void {
+    bug.segments.forEach(segment => this.renderSegment(segment, bug.activeSide))
   }
 
-  private renderLegs (bug: BugRender): void {
-    this.legs.clear()
-    bug.legs.left.forEach(this.renderLeg)
-    bug.legs.right.forEach(this.renderLeg)
+  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
+    const color = 0xddeeff
 
-    // Draws "spinal" column between leg sockets.
-    this.legs.lineStyle({ width: 1, color: 0xddeeff })
-    const left0 = bug.legs.left[0].getLive(0)
-    this.legs.moveTo(left0.x, left0.y)
-    for (let i = 1; i < bug.legs.left.length; i++) {
-      const leg = bug.legs.left[i].getLive(0)
-      this.legs.lineTo(leg.x, leg.y)
-    }
-    const right0 = bug.legs.right[0].getLive(0)
-    this.legs.moveTo(right0.x, right0.y)
-    for (let i = 1; i < bug.legs.right.length; i++) {
-      const leg = bug.legs.right[i].getLive(0)
-      this.legs.lineTo(leg.x, leg.y)
-    }
+    this.segmentsGfx.lineStyle({ width: 1, color })
+    this.segmentsGfx.drawCircle(0, 0, 9)
+    this.segmentsGfx.lineStyle({ width: 0 })
+
+    this.segmentsGfx.beginFill(color)
+    this.segmentsGfx.moveTo(0, -8)
+    this.segmentsGfx.lineTo(5, 8)
+    this.segmentsGfx.lineTo(0, 2)
+    this.segmentsGfx.lineTo(-5, 8)
+    this.segmentsGfx.lineTo(0, -8)
+    this.segmentsGfx.endFill()
+
+    this.segmentsGfx.rotation = segment.position.radians
+    this.segmentsGfx.position.x = segment.position.x
+    this.segmentsGfx.position.y = segment.position.y
+
+    this.renderSegmentLegs(segment, activeSide)
   }
 
-  private readonly renderLeg = (leg: Leg): void => {
-    const socket = leg.getLive(leg.socketIndex)
-    const joint = leg.jointIndex !== -1 ? leg.getLive(leg.jointIndex) : null
-    const claw = leg.getLive(leg.clawIndex)
-    this.legs.lineStyle({ width: 1, color: 0xddeeff })
-    this.legs.moveTo(socket.x, socket.y)
+  private renderSegmentLegs (segment: SegmentData, activeSide: BugSide): void {
+    segment.legs.left.forEach(leg => this.renderLeg(leg, activeSide === 'left'))
+    segment.legs.right.forEach(leg => this.renderLeg(leg, activeSide === 'right'))
+  }
+
+  private renderLeg (leg: Vector[], isActive: boolean): void {
+    const socket = leg[0]
+    const joint = leg.length >= 2 ? leg[1] : null
+    const claw = leg.length >= 2 ? leg[2] : leg[1]
+    this.legsGfx.lineStyle({ width: 1, color: 0xddeeff })
+    this.legsGfx.moveTo(socket.x, socket.y)
     if (joint != null) {
-      this.legs.lineTo(joint.x, joint.y)
+      this.legsGfx.lineTo(joint.x, joint.y)
     }
-    this.legs.lineTo(claw.x, claw.y)
+    this.legsGfx.lineTo(claw.x, claw.y)
 
-    this.legs.lineStyle({ width: 0 })
-    this.legs.beginFill(0xddeeff)
-    this.legs.drawCircle(claw.x, claw.y, leg.isMoving() ? 2 : 1)
-    this.legs.endFill()
+    this.legsGfx.lineStyle({ width: 0 })
+    this.legsGfx.beginFill(0xddeeff)
+    this.legsGfx.drawCircle(claw.x, claw.y, isActive ? 2 : 1)
+    this.legsGfx.endFill()
   }
 
   private updateTarget (): void {

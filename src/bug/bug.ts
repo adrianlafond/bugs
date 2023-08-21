@@ -296,7 +296,7 @@ export class Bug {
           height: stageRect.height - this.repulsionPx * 2
         }
       : stageRect
-    this.updateHead(repulusionRect)
+    this.updateAllSegments(repulusionRect)
     this.updateStepProgress(deltaMs)
   }
 
@@ -363,38 +363,58 @@ export class Bug {
     }
   }
 
-  private updateHead (stageRect?: StageRect): void {
-    const head = this.segments[0].position
-    const currentHead = this.current.segments[0].position
-    head.radians = Angle.interpolate(
-      currentHead.radians,
+  private updateAllSegments (stageRect?: StageRect): void {
+    this.segments.forEach((segment, index) => {
+      if (index === 0) {
+        this.updateHead(segment, this.current.segments[index], stageRect)
+      } else {
+        this.updateSegment(segment, this.current.segments[index], stageRect)
+      }
+    })
+  }
+
+  private updateHead (segment: Segment, currentSegment: SegmentData, stageRect?: StageRect): void {
+    const currentPosition = currentSegment.position
+    segment.position.radians = Angle.interpolate(
+      currentPosition.radians,
       this.stepTarget.radians,
       Math.min(1, this.stepProgress)
     )
 
-    head.x = currentHead.x +
-      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.x - currentHead.x)) *
+    segment.position.x = currentPosition.x +
+      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.x - currentPosition.x)) *
       this.stepProgress +
       Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
-    head.y = currentHead.y +
-      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.y - currentHead.y)) *
+    segment.position.y = currentPosition.y +
+      Math.max(-this.maxStepPx, Math.min(this.maxStepPx, this.stepTarget.y - currentPosition.y)) *
       this.stepProgress +
       Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
 
     if (stageRect != null) {
-      head.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, head.x))
-      head.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, head.y))
+      segment.position.x = Math.max(
+        stageRect.x,
+        Math.min(stageRect.x + stageRect.width, segment.position.x))
+      segment.position.y = Math.max(
+        stageRect.y,
+        Math.min(stageRect.y + stageRect.height, segment.position.y))
     }
 
-    this.updateLegsPerSegment(this.segments[0], stageRect)
+    this.updateLegsPerSegment(segment, currentSegment, stageRect)
   }
 
-  private updateLegsPerSegment (segment: Segment, stageRect?: StageRect): void {
-    (['left', 'right'] as Array<'left' | 'right'>).forEach(side => {
+  private updateSegment (segment: Segment, currentSegment: SegmentData, stageRect?: StageRect): void {
+    segment.position.x += 0.1
+    segment.position.y += 0.1
+    segment.position.radians += 0.01
+    this.updateLegsPerSegment(segment, currentSegment, stageRect)
+  }
+
+  private updateLegsPerSegment (segment: Segment, currentSegment: SegmentData, stageRect?: StageRect): void {
+    (['left', 'right'] as Array<BugSide>).forEach(side => {
       segment.legs[side].forEach((leg, legIndex) => {
-        this.updateLeg(leg, this.current.segments[0].legs[side][legIndex], leg.socketIndex, stageRect)
+        this.updateLeg(segment.position, leg, currentSegment.legs[side][legIndex], leg.socketIndex, stageRect)
         if (side === this.activeSide) {
-          this.updateLeg(leg, this.current.segments[0].legs[side][legIndex], leg.clawIndex, stageRect)
+          this.updateLeg(segment.position, leg, currentSegment.legs[side][legIndex], leg.clawIndex, stageRect)
         }
         if (leg.clawIndex > 1) {
           const socketPoint = leg.getLiveJoint(leg.socketIndex).point
@@ -413,19 +433,18 @@ export class Bug {
     })
   }
 
-  private readonly updateLeg = (leg: Leg, currentLeg: Vector[], index: number, stageRect?: StageRect): void => {
-    const head = this.segments[0].position
+  private updateLeg (segmentPosition: Vector, leg: Leg, currentLeg: Vector[], index: number, stageRect?: StageRect): void {
     const joint = leg.getModelJoint(index)
-    const radius = Point.distance(head.point, head.point.subtract(joint))
-    const targetRadians = Math.atan2(joint.y, joint.x) + head.radians
+    const radius = Point.distance(segmentPosition.point, segmentPosition.point.subtract(joint))
+    const targetRadians = Math.atan2(joint.y, joint.x) + segmentPosition.radians
     const radians = Angle.interpolate(
       currentLeg[index].radians,
       targetRadians,
       Math.min(1, this.stepProgress)
     )
     const updatedPoint = new Point(
-      Math.cos(radians) * radius + head.x,
-      Math.sin(radians) * radius + head.y
+      Math.cos(radians) * radius + segmentPosition.x,
+      Math.sin(radians) * radius + segmentPosition.y
     )
     if (stageRect != null) {
       updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x))

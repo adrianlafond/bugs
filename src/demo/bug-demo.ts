@@ -19,7 +19,60 @@ export class BugDemo {
 
   constructor (private readonly app: PIXI.Application) {
     this.pattern = this.updatePattern()
-    this.bug = new Bug({ maxDistractionPx: 0, maxJigglePx: 0, timingFunction: 'easeOutSine' })
+    this.bug = new Bug({
+      segments: [{
+        position: new Point(),
+        legs: {
+          left: [[
+            new Point(-9, 0),
+            new Point(-18, -15)
+          ], [
+            new Point(-9, 2),
+            new Point(-20, -2)
+          ], [
+            new Point(-9, 4),
+            new Point(-16, 8)
+          ]],
+          right: [[
+            new Point(9, 0),
+            new Point(18, -15)
+          ], [
+            new Point(9, 2),
+            new Point(20, -2)
+          ], [
+            new Point(9, 4),
+            new Point(16, 8)
+          ]]
+        },
+      }, {
+        position: new Point(0, 20),
+        legs: {
+          left: [[
+            new Point(-9, 0),
+            new Point(-18, -15)
+          ], [
+            new Point(-9, 2),
+            new Point(-20, -2)
+          ], [
+            new Point(-9, 4),
+            new Point(-16, 8)
+          ]],
+          right: [[
+            new Point(9, 0),
+            new Point(18, -15)
+          ], [
+            new Point(9, 2),
+            new Point(20, -2)
+          ], [
+            new Point(9, 4),
+            new Point(16, 8)
+          ]]
+        },
+      }],
+      maxDistractionPx: 0,
+      maxJigglePx: 0,
+      timingFunction: 'easeOutSine',
+    })
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
     this.app.stage.addChild(this.segmentsGfx)
@@ -53,7 +106,9 @@ export class BugDemo {
   private clearGfx () {
     this.targetGfx.clear()
     this.segmentsGfx.clear()
+    this.segmentsGfx.removeChildren()
     this.legsGfx.clear()
+    this.legsGfx.removeChildren()
   }
 
   private renderTarget ({ x, y }: BugRender['target']): void {
@@ -66,27 +121,32 @@ export class BugDemo {
   }
 
   private renderAllSegments (bug: BugRender): void {
-    bug.segments.forEach(segment => this.renderSegment(segment, bug.activeSide))
+    for (let i = bug.segments.length - 1; i >= 0; i--) {
+      this.renderSegment(bug.segments[i], bug.activeSide)
+    }
   }
 
   private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
     const color = 0xddeeff
 
-    this.segmentsGfx.lineStyle({ width: 1, color })
-    this.segmentsGfx.drawCircle(0, 0, 9)
-    this.segmentsGfx.lineStyle({ width: 0 })
+    const gfx = new PIXI.Graphics()
+    this.segmentsGfx.addChild(gfx)
 
-    this.segmentsGfx.beginFill(color)
-    this.segmentsGfx.moveTo(0, -8)
-    this.segmentsGfx.lineTo(5, 8)
-    this.segmentsGfx.lineTo(0, 2)
-    this.segmentsGfx.lineTo(-5, 8)
-    this.segmentsGfx.lineTo(0, -8)
-    this.segmentsGfx.endFill()
+    gfx.lineStyle({ width: 1, color })
+    gfx.drawCircle(0, 0, 9)
+    gfx.lineStyle({ width: 0 })
 
-    this.segmentsGfx.rotation = segment.position.radians
-    this.segmentsGfx.position.x = segment.position.x
-    this.segmentsGfx.position.y = segment.position.y
+    gfx.beginFill(color)
+    gfx.moveTo(0, -8)
+    gfx.lineTo(5, 8)
+    gfx.lineTo(0, 2)
+    gfx.lineTo(-5, 8)
+    gfx.lineTo(0, -8)
+    gfx.endFill()
+
+    gfx.rotation = segment.position.radians
+    gfx.position.x = segment.position.x
+    gfx.position.y = segment.position.y
 
     this.renderSegmentLegs(segment, activeSide)
   }
@@ -100,17 +160,21 @@ export class BugDemo {
     const socket = leg[0]
     const joint = leg.length >= 2 ? leg[1] : null
     const claw = leg.length >= 2 ? leg[2] : leg[1]
-    this.legsGfx.lineStyle({ width: 1, color: 0xddeeff })
-    this.legsGfx.moveTo(socket.x, socket.y)
-    if (joint != null) {
-      this.legsGfx.lineTo(joint.x, joint.y)
-    }
-    this.legsGfx.lineTo(claw.x, claw.y)
 
-    this.legsGfx.lineStyle({ width: 0 })
-    this.legsGfx.beginFill(0xddeeff)
-    this.legsGfx.drawCircle(claw.x, claw.y, isActive ? 2 : 1)
-    this.legsGfx.endFill()
+    const gfx = new PIXI.Graphics()
+    this.legsGfx.addChild(gfx)
+
+    gfx.lineStyle({ width: 1, color: 0xddeeff })
+    gfx.moveTo(socket.x, socket.y)
+    if (joint != null) {
+      gfx.lineTo(joint.x, joint.y)
+    }
+    gfx.lineTo(claw.x, claw.y)
+    gfx.lineStyle({ width: 0 })
+
+    gfx.beginFill(0xddeeff)
+    gfx.drawCircle(claw.x, claw.y, isActive ? 2 : 1)
+    gfx.endFill()
   }
 
   private updateTarget (): void {

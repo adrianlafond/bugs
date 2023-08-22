@@ -22,9 +22,6 @@ export class Segment {
   // Distance from a leading segment
   maxDistance: number
 
-  // (x,y) target of current step
-  stepTarget: Point
-
   // Current position
   position: Vector
 

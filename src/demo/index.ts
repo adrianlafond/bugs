@@ -11,7 +11,7 @@ class DemoApp {
   private playing = false
 
   constructor (containerElement?: HTMLElement) {
-    const defaultContainer: HTMLElement | null = document.querySelector('main#canvas')
+    const defaultContainer: HTMLElement | null = document.querySelector('#canvas')
     this.containerElement = containerElement != null
       ? containerElement
       : (defaultContainer != null) ? defaultContainer : document.createElement('main')

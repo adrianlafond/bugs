@@ -26865,7 +26865,7 @@ ${e2}`);
         this.playing = !this.playing;
         this.playing ? this.app.start() : this.app.stop();
       };
-      const defaultContainer = document.querySelector("main#canvas");
+      const defaultContainer = document.querySelector("#canvas");
       this.containerElement = containerElement != null ? containerElement : defaultContainer != null ? defaultContainer : document.createElement("main");
       this.app = new Application({ width: 360, height: 360 });
       this.appendToDom();

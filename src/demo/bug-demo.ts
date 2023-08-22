@@ -94,7 +94,9 @@ export class BugDemo {
         }
       }],
       maxDistractionPx: 0,
-      maxJigglePx: 0,
+      maxJigglePx: 3,
+      maxStepPx: 10,
+      millisecondsPerStep: 100,
       timingFunction: 'easeOutSine',
     })
     this.app.stage.addChild(this.targetGfx)

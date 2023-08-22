@@ -421,7 +421,9 @@ export class Bug {
 
     const leadRadians = Math.atan2(dy - leadPosition.y, dx - leadPosition.x)
     segment.position.x = leadPosition.x + Math.cos(leadRadians) * segment.maxDistance
+      + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
     segment.position.y = leadPosition.y + Math.sin(leadRadians) * segment.maxDistance
+      + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
 
     segment.position.radians = Math.atan2(
       leadPosition.y - segment.position.y,

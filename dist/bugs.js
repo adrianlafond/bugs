@@ -3369,10 +3369,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point10 = (
+      var Point11 = (
         /** @class */
         function() {
-          function Point11(x2, y2) {
+          function Point12(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -3382,39 +3382,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point11.prototype, "data", {
+          Object.defineProperty(Point12.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point11.prototype.clone = function() {
-            return new Point11(this.x, this.y);
+          Point12.prototype.clone = function() {
+            return new Point12(this.x, this.y);
           };
-          Point11.prototype.add = function(point) {
+          Point12.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point11.prototype.subtract = function(point) {
+          Point12.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point11.prototype.toString = function() {
+          Point12.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point11.distance = function(p1, p2) {
+          Point12.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point11.radians = function(p1, p2) {
+          Point12.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point11;
+          return Point12;
         }()
       );
-      exports.default = Point10;
+      exports.default = Point11;
     }
   });
 
@@ -26077,11 +26077,6 @@ ${e2}`);
     instance.udpateApp(app);
     instance.render(px);
   }
-  function onPointerDown(handler) {
-    if (instance != null) {
-      instance.onPointerDown(handler);
-    }
-  }
 
   // src/bug/bug.ts
   var import_geom3 = __toESM(require_dist());
@@ -26565,6 +26560,9 @@ ${e2}`);
   };
 
   // src/demo/bug-demo.ts
+  var import_geom9 = __toESM(require_dist());
+
+  // src/demo/base-demo.ts
   var import_geom8 = __toESM(require_dist());
 
   // src/demo/patterns/spiral.ts
@@ -26649,9 +26647,25 @@ ${e2}`);
   var BaseDemo = class {
     constructor(app) {
       this.app = app;
+      this.handlePointerDown = (event) => {
+        if (this.app.view.getBoundingClientRect) {
+          const viewRect = this.app.view.getBoundingClientRect();
+          if ("clientX" in event && "clientY" in event) {
+            this.changeTarget(new import_geom8.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+          }
+        }
+      };
       this.pattern = this.updatePattern();
+      if (app.view.addEventListener) {
+        app.view.addEventListener("pointerdown", this.handlePointerDown);
+      }
     }
     changeTarget(_point) {
+    }
+    destroy() {
+      if (this.app.view.removeEventListener) {
+        this.app.view.removeEventListener("pointerdown", this.handlePointerDown);
+      }
     }
     updateTargetPattern() {
       if (this.pattern === "random") {
@@ -26701,75 +26715,75 @@ ${e2}`);
       };
       this.bug = new Bug({
         segments: [{
-          position: new import_geom8.Point(),
+          position: new import_geom9.Point(),
           legs: {
             left: [[
-              new import_geom8.Point(-9, 0),
-              new import_geom8.Point(-18, -15)
+              new import_geom9.Point(-9, 0),
+              new import_geom9.Point(-18, -15)
             ], [
-              new import_geom8.Point(-9, 2),
-              new import_geom8.Point(-20, -2)
+              new import_geom9.Point(-9, 2),
+              new import_geom9.Point(-20, -2)
             ], [
-              new import_geom8.Point(-9, 4),
-              new import_geom8.Point(-16, 8)
+              new import_geom9.Point(-9, 4),
+              new import_geom9.Point(-16, 8)
             ]],
             right: [[
-              new import_geom8.Point(9, 0),
-              new import_geom8.Point(18, -15)
+              new import_geom9.Point(9, 0),
+              new import_geom9.Point(18, -15)
             ], [
-              new import_geom8.Point(9, 2),
-              new import_geom8.Point(20, -2)
+              new import_geom9.Point(9, 2),
+              new import_geom9.Point(20, -2)
             ], [
-              new import_geom8.Point(9, 4),
-              new import_geom8.Point(16, 8)
+              new import_geom9.Point(9, 4),
+              new import_geom9.Point(16, 8)
             ]]
           }
         }, {
-          position: new import_geom8.Point(0, 20),
+          position: new import_geom9.Point(0, 20),
           legs: {
             left: [[
-              new import_geom8.Point(-9, 2),
-              new import_geom8.Point(-20, -2)
+              new import_geom9.Point(-9, 2),
+              new import_geom9.Point(-20, -2)
             ]],
             right: [[
-              new import_geom8.Point(9, 2),
-              new import_geom8.Point(20, -2)
+              new import_geom9.Point(9, 2),
+              new import_geom9.Point(20, -2)
             ]]
           }
         }, {
-          position: new import_geom8.Point(0, 20),
+          position: new import_geom9.Point(0, 20),
           legs: {
             left: [[
-              new import_geom8.Point(-9, 2),
-              new import_geom8.Point(-20, -2)
+              new import_geom9.Point(-9, 2),
+              new import_geom9.Point(-20, -2)
             ]],
             right: [[
-              new import_geom8.Point(9, 2),
-              new import_geom8.Point(20, -2)
+              new import_geom9.Point(9, 2),
+              new import_geom9.Point(20, -2)
             ]]
           }
         }, {
-          position: new import_geom8.Point(0, 20),
+          position: new import_geom9.Point(0, 20),
           legs: {
             left: [[
-              new import_geom8.Point(-9, 2),
-              new import_geom8.Point(-20, -2)
+              new import_geom9.Point(-9, 2),
+              new import_geom9.Point(-20, -2)
             ]],
             right: [[
-              new import_geom8.Point(9, 2),
-              new import_geom8.Point(20, -2)
+              new import_geom9.Point(9, 2),
+              new import_geom9.Point(20, -2)
             ]]
           }
         }, {
-          position: new import_geom8.Point(0, 20),
+          position: new import_geom9.Point(0, 20),
           legs: {
             left: [[
-              new import_geom8.Point(-9, 2),
-              new import_geom8.Point(-20, -2)
+              new import_geom9.Point(-9, 2),
+              new import_geom9.Point(-20, -2)
             ]],
             right: [[
-              new import_geom8.Point(9, 2),
-              new import_geom8.Point(20, -2)
+              new import_geom9.Point(9, 2),
+              new import_geom9.Point(20, -2)
             ]]
           }
         }],
@@ -26780,12 +26794,6 @@ ${e2}`);
         timingFunction: "easeOutSine"
       });
       render(this.app);
-      onPointerDown((event) => {
-        if (this.app.view.getBoundingClientRect) {
-          const viewRect = this.app.view.getBoundingClientRect();
-          this.changeTarget(new import_geom8.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
-        }
-      });
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
@@ -26807,9 +26815,11 @@ ${e2}`);
       this.renderAllSegments(bug);
     }
     changeTarget(point) {
+      super.changeTarget(point);
       this.bug.updateTarget(point);
     }
     destroy() {
+      super.destroy();
       this.clearGfx();
     }
     clearGfx() {

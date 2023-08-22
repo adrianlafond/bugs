@@ -94,14 +94,8 @@ export class BugDemo extends BaseDemo {
       millisecondsPerStep: 100,
       timingFunction: 'easeOutSine',
     })
-    grid.render(this.app)
 
-    grid.onPointerDown((event: PIXI.FederatedPointerEvent): void => {
-      if (this.app.view.getBoundingClientRect) {
-        const viewRect = this.app.view.getBoundingClientRect()
-        this.changeTarget(new Point(event.clientX - viewRect.x, event.clientY - viewRect.y))
-      }
-    })
+    grid.render(this.app)
 
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
@@ -126,10 +120,12 @@ export class BugDemo extends BaseDemo {
   }
 
   changeTarget (point: Point): void {
+    super.changeTarget(point)
     this.bug.updateTarget(point)
   }
 
   destroy (): void {
+    super.destroy()
     this.clearGfx()
   }
 

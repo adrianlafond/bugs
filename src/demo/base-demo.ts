@@ -13,10 +13,28 @@ export class BaseDemo {
 
   constructor (protected readonly app: PIXI.Application) {
     this.pattern = this.updatePattern()
+    if (app.view.addEventListener) {
+      app.view.addEventListener('pointerdown', this.handlePointerDown)
+    }
   }
 
   changeTarget (_point: Point): void {
     // Designed to be overridden.
+  }
+
+  destroy (): void {
+    if (this.app.view.removeEventListener) {
+      this.app.view.removeEventListener('pointerdown', this.handlePointerDown)
+    }
+  }
+
+  private handlePointerDown = (event: Event | PointerEvent) => {
+    if (this.app.view.getBoundingClientRect) {
+      const viewRect = this.app.view.getBoundingClientRect()
+      if ('clientX' in event && 'clientY' in event) {
+        this.changeTarget(new Point(event.clientX - viewRect.x, event.clientY - viewRect.y))
+      }
+    }
   }
 
   protected updateTargetPattern (): void {

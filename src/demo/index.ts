@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import * as grid from './grid'
+// import * as grid from './grid'
 import { BugDemo } from './bug-demo'
 import { Point } from '@adrianlafond/geom'
 
@@ -29,13 +29,7 @@ class DemoApp {
   }
 
   start (): void {
-    grid.render(this.app)
     const bugDemo = new BugDemo(this.app)
-
-    grid.onPointerDown((event: PIXI.FederatedPointerEvent): void => {
-      const viewRect = this.app.view.getBoundingClientRect()
-      bugDemo.changeTarget(new Point(event.clientX - viewRect.x, event.clientY - viewRect.y))
-    })
     bugDemo.render()
 
     this.app.ticker.add(() => {

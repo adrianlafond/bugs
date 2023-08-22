@@ -3369,10 +3369,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point11 = (
+      var Point10 = (
         /** @class */
         function() {
-          function Point12(x2, y2) {
+          function Point11(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -3382,39 +3382,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point12.prototype, "data", {
+          Object.defineProperty(Point11.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point12.prototype.clone = function() {
-            return new Point12(this.x, this.y);
+          Point11.prototype.clone = function() {
+            return new Point11(this.x, this.y);
           };
-          Point12.prototype.add = function(point) {
+          Point11.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point12.prototype.subtract = function(point) {
+          Point11.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point12.prototype.toString = function() {
+          Point11.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point12.distance = function(p1, p2) {
+          Point11.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point12.radians = function(p1, p2) {
+          Point11.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point12;
+          return Point11;
         }()
       );
-      exports.default = Point11;
+      exports.default = Point10;
     }
   });
 
@@ -26645,17 +26645,60 @@ ${e2}`);
     };
   };
 
-  // src/demo/bug-demo.ts
-  var BugDemo = class {
+  // src/demo/base-demo.ts
+  var BaseDemo = class {
     constructor(app) {
       this.app = app;
+      this.pattern = this.updatePattern();
+    }
+    changeTarget(_point) {
+    }
+    updateTargetPattern() {
+      if (this.pattern === "random") {
+        const { point, complete } = calculateRandomPattern(this.app.view.width, this.app.view.height);
+        this.changeTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "vertical") {
+        const { point, complete } = calculateVerticalPattern(this.app.view.width, this.app.view.height);
+        this.changeTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "horizontal") {
+        const { point, complete } = calculateHorizontalPattern(this.app.view.width, this.app.view.height);
+        this.changeTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      } else if (this.pattern === "spiral") {
+        const { point, complete } = calculateSpiralPattern(Math.min(this.app.view.width, this.app.view.height) * 0.5);
+        point.x += this.app.view.width / 2;
+        point.y += this.app.view.height / 2;
+        this.changeTarget(point);
+        if (complete) {
+          this.updatePattern();
+        }
+      }
+    }
+    updatePattern() {
+      const index = Math.floor(Math.random() * 4);
+      const patterns = ["random", "horizontal", "vertical", "spiral"];
+      return this.pattern = patterns[index];
+    }
+  };
+
+  // src/demo/bug-demo.ts
+  var BugDemo = class extends BaseDemo {
+    constructor(app) {
+      super(app);
       this.targetGfx = new Graphics();
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
       this.handleTargetReached = () => {
-        this.updateTarget();
+        this.updateTargetPattern();
       };
-      this.pattern = this.updatePattern();
       this.bug = new Bug({
         segments: [{
           position: new import_geom8.Point(),
@@ -26736,10 +26779,17 @@ ${e2}`);
         millisecondsPerStep: 100,
         timingFunction: "easeOutSine"
       });
+      render(this.app);
+      onPointerDown((event) => {
+        if (this.app.view.getBoundingClientRect) {
+          const viewRect = this.app.view.getBoundingClientRect();
+          this.changeTarget(new import_geom8.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+        }
+      });
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
-      this.updateTarget();
+      this.updateTargetPattern();
     }
     render(deltaMs = 0) {
       const bug = this.bug.tick({
@@ -26758,6 +26808,9 @@ ${e2}`);
     }
     changeTarget(point) {
       this.bug.updateTarget(point);
+    }
+    destroy() {
+      this.clearGfx();
     }
     clearGfx() {
       this.targetGfx.clear();
@@ -26819,44 +26872,9 @@ ${e2}`);
       gfx.drawCircle(claw.x, claw.y, isActive ? 2 : 1);
       gfx.endFill();
     }
-    updateTarget() {
-      if (this.pattern === "random") {
-        const { point, complete } = calculateRandomPattern(this.app.view.width, this.app.view.height);
-        this.bug.updateTarget(point);
-        if (complete) {
-          this.updatePattern();
-        }
-      } else if (this.pattern === "vertical") {
-        const { point, complete } = calculateVerticalPattern(this.app.view.width, this.app.view.height);
-        this.bug.updateTarget(point);
-        if (complete) {
-          this.updatePattern();
-        }
-      } else if (this.pattern === "horizontal") {
-        const { point, complete } = calculateHorizontalPattern(this.app.view.width, this.app.view.height);
-        this.bug.updateTarget(point);
-        if (complete) {
-          this.updatePattern();
-        }
-      } else if (this.pattern === "spiral") {
-        const { point, complete } = calculateSpiralPattern(Math.min(this.app.view.width, this.app.view.height) * 0.5);
-        point.x += this.app.view.width / 2;
-        point.y += this.app.view.height / 2;
-        this.bug.updateTarget(point);
-        if (complete) {
-          this.updatePattern();
-        }
-      }
-    }
-    updatePattern() {
-      const index = Math.floor(Math.random() * 4);
-      const patterns = ["random", "horizontal", "vertical", "spiral"];
-      return this.pattern = patterns[index];
-    }
   };
 
   // src/demo/index.ts
-  var import_geom9 = __toESM(require_dist());
   var instance2;
   var DemoApp = class {
     constructor(containerElement) {
@@ -26874,12 +26892,7 @@ ${e2}`);
       this.containerElement.replaceChildren(this.app.view);
     }
     start() {
-      render(this.app);
       const bugDemo = new BugDemo(this.app);
-      onPointerDown((event) => {
-        const viewRect = this.app.view.getBoundingClientRect();
-        bugDemo.changeTarget(new import_geom9.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
-      });
       bugDemo.render();
       this.app.ticker.add(() => {
         bugDemo.render(this.app.ticker.deltaMS);

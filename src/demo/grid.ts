@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 
 let instance: Grid
 
-const LINE_COLOR = 0x112233
+const LINE_COLOR = 0x113355
 
 class Grid {
   pointerDownHandler: (event: PIXI.FederatedPointerEvent) => void = () => undefined

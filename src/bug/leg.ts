@@ -1,13 +1,12 @@
 import { Point, Vector } from '@adrianlafond/geom'
 
-export interface Joint {
+interface Joint {
   model: Point
   live: Vector
 }
 
 export class Leg {
   private joints: Joint[] = []
-  private moving = false
 
   constructor (model: Point[], live?: Vector[]) {
     model.forEach((point, index) => {
@@ -22,44 +21,29 @@ export class Leg {
     return 0
   }
 
-  get jointIndex (): number {
-    return this.joints.length > 2 ? 1 : -1
-  }
-
   get clawIndex (): number {
     return this.joints.length - 1
   }
 
-  getModel (index: number): Point {
-    return this.joints[index].model
+  updateLiveJoint (index: number, vector: Vector): void {
+    this.joints[index].live.x = vector.x
+    this.joints[index].live.y = vector.y
+    this.joints[index].live.radians = vector.radians
   }
 
-  updateLive (index: number, vector: Vector): void {
-    this.getLive(index).x = vector.x
-    this.getLive(index).y = vector.y
-    this.getLive(index).radians = vector.radians
+  getModelJoint (index: number): Point {
+    return this.joints[index].model.clone()
   }
 
-  getLive (index: number): Vector {
-    return this.joints[index].live
+  getLiveJoint (index: number): Vector {
+    return this.joints[index].live.clone()
   }
 
-  startMoving (): void {
-    this.moving = true
+  getAllModelJoints (): Point[] {
+    return this.joints.map(joint => joint.model.clone())
   }
 
-  stopMoving (): void {
-    this.moving = false
-  }
-
-  isMoving (): boolean {
-    return this.moving
-  }
-
-  clone (): Leg {
-    return new Leg(
-      this.joints.map(joint => joint.model.clone()),
-      this.joints.map(joint => joint.live.clone())
-    )
+  getAllLiveJoints (): Vector[] {
+    return this.joints.map(joint => joint.live.clone())
   }
 }

@@ -10,20 +10,27 @@
       height: 100%;
     }
     body {
-      background-color: whitesmoke;
+      background-color: black;
     }
-    #canvas {
+    main {
       display: flex;
       height: 100%;
       justify-content: center;
     }
-    #canvas > * {
+    #canvas {
+      border-radius: 16px;
+      overflow: hidden;
       align-self: center;
+      width: 360px;
+      height: 360px;
     }
   </style>
 </head>
 <body>
-  <main id="canvas" />
+  <main>
+    <div id="canvas" />
+  </main>
+
   <script src="dist/bugs.js"></script>
 </body>
 </html>

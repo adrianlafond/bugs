@@ -5,15 +5,13 @@ import { Point } from '@adrianlafond/geom'
 
 let instance: DemoApp
 
-export type DemoType = 'bug' | 'leg'
-
 class DemoApp {
   private readonly containerElement: HTMLElement
   private readonly app: PIXI.Application<HTMLCanvasElement>
   private playing = false
 
   constructor (containerElement?: HTMLElement) {
-    const defaultContainer: HTMLElement | null = document.querySelector('main#canvas')
+    const defaultContainer: HTMLElement | null = document.querySelector('#canvas')
     this.containerElement = containerElement != null
       ? containerElement
       : (defaultContainer != null) ? defaultContainer : document.createElement('main')

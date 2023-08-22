@@ -26246,6 +26246,9 @@ ${e2}`);
   // src/bug/segment.ts
   var Segment = class {
     constructor(bugStartingPosition, options) {
+      this.offsetPosition = options.position;
+      this.maxDistance = import_geom2.Point.distance(new import_geom2.Point(), this.offsetPosition);
+      this.stepTarget = new import_geom2.Point();
       this.position = this.calculateStartingVector(bugStartingPosition, options.position);
       this.legs = this.createLegs(options.legs);
     }
@@ -26467,12 +26470,14 @@ ${e2}`);
       }
     }
     updateAllSegments(stageRect) {
+      let leadPosition;
       this.segments.forEach((segment, index) => {
         if (index === 0) {
           this.updateHead(segment, this.current.segments[index], stageRect);
         } else {
-          this.updateSegment(segment, this.current.segments[index], stageRect);
+          this.updateSegment(segment, this.current.segments[index], leadPosition, stageRect);
         }
+        leadPosition = segment.position;
       });
     }
     updateHead(segment, currentSegment, stageRect) {
@@ -26496,10 +26501,25 @@ ${e2}`);
       }
       this.updateLegsPerSegment(segment, currentSegment, stageRect);
     }
-    updateSegment(segment, currentSegment, stageRect) {
-      segment.position.x += 0.1;
-      segment.position.y += 0.1;
-      segment.position.radians += 0.01;
+    updateSegment(segment, currentSegment, leadPosition, stageRect) {
+      const offsetRadians = leadPosition.radians + Math.PI * 0.5;
+      const ideal = new import_geom3.Vector(
+        leadPosition.x + Math.cos(offsetRadians) * segment.maxDistance,
+        leadPosition.y + Math.sin(offsetRadians) * segment.maxDistance,
+        leadPosition.radians
+      );
+      const idealDistance = import_geom3.Point.distance(ideal.point, segment.position.point);
+      const dampedDistance = idealDistance * 0.02;
+      const dampedRadians = Math.atan2(ideal.y - segment.position.y, ideal.x - segment.position.x);
+      const dx = segment.position.x + Math.cos(dampedRadians) * dampedDistance;
+      const dy = segment.position.y + Math.sin(dampedRadians) * dampedDistance;
+      const leadRadians = Math.atan2(dy - leadPosition.y, dx - leadPosition.x);
+      segment.position.x = leadPosition.x + Math.cos(leadRadians) * segment.maxDistance;
+      segment.position.y = leadPosition.y + Math.sin(leadRadians) * segment.maxDistance;
+      segment.position.radians = Math.atan2(
+        leadPosition.y - segment.position.y,
+        leadPosition.x - segment.position.x
+      ) + Math.PI * 0.5;
       this.updateLegsPerSegment(segment, currentSegment, stageRect);
     }
     updateLegsPerSegment(segment, currentSegment, stageRect) {
@@ -26665,24 +26685,48 @@ ${e2}`);
           position: new import_geom8.Point(0, 20),
           legs: {
             left: [[
-              new import_geom8.Point(-9, 0),
-              new import_geom8.Point(-18, -15)
-            ], [
               new import_geom8.Point(-9, 2),
               new import_geom8.Point(-20, -2)
-            ], [
-              new import_geom8.Point(-9, 4),
-              new import_geom8.Point(-16, 8)
             ]],
             right: [[
-              new import_geom8.Point(9, 0),
-              new import_geom8.Point(18, -15)
-            ], [
               new import_geom8.Point(9, 2),
               new import_geom8.Point(20, -2)
-            ], [
-              new import_geom8.Point(9, 4),
-              new import_geom8.Point(16, 8)
+            ]]
+          }
+        }, {
+          position: new import_geom8.Point(0, 20),
+          legs: {
+            left: [[
+              new import_geom8.Point(-9, 2),
+              new import_geom8.Point(-20, -2)
+            ]],
+            right: [[
+              new import_geom8.Point(9, 2),
+              new import_geom8.Point(20, -2)
+            ]]
+          }
+        }, {
+          position: new import_geom8.Point(0, 20),
+          legs: {
+            left: [[
+              new import_geom8.Point(-9, 2),
+              new import_geom8.Point(-20, -2)
+            ]],
+            right: [[
+              new import_geom8.Point(9, 2),
+              new import_geom8.Point(20, -2)
+            ]]
+          }
+        }, {
+          position: new import_geom8.Point(0, 20),
+          legs: {
+            left: [[
+              new import_geom8.Point(-9, 2),
+              new import_geom8.Point(-20, -2)
+            ]],
+            right: [[
+              new import_geom8.Point(9, 2),
+              new import_geom8.Point(20, -2)
             ]]
           }
         }],
@@ -26730,11 +26774,11 @@ ${e2}`);
     }
     renderAllSegments(bug) {
       for (let i2 = bug.segments.length - 1; i2 >= 0; i2--) {
-        this.renderSegment(bug.segments[i2], bug.activeSide);
+        this.renderSegment(bug.segments[i2], bug.activeSide, i2);
       }
     }
-    renderSegment(segment, activeSide) {
-      const color = 14544639;
+    renderSegment(segment, activeSide, index) {
+      const color = index == 0 ? 14544639 : 16776960;
       const gfx = new Graphics();
       this.segmentsGfx.addChild(gfx);
       gfx.lineStyle({ width: 1, color });

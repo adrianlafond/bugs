@@ -16,10 +16,25 @@ export interface SegmentData {
 }
 
 export class Segment {
+  // (x,y) relative to a leading segment
+  offsetPosition: Point
+
+  // Distance from a leading segment
+  maxDistance: number
+
+  // (x,y) target of current step
+  stepTarget: Point
+
+  // Current position
   position: Vector
+
+  // Map of segment's legs.
   legs: Legs
 
   constructor(bugStartingPosition: Vector, options: BugOptionsSegment) {
+    this.offsetPosition = options.position
+    this.maxDistance = Point.distance(new Point(), this.offsetPosition)
+    this.stepTarget = new Point()
     this.position = this.calculateStartingVector(bugStartingPosition, options.position)
     this.legs = this.createLegs(options.legs)
   }

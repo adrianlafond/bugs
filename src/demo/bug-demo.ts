@@ -48,26 +48,50 @@ export class BugDemo {
         position: new Point(0, 20),
         legs: {
           left: [[
-            new Point(-9, 0),
-            new Point(-18, -15)
-          ], [
             new Point(-9, 2),
             new Point(-20, -2)
-          ], [
-            new Point(-9, 4),
-            new Point(-16, 8)
           ]],
           right: [[
-            new Point(9, 0),
-            new Point(18, -15)
-          ], [
             new Point(9, 2),
             new Point(20, -2)
-          ], [
-            new Point(9, 4),
-            new Point(16, 8)
           ]]
         },
+      }, {
+        position: new Point(0, 20),
+        legs: {
+          left: [[
+            new Point(-9, 2),
+            new Point(-20, -2)
+          ]],
+          right: [[
+            new Point(9, 2),
+            new Point(20, -2)
+          ]]
+        }
+      }, {
+        position: new Point(0, 20),
+        legs: {
+          left: [[
+            new Point(-9, 2),
+            new Point(-20, -2)
+          ]],
+          right: [[
+            new Point(9, 2),
+            new Point(20, -2)
+          ]]
+        }
+      }, {
+        position: new Point(0, 20),
+        legs: {
+          left: [[
+            new Point(-9, 2),
+            new Point(-20, -2)
+          ]],
+          right: [[
+            new Point(9, 2),
+            new Point(20, -2)
+          ]]
+        }
       }],
       maxDistractionPx: 0,
       maxJigglePx: 0,
@@ -122,12 +146,12 @@ export class BugDemo {
 
   private renderAllSegments (bug: BugRender): void {
     for (let i = bug.segments.length - 1; i >= 0; i--) {
-      this.renderSegment(bug.segments[i], bug.activeSide)
+      this.renderSegment(bug.segments[i], bug.activeSide, i)
     }
   }
 
-  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
-    const color = 0xddeeff
+  private renderSegment (segment: SegmentData,  activeSide: BugSide, index: number): void {
+    const color = index == 0 ? 0xddeeff : 0xffff00
 
     const gfx = new PIXI.Graphics()
     this.segmentsGfx.addChild(gfx)

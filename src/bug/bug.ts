@@ -277,7 +277,6 @@ export class Bug {
   private createSegments(positionOption?: BugOptions['position'], segmentOptions?: BugOptions['segments']): Segment[] {
     const position = positionOption ?? new Vector()
     const segments = segmentOptions || defaults.segments
-
     return segments.map(segment => new Segment(position, segment))
   }
 
@@ -364,12 +363,14 @@ export class Bug {
   }
 
   private updateAllSegments (stageRect?: StageRect): void {
+    let leadPosition: Vector
     this.segments.forEach((segment, index) => {
       if (index === 0) {
         this.updateHead(segment, this.current.segments[index], stageRect)
       } else {
-        this.updateSegment(segment, this.current.segments[index], stageRect)
+        this.updateSegment(segment, this.current.segments[index], leadPosition, stageRect)
       }
+      leadPosition = segment.position
     })
   }
 
@@ -402,10 +403,30 @@ export class Bug {
     this.updateLegsPerSegment(segment, currentSegment, stageRect)
   }
 
-  private updateSegment (segment: Segment, currentSegment: SegmentData, stageRect?: StageRect): void {
-    segment.position.x += 0.1
-    segment.position.y += 0.1
-    segment.position.radians += 0.01
+  private updateSegment (segment: Segment, currentSegment: SegmentData, leadPosition: Vector, stageRect?: StageRect): void {
+    // 1 calculate ideal x, y, radians
+    const offsetRadians = leadPosition.radians + Math.PI * 0.5
+    const ideal: Vector = new Vector(
+      leadPosition.x + Math.cos(offsetRadians) * segment.maxDistance,
+      leadPosition.y + Math.sin(offsetRadians) * segment.maxDistance,
+      leadPosition.radians,
+    )
+
+    // 2 calculate max progress within ideal path
+    const idealDistance = Point.distance(ideal.point, segment.position.point)
+    const dampedDistance = idealDistance * 0.02
+    const dampedRadians = Math.atan2(ideal.y - segment.position.y, ideal.x - segment.position.x)
+    const dx = segment.position.x + Math.cos(dampedRadians) * dampedDistance
+    const dy = segment.position.y + Math.sin(dampedRadians) * dampedDistance
+
+    const leadRadians = Math.atan2(dy - leadPosition.y, dx - leadPosition.x)
+    segment.position.x = leadPosition.x + Math.cos(leadRadians) * segment.maxDistance
+    segment.position.y = leadPosition.y + Math.sin(leadRadians) * segment.maxDistance
+
+    segment.position.radians = Math.atan2(
+      leadPosition.y - segment.position.y,
+      leadPosition.x - segment.position.x) + Math.PI * 0.5
+
     this.updateLegsPerSegment(segment, currentSegment, stageRect)
   }
 

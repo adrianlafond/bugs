@@ -2328,7 +2328,7 @@
       };
       var toISO = Date.prototype.toISOString;
       var defaultFormat = formats2["default"];
-      var defaults2 = {
+      var defaults = {
         addQueryPrefix: false,
         allowDots: false,
         charset: "utf-8",
@@ -2384,14 +2384,14 @@
         }
         if (obj === null) {
           if (strictNullHandling) {
-            return encoder && !encodeValuesOnly ? encoder(prefix, defaults2.encoder, charset, "key", format2) : prefix;
+            return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, "key", format2) : prefix;
           }
           obj = "";
         }
         if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
           if (encoder) {
-            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults2.encoder, charset, "key", format2);
-            return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults2.encoder, charset, "value", format2))];
+            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, "key", format2);
+            return [formatter(keyValue) + "=" + formatter(encoder(obj, defaults.encoder, charset, "value", format2))];
           }
           return [formatter(prefix) + "=" + formatter(String(obj))];
         }
@@ -2445,12 +2445,12 @@
       };
       var normalizeStringifyOptions = function normalizeStringifyOptions2(opts) {
         if (!opts) {
-          return defaults2;
+          return defaults;
         }
         if (opts.encoder !== null && typeof opts.encoder !== "undefined" && typeof opts.encoder !== "function") {
           throw new TypeError("Encoder has to be a function.");
         }
-        var charset = opts.charset || defaults2.charset;
+        var charset = opts.charset || defaults.charset;
         if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
           throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
         }
@@ -2462,26 +2462,26 @@
           format2 = opts.format;
         }
         var formatter = formats2.formatters[format2];
-        var filter = defaults2.filter;
+        var filter = defaults.filter;
         if (typeof opts.filter === "function" || isArray(opts.filter)) {
           filter = opts.filter;
         }
         return {
-          addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults2.addQueryPrefix,
-          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
+          addQueryPrefix: typeof opts.addQueryPrefix === "boolean" ? opts.addQueryPrefix : defaults.addQueryPrefix,
+          allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
           charset,
-          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
-          delimiter: typeof opts.delimiter === "undefined" ? defaults2.delimiter : opts.delimiter,
-          encode: typeof opts.encode === "boolean" ? opts.encode : defaults2.encode,
-          encoder: typeof opts.encoder === "function" ? opts.encoder : defaults2.encoder,
-          encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults2.encodeValuesOnly,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
+          delimiter: typeof opts.delimiter === "undefined" ? defaults.delimiter : opts.delimiter,
+          encode: typeof opts.encode === "boolean" ? opts.encode : defaults.encode,
+          encoder: typeof opts.encoder === "function" ? opts.encoder : defaults.encoder,
+          encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
           filter,
           format: format2,
           formatter,
-          serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults2.serializeDate,
-          skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults2.skipNulls,
+          serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults.serializeDate,
+          skipNulls: typeof opts.skipNulls === "boolean" ? opts.skipNulls : defaults.skipNulls,
           sort: typeof opts.sort === "function" ? opts.sort : null,
-          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling
         };
       };
       module.exports = function(object, opts) {
@@ -2565,7 +2565,7 @@
       var utils = require_utils();
       var has = Object.prototype.hasOwnProperty;
       var isArray = Array.isArray;
-      var defaults2 = {
+      var defaults = {
         allowDots: false,
         allowPrototypes: false,
         allowSparse: false,
@@ -2626,14 +2626,14 @@
           var pos = bracketEqualsPos === -1 ? part.indexOf("=") : bracketEqualsPos + 1;
           var key, val;
           if (pos === -1) {
-            key = options.decoder(part, defaults2.decoder, charset, "key");
+            key = options.decoder(part, defaults.decoder, charset, "key");
             val = options.strictNullHandling ? null : "";
           } else {
-            key = options.decoder(part.slice(0, pos), defaults2.decoder, charset, "key");
+            key = options.decoder(part.slice(0, pos), defaults.decoder, charset, "key");
             val = utils.maybeMap(
               parseArrayValue(part.slice(pos + 1), options),
               function(encodedVal) {
-                return options.decoder(encodedVal, defaults2.decoder, charset, "value");
+                return options.decoder(encodedVal, defaults.decoder, charset, "value");
               }
             );
           }
@@ -2710,7 +2710,7 @@
       };
       var normalizeParseOptions = function normalizeParseOptions2(opts) {
         if (!opts) {
-          return defaults2;
+          return defaults;
         }
         if (opts.decoder !== null && opts.decoder !== void 0 && typeof opts.decoder !== "function") {
           throw new TypeError("Decoder has to be a function.");
@@ -2718,25 +2718,25 @@
         if (typeof opts.charset !== "undefined" && opts.charset !== "utf-8" && opts.charset !== "iso-8859-1") {
           throw new TypeError("The charset option must be either utf-8, iso-8859-1, or undefined");
         }
-        var charset = typeof opts.charset === "undefined" ? defaults2.charset : opts.charset;
+        var charset = typeof opts.charset === "undefined" ? defaults.charset : opts.charset;
         return {
-          allowDots: typeof opts.allowDots === "undefined" ? defaults2.allowDots : !!opts.allowDots,
-          allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults2.allowPrototypes,
-          allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults2.allowSparse,
-          arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults2.arrayLimit,
+          allowDots: typeof opts.allowDots === "undefined" ? defaults.allowDots : !!opts.allowDots,
+          allowPrototypes: typeof opts.allowPrototypes === "boolean" ? opts.allowPrototypes : defaults.allowPrototypes,
+          allowSparse: typeof opts.allowSparse === "boolean" ? opts.allowSparse : defaults.allowSparse,
+          arrayLimit: typeof opts.arrayLimit === "number" ? opts.arrayLimit : defaults.arrayLimit,
           charset,
-          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults2.charsetSentinel,
-          comma: typeof opts.comma === "boolean" ? opts.comma : defaults2.comma,
-          decoder: typeof opts.decoder === "function" ? opts.decoder : defaults2.decoder,
-          delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults2.delimiter,
+          charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
+          comma: typeof opts.comma === "boolean" ? opts.comma : defaults.comma,
+          decoder: typeof opts.decoder === "function" ? opts.decoder : defaults.decoder,
+          delimiter: typeof opts.delimiter === "string" || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
           // eslint-disable-next-line no-implicit-coercion, no-extra-parens
-          depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults2.depth,
+          depth: typeof opts.depth === "number" || opts.depth === false ? +opts.depth : defaults.depth,
           ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
-          interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults2.interpretNumericEntities,
-          parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults2.parameterLimit,
+          interpretNumericEntities: typeof opts.interpretNumericEntities === "boolean" ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
+          parameterLimit: typeof opts.parameterLimit === "number" ? opts.parameterLimit : defaults.parameterLimit,
           parseArrays: opts.parseArrays !== false,
-          plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults2.plainObjects,
-          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults2.strictNullHandling
+          plainObjects: typeof opts.plainObjects === "boolean" ? opts.plainObjects : defaults.plainObjects,
+          strictNullHandling: typeof opts.strictNullHandling === "boolean" ? opts.strictNullHandling : defaults.strictNullHandling
         };
       };
       module.exports = function(str, opts) {
@@ -3321,6 +3321,716 @@
     }
   });
 
+  // node_modules/page/page.js
+  var require_page = __commonJS({
+    "node_modules/page/page.js"(exports, module) {
+      (function(global2, factory) {
+        typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : global2.page = factory();
+      })(exports, function() {
+        "use strict";
+        var isarray = Array.isArray || function(arr) {
+          return Object.prototype.toString.call(arr) == "[object Array]";
+        };
+        var pathToRegexp_1 = pathToRegexp;
+        var parse_1 = parse2;
+        var compile_1 = compile;
+        var tokensToFunction_1 = tokensToFunction;
+        var tokensToRegExp_1 = tokensToRegExp;
+        var PATH_REGEXP = new RegExp([
+          // Match escaped characters that would otherwise appear in future matches.
+          // This allows the user to escape special characters that won't transform.
+          "(\\\\.)",
+          // Match Express-style parameters and un-named parameters with a prefix
+          // and optional suffixes. Matches appear as:
+          //
+          // "/:test(\\d+)?" => ["/", "test", "\d+", undefined, "?", undefined]
+          // "/route(\\d+)"  => [undefined, undefined, undefined, "\d+", undefined, undefined]
+          // "/*"            => ["/", undefined, undefined, undefined, undefined, "*"]
+          "([\\/.])?(?:(?:\\:(\\w+)(?:\\(((?:\\\\.|[^()])+)\\))?|\\(((?:\\\\.|[^()])+)\\))([+*?])?|(\\*))"
+        ].join("|"), "g");
+        function parse2(str) {
+          var tokens = [];
+          var key = 0;
+          var index = 0;
+          var path2 = "";
+          var res;
+          while ((res = PATH_REGEXP.exec(str)) != null) {
+            var m2 = res[0];
+            var escaped = res[1];
+            var offset4 = res.index;
+            path2 += str.slice(index, offset4);
+            index = offset4 + m2.length;
+            if (escaped) {
+              path2 += escaped[1];
+              continue;
+            }
+            if (path2) {
+              tokens.push(path2);
+              path2 = "";
+            }
+            var prefix = res[2];
+            var name = res[3];
+            var capture = res[4];
+            var group = res[5];
+            var suffix = res[6];
+            var asterisk = res[7];
+            var repeat = suffix === "+" || suffix === "*";
+            var optional = suffix === "?" || suffix === "*";
+            var delimiter = prefix || "/";
+            var pattern = capture || group || (asterisk ? ".*" : "[^" + delimiter + "]+?");
+            tokens.push({
+              name: name || key++,
+              prefix: prefix || "",
+              delimiter,
+              optional,
+              repeat,
+              pattern: escapeGroup(pattern)
+            });
+          }
+          if (index < str.length) {
+            path2 += str.substr(index);
+          }
+          if (path2) {
+            tokens.push(path2);
+          }
+          return tokens;
+        }
+        function compile(str) {
+          return tokensToFunction(parse2(str));
+        }
+        function tokensToFunction(tokens) {
+          var matches = new Array(tokens.length);
+          for (var i2 = 0; i2 < tokens.length; i2++) {
+            if (typeof tokens[i2] === "object") {
+              matches[i2] = new RegExp("^" + tokens[i2].pattern + "$");
+            }
+          }
+          return function(obj) {
+            var path2 = "";
+            var data = obj || {};
+            for (var i3 = 0; i3 < tokens.length; i3++) {
+              var token = tokens[i3];
+              if (typeof token === "string") {
+                path2 += token;
+                continue;
+              }
+              var value = data[token.name];
+              var segment;
+              if (value == null) {
+                if (token.optional) {
+                  continue;
+                } else {
+                  throw new TypeError('Expected "' + token.name + '" to be defined');
+                }
+              }
+              if (isarray(value)) {
+                if (!token.repeat) {
+                  throw new TypeError('Expected "' + token.name + '" to not repeat, but received "' + value + '"');
+                }
+                if (value.length === 0) {
+                  if (token.optional) {
+                    continue;
+                  } else {
+                    throw new TypeError('Expected "' + token.name + '" to not be empty');
+                  }
+                }
+                for (var j2 = 0; j2 < value.length; j2++) {
+                  segment = encodeURIComponent(value[j2]);
+                  if (!matches[i3].test(segment)) {
+                    throw new TypeError('Expected all "' + token.name + '" to match "' + token.pattern + '", but received "' + segment + '"');
+                  }
+                  path2 += (j2 === 0 ? token.prefix : token.delimiter) + segment;
+                }
+                continue;
+              }
+              segment = encodeURIComponent(value);
+              if (!matches[i3].test(segment)) {
+                throw new TypeError('Expected "' + token.name + '" to match "' + token.pattern + '", but received "' + segment + '"');
+              }
+              path2 += token.prefix + segment;
+            }
+            return path2;
+          };
+        }
+        function escapeString(str) {
+          return str.replace(/([.+*?=^!:${}()[\]|\/])/g, "\\$1");
+        }
+        function escapeGroup(group) {
+          return group.replace(/([=!:$\/()])/g, "\\$1");
+        }
+        function attachKeys(re, keys) {
+          re.keys = keys;
+          return re;
+        }
+        function flags(options) {
+          return options.sensitive ? "" : "i";
+        }
+        function regexpToRegexp(path2, keys) {
+          var groups = path2.source.match(/\((?!\?)/g);
+          if (groups) {
+            for (var i2 = 0; i2 < groups.length; i2++) {
+              keys.push({
+                name: i2,
+                prefix: null,
+                delimiter: null,
+                optional: false,
+                repeat: false,
+                pattern: null
+              });
+            }
+          }
+          return attachKeys(path2, keys);
+        }
+        function arrayToRegexp(path2, keys, options) {
+          var parts = [];
+          for (var i2 = 0; i2 < path2.length; i2++) {
+            parts.push(pathToRegexp(path2[i2], keys, options).source);
+          }
+          var regexp = new RegExp("(?:" + parts.join("|") + ")", flags(options));
+          return attachKeys(regexp, keys);
+        }
+        function stringToRegexp(path2, keys, options) {
+          var tokens = parse2(path2);
+          var re = tokensToRegExp(tokens, options);
+          for (var i2 = 0; i2 < tokens.length; i2++) {
+            if (typeof tokens[i2] !== "string") {
+              keys.push(tokens[i2]);
+            }
+          }
+          return attachKeys(re, keys);
+        }
+        function tokensToRegExp(tokens, options) {
+          options = options || {};
+          var strict = options.strict;
+          var end = options.end !== false;
+          var route = "";
+          var lastToken = tokens[tokens.length - 1];
+          var endsWithSlash = typeof lastToken === "string" && /\/$/.test(lastToken);
+          for (var i2 = 0; i2 < tokens.length; i2++) {
+            var token = tokens[i2];
+            if (typeof token === "string") {
+              route += escapeString(token);
+            } else {
+              var prefix = escapeString(token.prefix);
+              var capture = token.pattern;
+              if (token.repeat) {
+                capture += "(?:" + prefix + capture + ")*";
+              }
+              if (token.optional) {
+                if (prefix) {
+                  capture = "(?:" + prefix + "(" + capture + "))?";
+                } else {
+                  capture = "(" + capture + ")?";
+                }
+              } else {
+                capture = prefix + "(" + capture + ")";
+              }
+              route += capture;
+            }
+          }
+          if (!strict) {
+            route = (endsWithSlash ? route.slice(0, -2) : route) + "(?:\\/(?=$))?";
+          }
+          if (end) {
+            route += "$";
+          } else {
+            route += strict && endsWithSlash ? "" : "(?=\\/|$)";
+          }
+          return new RegExp("^" + route, flags(options));
+        }
+        function pathToRegexp(path2, keys, options) {
+          keys = keys || [];
+          if (!isarray(keys)) {
+            options = keys;
+            keys = [];
+          } else if (!options) {
+            options = {};
+          }
+          if (path2 instanceof RegExp) {
+            return regexpToRegexp(path2, keys, options);
+          }
+          if (isarray(path2)) {
+            return arrayToRegexp(path2, keys, options);
+          }
+          return stringToRegexp(path2, keys, options);
+        }
+        pathToRegexp_1.parse = parse_1;
+        pathToRegexp_1.compile = compile_1;
+        pathToRegexp_1.tokensToFunction = tokensToFunction_1;
+        pathToRegexp_1.tokensToRegExp = tokensToRegExp_1;
+        var hasDocument = "undefined" !== typeof document;
+        var hasWindow = "undefined" !== typeof window;
+        var hasHistory = "undefined" !== typeof history;
+        var hasProcess = typeof process !== "undefined";
+        var clickEvent = hasDocument && document.ontouchstart ? "touchstart" : "click";
+        var isLocation = hasWindow && !!(window.history.location || window.location);
+        function Page() {
+          this.callbacks = [];
+          this.exits = [];
+          this.current = "";
+          this.len = 0;
+          this._decodeURLComponents = true;
+          this._base = "";
+          this._strict = false;
+          this._running = false;
+          this._hashbang = false;
+          this.clickHandler = this.clickHandler.bind(this);
+          this._onpopstate = this._onpopstate.bind(this);
+        }
+        Page.prototype.configure = function(options) {
+          var opts = options || {};
+          this._window = opts.window || hasWindow && window;
+          this._decodeURLComponents = opts.decodeURLComponents !== false;
+          this._popstate = opts.popstate !== false && hasWindow;
+          this._click = opts.click !== false && hasDocument;
+          this._hashbang = !!opts.hashbang;
+          var _window = this._window;
+          if (this._popstate) {
+            _window.addEventListener("popstate", this._onpopstate, false);
+          } else if (hasWindow) {
+            _window.removeEventListener("popstate", this._onpopstate, false);
+          }
+          if (this._click) {
+            _window.document.addEventListener(clickEvent, this.clickHandler, false);
+          } else if (hasDocument) {
+            _window.document.removeEventListener(clickEvent, this.clickHandler, false);
+          }
+          if (this._hashbang && hasWindow && !hasHistory) {
+            _window.addEventListener("hashchange", this._onpopstate, false);
+          } else if (hasWindow) {
+            _window.removeEventListener("hashchange", this._onpopstate, false);
+          }
+        };
+        Page.prototype.base = function(path2) {
+          if (0 === arguments.length)
+            return this._base;
+          this._base = path2;
+        };
+        Page.prototype._getBase = function() {
+          var base = this._base;
+          if (!!base)
+            return base;
+          var loc = hasWindow && this._window && this._window.location;
+          if (hasWindow && this._hashbang && loc && loc.protocol === "file:") {
+            base = loc.pathname;
+          }
+          return base;
+        };
+        Page.prototype.strict = function(enable) {
+          if (0 === arguments.length)
+            return this._strict;
+          this._strict = enable;
+        };
+        Page.prototype.start = function(options) {
+          var opts = options || {};
+          this.configure(opts);
+          if (false === opts.dispatch)
+            return;
+          this._running = true;
+          var url2;
+          if (isLocation) {
+            var window2 = this._window;
+            var loc = window2.location;
+            if (this._hashbang && ~loc.hash.indexOf("#!")) {
+              url2 = loc.hash.substr(2) + loc.search;
+            } else if (this._hashbang) {
+              url2 = loc.search + loc.hash;
+            } else {
+              url2 = loc.pathname + loc.search + loc.hash;
+            }
+          }
+          this.replace(url2, null, true, opts.dispatch);
+        };
+        Page.prototype.stop = function() {
+          if (!this._running)
+            return;
+          this.current = "";
+          this.len = 0;
+          this._running = false;
+          var window2 = this._window;
+          this._click && window2.document.removeEventListener(clickEvent, this.clickHandler, false);
+          hasWindow && window2.removeEventListener("popstate", this._onpopstate, false);
+          hasWindow && window2.removeEventListener("hashchange", this._onpopstate, false);
+        };
+        Page.prototype.show = function(path2, state, dispatch, push) {
+          var ctx = new Context(path2, state, this), prev = this.prevContext;
+          this.prevContext = ctx;
+          this.current = ctx.path;
+          if (false !== dispatch)
+            this.dispatch(ctx, prev);
+          if (false !== ctx.handled && false !== push)
+            ctx.pushState();
+          return ctx;
+        };
+        Page.prototype.back = function(path2, state) {
+          var page3 = this;
+          if (this.len > 0) {
+            var window2 = this._window;
+            hasHistory && window2.history.back();
+            this.len--;
+          } else if (path2) {
+            setTimeout(function() {
+              page3.show(path2, state);
+            });
+          } else {
+            setTimeout(function() {
+              page3.show(page3._getBase(), state);
+            });
+          }
+        };
+        Page.prototype.redirect = function(from, to) {
+          var inst = this;
+          if ("string" === typeof from && "string" === typeof to) {
+            page2.call(this, from, function(e2) {
+              setTimeout(function() {
+                inst.replace(
+                  /** @type {!string} */
+                  to
+                );
+              }, 0);
+            });
+          }
+          if ("string" === typeof from && "undefined" === typeof to) {
+            setTimeout(function() {
+              inst.replace(from);
+            }, 0);
+          }
+        };
+        Page.prototype.replace = function(path2, state, init2, dispatch) {
+          var ctx = new Context(path2, state, this), prev = this.prevContext;
+          this.prevContext = ctx;
+          this.current = ctx.path;
+          ctx.init = init2;
+          ctx.save();
+          if (false !== dispatch)
+            this.dispatch(ctx, prev);
+          return ctx;
+        };
+        Page.prototype.dispatch = function(ctx, prev) {
+          var i2 = 0, j2 = 0, page3 = this;
+          function nextExit() {
+            var fn = page3.exits[j2++];
+            if (!fn)
+              return nextEnter();
+            fn(prev, nextExit);
+          }
+          function nextEnter() {
+            var fn = page3.callbacks[i2++];
+            if (ctx.path !== page3.current) {
+              ctx.handled = false;
+              return;
+            }
+            if (!fn)
+              return unhandled.call(page3, ctx);
+            fn(ctx, nextEnter);
+          }
+          if (prev) {
+            nextExit();
+          } else {
+            nextEnter();
+          }
+        };
+        Page.prototype.exit = function(path2, fn) {
+          if (typeof path2 === "function") {
+            return this.exit("*", path2);
+          }
+          var route = new Route(path2, null, this);
+          for (var i2 = 1; i2 < arguments.length; ++i2) {
+            this.exits.push(route.middleware(arguments[i2]));
+          }
+        };
+        Page.prototype.clickHandler = function(e2) {
+          if (1 !== this._which(e2))
+            return;
+          if (e2.metaKey || e2.ctrlKey || e2.shiftKey)
+            return;
+          if (e2.defaultPrevented)
+            return;
+          var el = e2.target;
+          var eventPath = e2.path || (e2.composedPath ? e2.composedPath() : null);
+          if (eventPath) {
+            for (var i2 = 0; i2 < eventPath.length; i2++) {
+              if (!eventPath[i2].nodeName)
+                continue;
+              if (eventPath[i2].nodeName.toUpperCase() !== "A")
+                continue;
+              if (!eventPath[i2].href)
+                continue;
+              el = eventPath[i2];
+              break;
+            }
+          }
+          while (el && "A" !== el.nodeName.toUpperCase())
+            el = el.parentNode;
+          if (!el || "A" !== el.nodeName.toUpperCase())
+            return;
+          var svg = typeof el.href === "object" && el.href.constructor.name === "SVGAnimatedString";
+          if (el.hasAttribute("download") || el.getAttribute("rel") === "external")
+            return;
+          var link = el.getAttribute("href");
+          if (!this._hashbang && this._samePath(el) && (el.hash || "#" === link))
+            return;
+          if (link && link.indexOf("mailto:") > -1)
+            return;
+          if (svg ? el.target.baseVal : el.target)
+            return;
+          if (!svg && !this.sameOrigin(el.href))
+            return;
+          var path2 = svg ? el.href.baseVal : el.pathname + el.search + (el.hash || "");
+          path2 = path2[0] !== "/" ? "/" + path2 : path2;
+          if (hasProcess && path2.match(/^\/[a-zA-Z]:\//)) {
+            path2 = path2.replace(/^\/[a-zA-Z]:\//, "/");
+          }
+          var orig = path2;
+          var pageBase = this._getBase();
+          if (path2.indexOf(pageBase) === 0) {
+            path2 = path2.substr(pageBase.length);
+          }
+          if (this._hashbang)
+            path2 = path2.replace("#!", "");
+          if (pageBase && orig === path2 && (!isLocation || this._window.location.protocol !== "file:")) {
+            return;
+          }
+          e2.preventDefault();
+          this.show(orig);
+        };
+        Page.prototype._onpopstate = function() {
+          var loaded = false;
+          if (!hasWindow) {
+            return function() {
+            };
+          }
+          if (hasDocument && document.readyState === "complete") {
+            loaded = true;
+          } else {
+            window.addEventListener("load", function() {
+              setTimeout(function() {
+                loaded = true;
+              }, 0);
+            });
+          }
+          return function onpopstate(e2) {
+            if (!loaded)
+              return;
+            var page3 = this;
+            if (e2.state) {
+              var path2 = e2.state.path;
+              page3.replace(path2, e2.state);
+            } else if (isLocation) {
+              var loc = page3._window.location;
+              page3.show(loc.pathname + loc.search + loc.hash, void 0, void 0, false);
+            }
+          };
+        }();
+        Page.prototype._which = function(e2) {
+          e2 = e2 || hasWindow && this._window.event;
+          return null == e2.which ? e2.button : e2.which;
+        };
+        Page.prototype._toURL = function(href) {
+          var window2 = this._window;
+          if (typeof URL === "function" && isLocation) {
+            return new URL(href, window2.location.toString());
+          } else if (hasDocument) {
+            var anc = window2.document.createElement("a");
+            anc.href = href;
+            return anc;
+          }
+        };
+        Page.prototype.sameOrigin = function(href) {
+          if (!href || !isLocation)
+            return false;
+          var url2 = this._toURL(href);
+          var window2 = this._window;
+          var loc = window2.location;
+          return loc.protocol === url2.protocol && loc.hostname === url2.hostname && (loc.port === url2.port || loc.port === "" && (url2.port == 80 || url2.port == 443));
+        };
+        Page.prototype._samePath = function(url2) {
+          if (!isLocation)
+            return false;
+          var window2 = this._window;
+          var loc = window2.location;
+          return url2.pathname === loc.pathname && url2.search === loc.search;
+        };
+        Page.prototype._decodeURLEncodedURIComponent = function(val) {
+          if (typeof val !== "string") {
+            return val;
+          }
+          return this._decodeURLComponents ? decodeURIComponent(val.replace(/\+/g, " ")) : val;
+        };
+        function createPage() {
+          var pageInstance = new Page();
+          function pageFn() {
+            return page2.apply(pageInstance, arguments);
+          }
+          pageFn.callbacks = pageInstance.callbacks;
+          pageFn.exits = pageInstance.exits;
+          pageFn.base = pageInstance.base.bind(pageInstance);
+          pageFn.strict = pageInstance.strict.bind(pageInstance);
+          pageFn.start = pageInstance.start.bind(pageInstance);
+          pageFn.stop = pageInstance.stop.bind(pageInstance);
+          pageFn.show = pageInstance.show.bind(pageInstance);
+          pageFn.back = pageInstance.back.bind(pageInstance);
+          pageFn.redirect = pageInstance.redirect.bind(pageInstance);
+          pageFn.replace = pageInstance.replace.bind(pageInstance);
+          pageFn.dispatch = pageInstance.dispatch.bind(pageInstance);
+          pageFn.exit = pageInstance.exit.bind(pageInstance);
+          pageFn.configure = pageInstance.configure.bind(pageInstance);
+          pageFn.sameOrigin = pageInstance.sameOrigin.bind(pageInstance);
+          pageFn.clickHandler = pageInstance.clickHandler.bind(pageInstance);
+          pageFn.create = createPage;
+          Object.defineProperty(pageFn, "len", {
+            get: function() {
+              return pageInstance.len;
+            },
+            set: function(val) {
+              pageInstance.len = val;
+            }
+          });
+          Object.defineProperty(pageFn, "current", {
+            get: function() {
+              return pageInstance.current;
+            },
+            set: function(val) {
+              pageInstance.current = val;
+            }
+          });
+          pageFn.Context = Context;
+          pageFn.Route = Route;
+          return pageFn;
+        }
+        function page2(path2, fn) {
+          if ("function" === typeof path2) {
+            return page2.call(this, "*", path2);
+          }
+          if ("function" === typeof fn) {
+            var route = new Route(
+              /** @type {string} */
+              path2,
+              null,
+              this
+            );
+            for (var i2 = 1; i2 < arguments.length; ++i2) {
+              this.callbacks.push(route.middleware(arguments[i2]));
+            }
+          } else if ("string" === typeof path2) {
+            this["string" === typeof fn ? "redirect" : "show"](path2, fn);
+          } else {
+            this.start(path2);
+          }
+        }
+        function unhandled(ctx) {
+          if (ctx.handled)
+            return;
+          var current;
+          var page3 = this;
+          var window2 = page3._window;
+          if (page3._hashbang) {
+            current = isLocation && this._getBase() + window2.location.hash.replace("#!", "");
+          } else {
+            current = isLocation && window2.location.pathname + window2.location.search;
+          }
+          if (current === ctx.canonicalPath)
+            return;
+          page3.stop();
+          ctx.handled = false;
+          isLocation && (window2.location.href = ctx.canonicalPath);
+        }
+        function escapeRegExp2(s2) {
+          return s2.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
+        }
+        function Context(path2, state, pageInstance) {
+          var _page = this.page = pageInstance || page2;
+          var window2 = _page._window;
+          var hashbang = _page._hashbang;
+          var pageBase = _page._getBase();
+          if ("/" === path2[0] && 0 !== path2.indexOf(pageBase))
+            path2 = pageBase + (hashbang ? "#!" : "") + path2;
+          var i2 = path2.indexOf("?");
+          this.canonicalPath = path2;
+          var re = new RegExp("^" + escapeRegExp2(pageBase));
+          this.path = path2.replace(re, "") || "/";
+          if (hashbang)
+            this.path = this.path.replace("#!", "") || "/";
+          this.title = hasDocument && window2.document.title;
+          this.state = state || {};
+          this.state.path = path2;
+          this.querystring = ~i2 ? _page._decodeURLEncodedURIComponent(path2.slice(i2 + 1)) : "";
+          this.pathname = _page._decodeURLEncodedURIComponent(~i2 ? path2.slice(0, i2) : path2);
+          this.params = {};
+          this.hash = "";
+          if (!hashbang) {
+            if (!~this.path.indexOf("#"))
+              return;
+            var parts = this.path.split("#");
+            this.path = this.pathname = parts[0];
+            this.hash = _page._decodeURLEncodedURIComponent(parts[1]) || "";
+            this.querystring = this.querystring.split("#")[0];
+          }
+        }
+        Context.prototype.pushState = function() {
+          var page3 = this.page;
+          var window2 = page3._window;
+          var hashbang = page3._hashbang;
+          page3.len++;
+          if (hasHistory) {
+            window2.history.pushState(
+              this.state,
+              this.title,
+              hashbang && this.path !== "/" ? "#!" + this.path : this.canonicalPath
+            );
+          }
+        };
+        Context.prototype.save = function() {
+          var page3 = this.page;
+          if (hasHistory) {
+            page3._window.history.replaceState(
+              this.state,
+              this.title,
+              page3._hashbang && this.path !== "/" ? "#!" + this.path : this.canonicalPath
+            );
+          }
+        };
+        function Route(path2, options, page3) {
+          var _page = this.page = page3 || globalPage;
+          var opts = options || {};
+          opts.strict = opts.strict || _page._strict;
+          this.path = path2 === "*" ? "(.*)" : path2;
+          this.method = "GET";
+          this.regexp = pathToRegexp_1(this.path, this.keys = [], opts);
+        }
+        Route.prototype.middleware = function(fn) {
+          var self = this;
+          return function(ctx, next) {
+            if (self.match(ctx.path, ctx.params)) {
+              ctx.routePath = self.path;
+              return fn(ctx, next);
+            }
+            next();
+          };
+        };
+        Route.prototype.match = function(path2, params) {
+          var keys = this.keys, qsIndex = path2.indexOf("?"), pathname = ~qsIndex ? path2.slice(0, qsIndex) : path2, m2 = this.regexp.exec(decodeURIComponent(pathname));
+          if (!m2)
+            return false;
+          delete params[0];
+          for (var i2 = 1, len = m2.length; i2 < len; ++i2) {
+            var key = keys[i2 - 1];
+            var val = this.page._decodeURLEncodedURIComponent(m2[i2]);
+            if (val !== void 0 || !hasOwnProperty.call(params, key.name)) {
+              params[key.name] = val;
+            }
+          }
+          return true;
+        };
+        var globalPage = createPage();
+        var page_js = globalPage;
+        var default_1 = globalPage;
+        page_js.default = default_1;
+        return page_js;
+      });
+    }
+  });
+
   // node_modules/@adrianlafond/geom/dist/angle.js
   var require_angle = __commonJS({
     "node_modules/@adrianlafond/geom/dist/angle.js"(exports) {
@@ -3369,10 +4079,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point11 = (
+      var Point12 = (
         /** @class */
         function() {
-          function Point12(x2, y2) {
+          function Point13(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -3382,39 +4092,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point12.prototype, "data", {
+          Object.defineProperty(Point13.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point12.prototype.clone = function() {
-            return new Point12(this.x, this.y);
+          Point13.prototype.clone = function() {
+            return new Point13(this.x, this.y);
           };
-          Point12.prototype.add = function(point) {
+          Point13.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point12.prototype.subtract = function(point) {
+          Point13.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point12.prototype.toString = function() {
+          Point13.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point12.distance = function(p1, p2) {
+          Point13.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point12.radians = function(p1, p2) {
+          Point13.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point12;
+          return Point13;
         }()
       );
-      exports.default = Point11;
+      exports.default = Point12;
     }
   });
 
@@ -3424,10 +4134,10 @@
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
       var point_1 = require_point();
-      var Vector5 = (
+      var Vector6 = (
         /** @class */
         function() {
-          function Vector6(x_point, y_point, radians2) {
+          function Vector7(x_point, y_point, radians2) {
             if (x_point === void 0) {
               x_point = 0;
             }
@@ -3446,14 +4156,14 @@
               this.model.radians = radians2;
             }
           }
-          Object.defineProperty(Vector6.prototype, "point", {
+          Object.defineProperty(Vector7.prototype, "point", {
             get: function() {
               return this.model.point.clone();
             },
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector6.prototype, "x", {
+          Object.defineProperty(Vector7.prototype, "x", {
             get: function() {
               return this.model.point.x;
             },
@@ -3463,7 +4173,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector6.prototype, "y", {
+          Object.defineProperty(Vector7.prototype, "y", {
             get: function() {
               return this.model.point.y;
             },
@@ -3473,7 +4183,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector6.prototype, "radians", {
+          Object.defineProperty(Vector7.prototype, "radians", {
             get: function() {
               return this.model.radians;
             },
@@ -3483,7 +4193,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector6.prototype, "data", {
+          Object.defineProperty(Vector7.prototype, "data", {
             get: function() {
               var _a = this, x2 = _a.x, y2 = _a.y, radians2 = _a.radians;
               return { x: x2, y: y2, radians: radians2 };
@@ -3491,16 +4201,16 @@
             enumerable: false,
             configurable: true
           });
-          Vector6.prototype.clone = function() {
-            return new Vector6(this.point, this.radians);
+          Vector7.prototype.clone = function() {
+            return new Vector7(this.point, this.radians);
           };
-          Vector6.prototype.toString = function() {
+          Vector7.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          return Vector6;
+          return Vector7;
         }()
       );
-      exports.default = Vector5;
+      exports.default = Vector6;
     }
   });
 
@@ -24537,9 +25247,9 @@ ${e2}`);
       rawData.common.forEach((common) => font.common.push({
         lineHeight: parseInt(common.lineHeight, 10)
       }));
-      rawData.page.forEach((page) => font.page.push({
-        id: parseInt(page.id, 10),
-        file: page.file
+      rawData.page.forEach((page2) => font.page.push({
+        id: parseInt(page2.id, 10),
+        file: page2.file
       }));
       rawData.char.forEach((char) => font.char.push({
         id: parseInt(char.id, 10),
@@ -24575,7 +25285,7 @@ ${e2}`);
       const data = new BitmapFontData();
       const info = xml.getElementsByTagName("info");
       const common = xml.getElementsByTagName("common");
-      const page = xml.getElementsByTagName("page");
+      const page2 = xml.getElementsByTagName("page");
       const char = xml.getElementsByTagName("char");
       const kerning = xml.getElementsByTagName("kerning");
       const distanceField = xml.getElementsByTagName("distanceField");
@@ -24590,10 +25300,10 @@ ${e2}`);
           lineHeight: parseInt(common[i2].getAttribute("lineHeight"), 10)
         });
       }
-      for (let i2 = 0; i2 < page.length; i2++) {
+      for (let i2 = 0; i2 < page2.length; i2++) {
         data.page.push({
-          id: parseInt(page[i2].getAttribute("id"), 10) || 0,
-          file: page[i2].getAttribute("file")
+          id: parseInt(page2[i2].getAttribute("id"), 10) || 0,
+          file: page2[i2].getAttribute("file")
         });
       }
       for (let i2 = 0; i2 < char.length; i2++) {
@@ -24803,9 +25513,9 @@ ${e2}`);
     constructor(data, textures, ownsTextures) {
       const [info] = data.info;
       const [common] = data.common;
-      const [page] = data.page;
+      const [page2] = data.page;
       const [distanceField] = data.distanceField;
-      const res = lib_exports.getResolutionOfUrl(page.file);
+      const res = lib_exports.getResolutionOfUrl(page2.file);
       const pageTextures = {};
       this._ownsTextures = ownsTextures;
       this.font = info.face;
@@ -24822,7 +25532,7 @@ ${e2}`);
         }
       }
       for (let i2 = 0; i2 < data.char.length; i2++) {
-        const { id, page: page2 } = data.char[i2];
+        const { id, page: page22 } = data.char[i2];
         let { x: x2, y: y2, width, height, xoffset, yoffset, xadvance } = data.char[i2];
         x2 /= res;
         y2 /= res;
@@ -24831,14 +25541,14 @@ ${e2}`);
         xoffset /= res;
         yoffset /= res;
         xadvance /= res;
-        const rect = new Rectangle(x2 + pageTextures[page2].frame.x / res, y2 + pageTextures[page2].frame.y / res, width, height);
+        const rect = new Rectangle(x2 + pageTextures[page22].frame.x / res, y2 + pageTextures[page22].frame.y / res, width, height);
         this.chars[id] = {
           xOffset: xoffset,
           yOffset: yoffset,
           xAdvance: xadvance,
           kerning: {},
-          texture: new Texture(pageTextures[page2].baseTexture, rect),
-          page: page2
+          texture: new Texture(pageTextures[page22].baseTexture, rect),
+          page: page22
         };
       }
       for (let i2 = 0; i2 < data.kerning.length; i2++) {
@@ -25472,8 +26182,8 @@ ${e2}`);
         this.removeChild(pageMeshData.mesh);
       }
       this._activePagesMeshData = [];
-      pageMeshDataPool.filter((page) => _textureCache[page.mesh.texture.baseTexture.uid]).forEach((page) => {
-        page.mesh.texture = Texture.EMPTY;
+      pageMeshDataPool.filter((page2) => _textureCache[page2.mesh.texture.baseTexture.uid]).forEach((page2) => {
+        page2.mesh.texture = Texture.EMPTY;
       });
       for (const id in _textureCache) {
         const texture = _textureCache[id];
@@ -26030,6 +26740,9 @@ ${e2}`);
   HTMLText.defaultMaxHeight = 2024;
   HTMLText.defaultAutoResolution = true;
 
+  // src/demo/index.ts
+  var import_page = __toESM(require_page());
+
   // src/demo/grid.ts
   var instance;
   var LINE_COLOR = 1127253;
@@ -26079,7 +26792,7 @@ ${e2}`);
   }
 
   // src/bug/bug.ts
-  var import_geom3 = __toESM(require_dist());
+  var import_geom4 = __toESM(require_dist());
 
   // node_modules/easings.net/lib/esm/easingsFunctions.js
   var pow = Math.pow;
@@ -26243,7 +26956,6 @@ ${e2}`);
     constructor(bugStartingPosition, options) {
       this.offsetPosition = options.position;
       this.maxDistance = import_geom2.Point.distance(new import_geom2.Point(), this.offsetPosition);
-      this.stepTarget = new import_geom2.Point();
       this.position = this.calculateStartingVector(bugStartingPosition, options.position);
       this.legs = this.createLegs(options.legs);
     }
@@ -26283,8 +26995,9 @@ ${e2}`);
     }
   };
 
-  // src/bug/bug.ts
-  var defaults = {
+  // src/bug/bug.defaults.ts
+  var import_geom3 = __toESM(require_dist());
+  var getDefaults = () => ({
     activeSide: "left",
     millisecondsPerStep: 250,
     maxStepPx: 16,
@@ -26320,16 +27033,19 @@ ${e2}`);
     maxDistractionPx: 24,
     timingFunction: "easeOutCubic",
     target: new import_geom3.Vector()
-  };
+  });
+
+  // src/bug/bug.ts
   var Bug = class {
     constructor(options) {
       this.stepProgress = 0;
       this.stepMs = 0;
-      this.stepTarget = new import_geom3.Vector();
+      this.stepTarget = new import_geom4.Vector();
       this.listeners = {
         targetReached: []
       };
       var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+      const defaults = getDefaults();
       this.activeSide = (_a = options == null ? void 0 : options.activeSide) != null ? _a : defaults.activeSide;
       this.millisecondsPerStep = (_b = options == null ? void 0 : options.millisecondsPerStep) != null ? _b : defaults.millisecondsPerStep;
       this.maxStepPx = (_c = options == null ? void 0 : options.maxStepPx) != null ? _c : defaults.maxStepPx;
@@ -26338,7 +27054,7 @@ ${e2}`);
       this.maxJigglePx = (_f = options == null ? void 0 : options.maxJigglePx) != null ? _f : defaults.maxJigglePx;
       this.maxDistractionPx = (_g = options == null ? void 0 : options.maxDistractionPx) != null ? _g : defaults.maxDistractionPx;
       this.timingFunction = (_h = options == null ? void 0 : options.timingFunction) != null ? _h : defaults.timingFunction;
-      this.segments = this.createSegments(options == null ? void 0 : options.position, options == null ? void 0 : options.segments);
+      this.segments = this.createSegments(defaults, options == null ? void 0 : options.position, options == null ? void 0 : options.segments, options == null ? void 0 : options.stageRect);
       this.target = (_i = options == null ? void 0 : options.target) != null ? _i : defaults.target;
       this.current = {
         activeSide: this.activeSide,
@@ -26358,7 +27074,7 @@ ${e2}`);
       const progress = this.stepMs / this.millisecondsPerStep;
       this.stepProgress = easingsFunctions_default[this.timingFunction](progress);
       this.updateBug({ deltaMs, stageRect });
-      if (import_geom3.Point.distance(this.target.point, this.segments[0].position.point) < this.maxStepPx + this.repulsionPx) {
+      if (import_geom4.Point.distance(this.target.point, this.segments[0].position.point) < this.maxStepPx + this.repulsionPx) {
         const bugRender = this.getRender();
         this.listeners.targetReached.forEach((fn) => fn(bugRender));
       }
@@ -26400,8 +27116,12 @@ ${e2}`);
      * offset by a BugOptions['position'] vector for the starting coordinates, and
      * returns it.
      */
-    createSegments(positionOption, segmentOptions) {
-      const position = positionOption != null ? positionOption : new import_geom3.Vector();
+    createSegments(defaults, positionOption, segmentOptions, stageRect) {
+      const position = positionOption != null ? positionOption : new import_geom4.Vector(
+        stageRect ? stageRect.x + Math.random() * stageRect.width : 0,
+        stageRect ? stageRect.y + Math.random() * stageRect.height : 0,
+        Math.random() * Math.PI * 2
+      );
       const segments = segmentOptions || defaults.segments;
       return segments.map((segment) => new Segment(position, segment));
     }
@@ -26442,11 +27162,11 @@ ${e2}`);
       this.stepTarget.y = this.target.y + Math.random() * this.maxDistractionPx - this.maxDistractionPx * 0.5;
       const currentHead = this.current.segments[0].position;
       this.stepTarget.radians = Math.atan2(this.stepTarget.y - currentHead.y, this.stepTarget.x - currentHead.x) + Math.PI * 0.5;
-      this.stepTarget.radians = import_geom3.Angle.normalize(this.stepTarget.radians);
+      this.stepTarget.radians = import_geom4.Angle.normalize(this.stepTarget.radians);
       const maxTurnRadians = Math.PI * 0.25;
-      let delta = import_geom3.Angle.normalize(this.stepTarget.radians) - import_geom3.Angle.normalize(currentHead.radians);
+      let delta = import_geom4.Angle.normalize(this.stepTarget.radians) - import_geom4.Angle.normalize(currentHead.radians);
       if (Math.abs(delta) > Math.PI) {
-        delta = import_geom3.Angle.normalize(currentHead.radians) - import_geom3.Angle.normalize(this.stepTarget.radians);
+        delta = import_geom4.Angle.normalize(currentHead.radians) - import_geom4.Angle.normalize(this.stepTarget.radians);
       }
       const fullCircle = Math.PI * 2;
       if (Math.abs(delta) > Math.PI) {
@@ -26477,7 +27197,7 @@ ${e2}`);
     }
     updateHead(segment, currentSegment, stageRect) {
       const currentPosition = currentSegment.position;
-      segment.position.radians = import_geom3.Angle.interpolate(
+      segment.position.radians = import_geom4.Angle.interpolate(
         currentPosition.radians,
         this.stepTarget.radians,
         Math.min(1, this.stepProgress)
@@ -26498,12 +27218,12 @@ ${e2}`);
     }
     updateSegment(segment, currentSegment, leadPosition, stageRect) {
       const offsetRadians = leadPosition.radians + Math.PI * 0.5;
-      const ideal = new import_geom3.Vector(
+      const ideal = new import_geom4.Vector(
         leadPosition.x + Math.cos(offsetRadians) * segment.maxDistance,
         leadPosition.y + Math.sin(offsetRadians) * segment.maxDistance,
         leadPosition.radians
       );
-      const idealDistance = import_geom3.Point.distance(ideal.point, segment.position.point);
+      const idealDistance = import_geom4.Point.distance(ideal.point, segment.position.point);
       const dampedDistance = idealDistance * 0.02;
       const dampedRadians = Math.atan2(ideal.y - segment.position.y, ideal.x - segment.position.x);
       const dx = segment.position.x + Math.cos(dampedRadians) * dampedDistance;
@@ -26528,9 +27248,9 @@ ${e2}`);
             const socketPoint = leg.getLiveJoint(leg.socketIndex).point;
             const clawPoint = leg.getLiveJoint(leg.clawIndex).point;
             const radians2 = Math.atan2(socketPoint.y - clawPoint.y, socketPoint.x - clawPoint.x) - Math.PI * 2;
-            const length = import_geom3.Point.distance(leg.getModelJoint(0), leg.getModelJoint(2));
+            const length = import_geom4.Point.distance(leg.getModelJoint(0), leg.getModelJoint(2));
             const offset4 = length * this.jointOffset;
-            leg.updateLiveJoint(1, new import_geom3.Vector(
+            leg.updateLiveJoint(1, new import_geom4.Vector(
               (socketPoint.x + clawPoint.x) * 0.5 - Math.cos(radians2) * offset4,
               (socketPoint.y + clawPoint.y) * 0.5 + Math.sin(radians2) * offset4
             ));
@@ -26540,14 +27260,14 @@ ${e2}`);
     }
     updateLeg(segmentPosition, leg, currentLeg, index, stageRect) {
       const joint = leg.getModelJoint(index);
-      const radius2 = import_geom3.Point.distance(segmentPosition.point, segmentPosition.point.subtract(joint));
+      const radius2 = import_geom4.Point.distance(segmentPosition.point, segmentPosition.point.subtract(joint));
       const targetRadians = Math.atan2(joint.y, joint.x) + segmentPosition.radians;
-      const radians2 = import_geom3.Angle.interpolate(
+      const radians2 = import_geom4.Angle.interpolate(
         currentLeg[index].radians,
         targetRadians,
         Math.min(1, this.stepProgress)
       );
-      const updatedPoint = new import_geom3.Point(
+      const updatedPoint = new import_geom4.Point(
         Math.cos(radians2) * radius2 + segmentPosition.x,
         Math.sin(radians2) * radius2 + segmentPosition.y
       );
@@ -26555,18 +27275,18 @@ ${e2}`);
         updatedPoint.x = Math.max(stageRect.x, Math.min(stageRect.x + stageRect.width, updatedPoint.x));
         updatedPoint.y = Math.max(stageRect.y, Math.min(stageRect.y + stageRect.height, updatedPoint.y));
       }
-      leg.updateLiveJoint(index, new import_geom3.Vector(updatedPoint, radians2));
+      leg.updateLiveJoint(index, new import_geom4.Vector(updatedPoint, radians2));
     }
   };
 
   // src/demo/bug-demo.ts
-  var import_geom9 = __toESM(require_dist());
+  var import_geom10 = __toESM(require_dist());
 
   // src/demo/base-demo.ts
-  var import_geom8 = __toESM(require_dist());
+  var import_geom9 = __toESM(require_dist());
 
   // src/demo/patterns/spiral.ts
-  var import_geom4 = __toESM(require_dist());
+  var import_geom5 = __toESM(require_dist());
   var radians = 0;
   var radius = 0;
   var direction = 1;
@@ -26580,16 +27300,16 @@ ${e2}`);
     }
     const x2 = Math.cos(radians) * radius;
     const y2 = Math.sin(radians) * radius;
-    radians = import_geom4.Angle.normalize(radians - Math.PI * 0.05 * direction);
+    radians = import_geom5.Angle.normalize(radians - Math.PI * 0.05 * direction);
     radius += 1;
     return {
-      point: new import_geom4.Point(x2, y2),
+      point: new import_geom5.Point(x2, y2),
       complete
     };
   };
 
   // src/demo/patterns/vertical.ts
-  var import_geom5 = __toESM(require_dist());
+  var import_geom6 = __toESM(require_dist());
   var count = 0;
   var offset = 10;
   var calculateVerticalPattern = (width, height) => {
@@ -26599,7 +27319,7 @@ ${e2}`);
     const x2 = count * width / 10 + Math.random() * offset;
     const y2 = Math.random() * 20 + offset;
     return {
-      point: new import_geom5.Point(
+      point: new import_geom6.Point(
         x2,
         count % 2 === 0 ? y2 : height - y2
       ),
@@ -26608,7 +27328,7 @@ ${e2}`);
   };
 
   // src/demo/patterns/horizontal.ts
-  var import_geom6 = __toESM(require_dist());
+  var import_geom7 = __toESM(require_dist());
   var count2 = 0;
   var offset2 = 10;
   var calculateHorizontalPattern = (width, height) => {
@@ -26618,7 +27338,7 @@ ${e2}`);
     const x2 = Math.random() * 20 + offset2;
     const y2 = count2 * height / 10 + Math.random() * offset2;
     return {
-      point: new import_geom6.Point(
+      point: new import_geom7.Point(
         count2 % 2 === 0 ? x2 : width - x2,
         y2
       ),
@@ -26627,7 +27347,7 @@ ${e2}`);
   };
 
   // src/demo/patterns/random.ts
-  var import_geom7 = __toESM(require_dist());
+  var import_geom8 = __toESM(require_dist());
   var count3 = 0;
   var offset3 = 10;
   var calculateRandomPattern = (width, height) => {
@@ -26635,7 +27355,7 @@ ${e2}`);
       count3 = 0;
     }
     return {
-      point: new import_geom7.Point(
+      point: new import_geom8.Point(
         offset3 + Math.floor(Math.random() * (width - offset3 * 2)),
         offset3 + Math.floor(Math.random() * (height - offset3 * 2))
       ),
@@ -26651,7 +27371,7 @@ ${e2}`);
         if (this.app.view.getBoundingClientRect) {
           const viewRect = this.app.view.getBoundingClientRect();
           if ("clientX" in event && "clientY" in event) {
-            this.changeTarget(new import_geom8.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
+            this.changeTarget(new import_geom9.Point(event.clientX - viewRect.x, event.clientY - viewRect.y));
           }
         }
       };
@@ -26659,6 +27379,8 @@ ${e2}`);
       if (app.view.addEventListener) {
         app.view.addEventListener("pointerdown", this.handlePointerDown);
       }
+    }
+    render(_deltaMs = 0) {
     }
     changeTarget(_point) {
     }
@@ -26715,75 +27437,75 @@ ${e2}`);
       };
       this.bug = new Bug({
         segments: [{
-          position: new import_geom9.Point(),
+          position: new import_geom10.Point(),
           legs: {
             left: [[
-              new import_geom9.Point(-9, 0),
-              new import_geom9.Point(-18, -15)
+              new import_geom10.Point(-9, 0),
+              new import_geom10.Point(-18, -15)
             ], [
-              new import_geom9.Point(-9, 2),
-              new import_geom9.Point(-20, -2)
+              new import_geom10.Point(-9, 2),
+              new import_geom10.Point(-20, -2)
             ], [
-              new import_geom9.Point(-9, 4),
-              new import_geom9.Point(-16, 8)
+              new import_geom10.Point(-9, 4),
+              new import_geom10.Point(-16, 8)
             ]],
             right: [[
-              new import_geom9.Point(9, 0),
-              new import_geom9.Point(18, -15)
+              new import_geom10.Point(9, 0),
+              new import_geom10.Point(18, -15)
             ], [
-              new import_geom9.Point(9, 2),
-              new import_geom9.Point(20, -2)
+              new import_geom10.Point(9, 2),
+              new import_geom10.Point(20, -2)
             ], [
-              new import_geom9.Point(9, 4),
-              new import_geom9.Point(16, 8)
+              new import_geom10.Point(9, 4),
+              new import_geom10.Point(16, 8)
             ]]
           }
         }, {
-          position: new import_geom9.Point(0, 20),
+          position: new import_geom10.Point(0, 20),
           legs: {
             left: [[
-              new import_geom9.Point(-9, 2),
-              new import_geom9.Point(-20, -2)
+              new import_geom10.Point(-9, 2),
+              new import_geom10.Point(-20, -2)
             ]],
             right: [[
-              new import_geom9.Point(9, 2),
-              new import_geom9.Point(20, -2)
+              new import_geom10.Point(9, 2),
+              new import_geom10.Point(20, -2)
             ]]
           }
         }, {
-          position: new import_geom9.Point(0, 20),
+          position: new import_geom10.Point(0, 20),
           legs: {
             left: [[
-              new import_geom9.Point(-9, 2),
-              new import_geom9.Point(-20, -2)
+              new import_geom10.Point(-9, 2),
+              new import_geom10.Point(-20, -2)
             ]],
             right: [[
-              new import_geom9.Point(9, 2),
-              new import_geom9.Point(20, -2)
+              new import_geom10.Point(9, 2),
+              new import_geom10.Point(20, -2)
             ]]
           }
         }, {
-          position: new import_geom9.Point(0, 20),
+          position: new import_geom10.Point(0, 20),
           legs: {
             left: [[
-              new import_geom9.Point(-9, 2),
-              new import_geom9.Point(-20, -2)
+              new import_geom10.Point(-9, 2),
+              new import_geom10.Point(-20, -2)
             ]],
             right: [[
-              new import_geom9.Point(9, 2),
-              new import_geom9.Point(20, -2)
+              new import_geom10.Point(9, 2),
+              new import_geom10.Point(20, -2)
             ]]
           }
         }, {
-          position: new import_geom9.Point(0, 20),
+          position: new import_geom10.Point(0, 20),
           legs: {
             left: [[
-              new import_geom9.Point(-9, 2),
-              new import_geom9.Point(-20, -2)
+              new import_geom10.Point(-9, 2),
+              new import_geom10.Point(-20, -2)
             ]],
             right: [[
-              new import_geom9.Point(9, 2),
-              new import_geom9.Point(20, -2)
+              new import_geom10.Point(9, 2),
+              new import_geom10.Point(20, -2)
             ]]
           }
         }],
@@ -26884,40 +27606,199 @@ ${e2}`);
     }
   };
 
+  // src/demo/simple.ts
+  var Simple = class extends BaseDemo {
+    constructor(app) {
+      var _a;
+      super(app);
+      this.segmentsGfx = new Graphics();
+      this.legsGfx = new Graphics();
+      this.handleTargetReached = () => {
+        this.updateTargetPattern();
+      };
+      const clientRect = app.view.getBoundingClientRect ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
+      this.bug = new Bug({
+        stageRect: clientRect ? {
+          x: 0,
+          y: 0,
+          width: clientRect.width,
+          height: clientRect.height
+        } : void 0
+      });
+      render(this.app);
+      this.app.stage.addChild(this.legsGfx);
+      this.app.stage.addChild(this.segmentsGfx);
+      this.updateTargetPattern();
+    }
+    render(deltaMs = 0) {
+      const bug = this.bug.tick({
+        deltaMs,
+        stageRect: {
+          x: 5,
+          y: 5,
+          width: this.app.view.width - 5,
+          height: this.app.view.height - 5
+        }
+      });
+      this.bug.on("targetReached", this.handleTargetReached);
+      this.clearGfx();
+      this.renderAllSegments(bug);
+    }
+    changeTarget(point) {
+      super.changeTarget(point);
+      this.bug.updateTarget(point);
+    }
+    destroy() {
+      super.destroy();
+      this.clearGfx();
+    }
+    clearGfx() {
+      this.segmentsGfx.clear();
+      this.segmentsGfx.removeChildren();
+      this.legsGfx.clear();
+      this.legsGfx.removeChildren();
+    }
+    renderAllSegments(bug) {
+      for (let i2 = bug.segments.length - 1; i2 >= 0; i2--) {
+        this.renderSegment(bug.segments[i2], bug.activeSide, i2);
+      }
+    }
+    renderSegment(segment, activeSide, index) {
+      const color = index == 0 ? 14544639 : 16776960;
+      const gfx = new Graphics();
+      this.segmentsGfx.addChild(gfx);
+      gfx.lineStyle({ width: 1, color });
+      gfx.drawCircle(0, 0, 9);
+      gfx.lineStyle({ width: 0 });
+      gfx.beginFill(color);
+      gfx.moveTo(0, -8);
+      gfx.lineTo(5, 8);
+      gfx.lineTo(0, 2);
+      gfx.lineTo(-5, 8);
+      gfx.lineTo(0, -8);
+      gfx.endFill();
+      gfx.rotation = segment.position.radians;
+      gfx.position.x = segment.position.x;
+      gfx.position.y = segment.position.y;
+      this.renderSegmentLegs(segment, activeSide);
+    }
+    renderSegmentLegs(segment, activeSide) {
+      segment.legs.left.forEach((leg) => this.renderLeg(leg, activeSide === "left"));
+      segment.legs.right.forEach((leg) => this.renderLeg(leg, activeSide === "right"));
+    }
+    renderLeg(leg, isActive) {
+      const socket = leg[0];
+      const joint = leg.length >= 2 ? leg[1] : null;
+      const claw = leg.length >= 2 ? leg[2] : leg[1];
+      const gfx = new Graphics();
+      this.legsGfx.addChild(gfx);
+      gfx.lineStyle({ width: 1, color: 14544639 });
+      gfx.moveTo(socket.x, socket.y);
+      if (joint != null) {
+        gfx.lineTo(joint.x, joint.y);
+      }
+      gfx.lineTo(claw.x, claw.y);
+      gfx.lineStyle({ width: 0 });
+      gfx.beginFill(14544639);
+      gfx.drawCircle(claw.x, claw.y, isActive ? 2 : 1);
+      gfx.endFill();
+    }
+  };
+
   // src/demo/index.ts
   var instance2;
+  var bugsMap = {
+    demo: BugDemo,
+    simple: Simple
+  };
   var DemoApp = class {
-    constructor(containerElement) {
+    constructor(selector) {
       this.playing = false;
+      this.bug = "demo";
+      this.bugs = ["demo", "simple"];
+      this.liveBug = null;
+      this.handlePrevClick = () => {
+        let index = this.bugs.findIndex((bug) => bug === this.bug);
+        if (index !== -1) {
+          index -= 1;
+          if (index < 0) {
+            index = this.bugs.length - 1;
+          }
+          (0, import_page.default)(`/${this.bugs[index]}`);
+        }
+      };
+      this.handleNextClick = () => {
+        let index = this.bugs.findIndex((bug) => bug === this.bug);
+        if (index !== -1) {
+          index += 1;
+          if (index >= this.bugs.length) {
+            index = 0;
+          }
+          (0, import_page.default)(`/${this.bugs[index]}`);
+        }
+      };
       this.togglePlaying = () => {
         this.playing = !this.playing;
         this.playing ? this.app.start() : this.app.stop();
       };
-      const defaultContainer = document.querySelector("#canvas");
-      this.containerElement = containerElement != null ? containerElement : defaultContainer != null ? defaultContainer : document.createElement("main");
+      const element = document.querySelector(selector);
+      if (element instanceof HTMLElement) {
+        this.containerElement = element;
+      } else {
+        throw new Error('Canvas element "#bugs-canvas" not found.');
+      }
       this.app = new Application({ width: 360, height: 360 });
+      this.initializePage();
       this.appendToDom();
+      this.start();
+    }
+    initializePage() {
+      (0, import_page.default)("/demo", () => this.updateBug("demo"));
+      (0, import_page.default)("/simple", () => this.updateBug("simple"));
+      (0, import_page.default)("*", () => this.updateBug("demo"));
+      (0, import_page.default)({ window });
+      const prevEl = document.querySelector(".bugs__btn-prev");
+      const nextEl = document.querySelector(".bugs__btn-next");
+      if (prevEl) {
+        prevEl.addEventListener("click", this.handlePrevClick);
+      }
+      if (nextEl) {
+        nextEl.addEventListener("click", this.handleNextClick);
+      }
     }
     appendToDom() {
       this.containerElement.replaceChildren(this.app.view);
-    }
-    start() {
-      const bugDemo = new BugDemo(this.app);
-      bugDemo.render();
-      this.app.ticker.add(() => {
-        bugDemo.render(this.app.ticker.deltaMS);
-      });
-      this.playing = true;
       this.containerElement.addEventListener("dblclick", this.togglePlaying);
     }
+    updateBug(bug) {
+      this.bug = bug;
+      this.restart();
+    }
+    restart() {
+      if (this.liveBug) {
+        this.liveBug.destroy();
+      }
+      this.liveBug = new bugsMap[this.bug](this.app);
+      this.liveBug.render();
+      if (!this.playing) {
+        this.playing = true;
+        this.app.start();
+      }
+    }
+    start() {
+      this.app.ticker.add(() => {
+        if (this.liveBug) {
+          this.liveBug.render(this.app.ticker.deltaMS);
+        }
+      });
+    }
   };
-  function start() {
-    instance2 = instance2 != null ? instance2 : new DemoApp();
-    instance2.start();
+  function start(selector) {
+    instance2 = instance2 != null ? instance2 : new DemoApp(selector);
   }
 
   // src/index.ts
-  start();
+  start(".bugs__content");
 })();
 /*! Bundled license information:
 

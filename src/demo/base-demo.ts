@@ -18,6 +18,10 @@ export class BaseDemo {
     }
   }
 
+  render (_deltaMs = 0): void {
+    // Designed to be overridden.
+  }
+
   changeTarget (_point: Point): void {
     // Designed to be overridden.
   }

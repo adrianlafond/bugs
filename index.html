@@ -32,14 +32,25 @@
       justify-content: space-between;
       width: var(--bugs-width);
     }
+    .bugs__btn {
+      border-width: 0;
+      background-color: transparent;
+      color: darkgray;
+      cursor: pointer;
+      font-size: 24px;
+      transition: color 0.2s;
+    }
+    .bugs__btn:hover {
+      color: white;
+    }
   </style>
 </head>
 <body>
   <main>
     <div class="bugs__content"></div>
     <div class="bugs__navigation">
-      <button class="bugs__btn-prev">&lt;</button>
-      <button class="bugs__btn-next">&gt;</button>
+      <button class="bugs__btn bugs__btn-prev" aria-label="previous">&#8678;</button>
+      <button class="bugs__btn bugs__btn-next" aria-label="next">&#8680;</button>
     </div>
   </main>
 

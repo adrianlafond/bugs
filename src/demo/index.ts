@@ -37,11 +37,17 @@ class DemoApp {
   }
 
   private initializePage (): void {
-    page('/demo', () => this.updateBug('demo'))
-    page('/bug001', () => this.updateBug('bug001'))
-    page('*', () => this.updateBug('demo'))
-
-    page({ window }) // <- avoids "Uncaught TypeError: window2 is undefined"
+    if (window.location.hash.startsWith('#!')) {
+      this.updateBug(window.location.hash.substring(2) as Bug)
+    } else {
+      this.updateBug('bug001')
+    }
+    page({
+      hashbang: true,
+      window, // <- avoids "Uncaught TypeError: window2 is undefined"
+    })
+    page(':id', ({ params }) => this.updateBug(params.id))
+    page('*', () => this.updateBug('bug001'))
     const prevEl = document.querySelector('.bugs__btn-prev')
     const nextEl = document.querySelector('.bugs__btn-next')
     if (prevEl) {
@@ -59,7 +65,7 @@ class DemoApp {
       if (index < 0) {
         index = this.bugs.length - 1
       }
-      page(`/${this.bugs[index]}`)
+      page(`#!${this.bugs[index]}`)
     }
   }
 
@@ -70,7 +76,7 @@ class DemoApp {
       if (index >= this.bugs.length) {
         index = 0
       }
-      page(`/${this.bugs[index]}`)
+      page(`#!${this.bugs[index]}`)
     }
   }
 
@@ -85,7 +91,7 @@ class DemoApp {
   }
 
   private updateBug (bug: Bug): void {
-    this.bug = bug
+    this.bug = bug in bugsMap ? bug : 'bug001'
     this.restart()
   }
 

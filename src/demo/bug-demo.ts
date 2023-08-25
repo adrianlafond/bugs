@@ -1,24 +1,19 @@
 import * as PIXI from 'pixi.js'
+import * as grid from './grid'
 import { Bug, BugRender, BugSide, Leg, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
-import { calculateSpiralPattern } from './patterns/spiral'
-import { calculateVerticalPattern } from './patterns/vertical'
-import { calculateHorizontalPattern } from './patterns/horizontal'
-import { calculateRandomPattern } from './patterns/random'
+import { BaseDemo } from './base-demo'
 
-type Pattern = 'random' | 'horizontal' | 'vertical' | 'spiral'
 
-export class BugDemo {
+export class BugDemo extends BaseDemo {
+  protected readonly bug: Bug
+
   private readonly targetGfx = new PIXI.Graphics()
   private readonly segmentsGfx = new PIXI.Graphics()
   private readonly legsGfx = new PIXI.Graphics()
 
-  private readonly bug: Bug
-
-  private pattern: Pattern
-
-  constructor (private readonly app: PIXI.Application) {
-    this.pattern = this.updatePattern()
+  constructor (app: PIXI.Application) {
+    super(app)
     this.bug = new Bug({
       segments: [{
         position: new Point(),
@@ -99,10 +94,13 @@ export class BugDemo {
       millisecondsPerStep: 100,
       timingFunction: 'easeOutSine',
     })
+
+    grid.render(this.app)
+
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
     this.app.stage.addChild(this.segmentsGfx)
-    this.updateTarget()
+    this.updateTargetPattern()
   }
 
   render (deltaMs = 0): void {
@@ -122,11 +120,17 @@ export class BugDemo {
   }
 
   changeTarget (point: Point): void {
+    super.changeTarget(point)
     this.bug.updateTarget(point)
   }
 
+  destroy (): void {
+    super.destroy()
+    this.clearGfx()
+  }
+
   private readonly handleTargetReached = (): void => {
-    this.updateTarget()
+    this.updateTargetPattern()
   }
 
   private clearGfx () {
@@ -201,41 +205,5 @@ export class BugDemo {
     gfx.beginFill(0xddeeff)
     gfx.drawCircle(claw.x, claw.y, isActive ? 2 : 1)
     gfx.endFill()
-  }
-
-  private updateTarget (): void {
-    if (this.pattern === 'random') {
-      const { point, complete } = calculateRandomPattern(this.app.view.width, this.app.view.height)
-      this.bug.updateTarget(point)
-      if (complete) {
-        this.updatePattern()
-      }
-    } else if (this.pattern === 'vertical') {
-      const { point, complete } = calculateVerticalPattern(this.app.view.width, this.app.view.height)
-      this.bug.updateTarget(point)
-      if (complete) {
-        this.updatePattern()
-      }
-    } else if (this.pattern === 'horizontal') {
-      const { point, complete } = calculateHorizontalPattern(this.app.view.width, this.app.view.height)
-      this.bug.updateTarget(point)
-      if (complete) {
-        this.updatePattern()
-      }
-    } else if (this.pattern === 'spiral') {
-      const { point, complete } = calculateSpiralPattern(Math.min(this.app.view.width, this.app.view.height) * 0.5)
-      point.x += this.app.view.width / 2
-      point.y += this.app.view.height / 2
-      this.bug.updateTarget(point)
-      if (complete) {
-        this.updatePattern()
-      }
-    }
-  }
-
-  private updatePattern (): Pattern {
-    const index = Math.floor(Math.random() * 4)
-    const patterns: Pattern[] = ['random', 'horizontal', 'vertical', 'spiral']
-    return (this.pattern = patterns[index])
   }
 }

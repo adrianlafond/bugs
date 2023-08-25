@@ -1,26 +1,82 @@
 import * as PIXI from 'pixi.js'
-import * as grid from './grid'
+import page from 'page'
 import { BugDemo } from './bug-demo'
-import { Point } from '@adrianlafond/geom'
+import { Bug001 } from './bug001'
+import { BaseDemo } from './base-demo'
 
 let instance: DemoApp
+
+type Bug =
+  | 'demo'
+  | 'bug001'
+
+const bugsMap = {
+  demo: BugDemo,
+  bug001: Bug001,
+}
 
 class DemoApp {
   private readonly containerElement: HTMLElement
   private readonly app: PIXI.Application<HTMLCanvasElement>
   private playing = false
+  private bug: Bug = 'demo'
+  private bugs: Bug[] = ['demo', 'bug001']
+  private liveBug: BaseDemo | null = null
 
-  constructor (containerElement?: HTMLElement) {
-    const defaultContainer: HTMLElement | null = document.querySelector('main#canvas')
-    this.containerElement = containerElement != null
-      ? containerElement
-      : (defaultContainer != null) ? defaultContainer : document.createElement('main')
+  constructor (selector: string) {
+    const element = document.querySelector(selector)
+    if (element instanceof HTMLElement) {
+      this.containerElement = element
+    } else {
+      throw new Error('Canvas element "#bugs-canvas" not found.');
+    }
     this.app = new PIXI.Application({ width: 360, height: 360 })
+    this.initializePage()
     this.appendToDom()
+    this.start()
+  }
+
+  private initializePage (): void {
+    page('/demo', () => this.updateBug('demo'))
+    page('/bug001', () => this.updateBug('bug001'))
+    page('*', () => this.updateBug('demo'))
+
+    page({ window }) // <- avoids "Uncaught TypeError: window2 is undefined"
+    const prevEl = document.querySelector('.bugs__btn-prev')
+    const nextEl = document.querySelector('.bugs__btn-next')
+    if (prevEl) {
+      prevEl.addEventListener('click', this.handlePrevClick)
+    }
+    if (nextEl) {
+      nextEl.addEventListener('click', this.handleNextClick)
+    }
+  }
+
+  private readonly handlePrevClick = (): void => {
+    let index = this.bugs.findIndex(bug => bug === this.bug)
+    if (index !== -1) {
+      index -= 1
+      if (index < 0) {
+        index = this.bugs.length - 1
+      }
+      page(`/${this.bugs[index]}`)
+    }
+  }
+
+  private readonly handleNextClick = (): void => {
+    let index = this.bugs.findIndex(bug => bug === this.bug)
+    if (index !== -1) {
+      index += 1
+      if (index >= this.bugs.length) {
+        index = 0
+      }
+      page(`/${this.bugs[index]}`)
+    }
   }
 
   private appendToDom (): void {
     this.containerElement.replaceChildren(this.app.view)
+    this.containerElement.addEventListener('dblclick', this.togglePlaying)
   }
 
   private readonly togglePlaying = (): void => {
@@ -28,26 +84,32 @@ class DemoApp {
     this.playing ? this.app.start() : this.app.stop()
   }
 
+  private updateBug (bug: Bug): void {
+    this.bug = bug
+    this.restart()
+  }
+
+  private restart (): void {
+    if (this.liveBug) {
+      this.liveBug.destroy()
+    }
+    this.liveBug = new bugsMap[this.bug](this.app)
+    this.liveBug.render()
+    if (!this.playing) {
+      this.playing = true
+      this.app.start()
+    }
+  }
+
   start (): void {
-    grid.render(this.app)
-    const bugDemo = new BugDemo(this.app)
-
-    grid.onPointerDown((event: PIXI.FederatedPointerEvent): void => {
-      const viewRect = this.app.view.getBoundingClientRect()
-      bugDemo.changeTarget(new Point(event.clientX - viewRect.x, event.clientY - viewRect.y))
-    })
-    bugDemo.render()
-
     this.app.ticker.add(() => {
-      bugDemo.render(this.app.ticker.deltaMS)
+      if (this.liveBug) {
+        this.liveBug.render(this.app.ticker.deltaMS)
+      }
     })
-
-    this.playing = true
-    this.containerElement.addEventListener('dblclick', this.togglePlaying)
   }
 }
 
-export function start (): void {
-  instance = instance ?? new DemoApp()
-  instance.start()
+export function start (selector: string): void {
+  instance = instance ?? new DemoApp(selector)
 }

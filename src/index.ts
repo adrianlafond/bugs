@@ -1,3 +1,3 @@
 import { start } from './demo'
 
-start()
+start('.bugs__content')

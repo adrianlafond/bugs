@@ -6,24 +6,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>bugs</title>
   <style>
+    :root {
+      --bugs-width: 360px;
+      --bugs-height: 360px;
+    }
     html, body {
       height: 100%;
     }
     body {
-      background-color: whitesmoke;
+      background-color: black;
     }
-    #canvas {
+    main {
       display: flex;
       height: 100%;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
     }
-    #canvas > * {
-      align-self: center;
+    .bugs__content {
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .bugs__navigation {
+      display: flex;
+      justify-content: space-between;
+      width: var(--bugs-width);
+    }
+    .bugs__btn {
+      border-width: 0;
+      background-color: transparent;
+      color: darkgray;
+      cursor: pointer;
+      font-size: 24px;
+      transition: color 0.2s;
+    }
+    .bugs__btn:hover {
+      color: white;
     }
   </style>
 </head>
 <body>
-  <main id="canvas" />
+  <main>
+    <div class="bugs__content"></div>
+    <div class="bugs__navigation">
+      <button class="bugs__btn bugs__btn-prev" aria-label="previous">&#8678;</button>
+      <button class="bugs__btn bugs__btn-next" aria-label="next">&#8680;</button>
+    </div>
+  </main>
+
   <script src="dist/bugs.js"></script>
 </body>
 </html>

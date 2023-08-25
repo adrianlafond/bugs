@@ -22,9 +22,6 @@ export class Segment {
   // Distance from a leading segment
   maxDistance: number
 
-  // (x,y) target of current step
-  stepTarget: Point
-
   // Current position
   position: Vector
 
@@ -34,7 +31,6 @@ export class Segment {
   constructor(bugStartingPosition: Vector, options: BugOptionsSegment) {
     this.offsetPosition = options.position
     this.maxDistance = Point.distance(new Point(), this.offsetPosition)
-    this.stepTarget = new Point()
     this.position = this.calculateStartingVector(bugStartingPosition, options.position)
     this.legs = this.createLegs(options.legs)
   }

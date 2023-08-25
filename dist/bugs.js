@@ -27754,7 +27754,7 @@ ${e2}`);
           if (index < 0) {
             index = this.bugs.length - 1;
           }
-          (0, import_page.default)(`${this.bugs[index]}`);
+          (0, import_page.default)(`/bugs/${this.bugs[index]}`);
         }
       };
       this.handleNextClick = () => {
@@ -27764,7 +27764,7 @@ ${e2}`);
           if (index >= this.bugs.length) {
             index = 0;
           }
-          (0, import_page.default)(`${this.bugs[index]}`);
+          (0, import_page.default)(`/bugs/${this.bugs[index]}`);
         }
       };
       this.togglePlaying = () => {
@@ -27783,8 +27783,8 @@ ${e2}`);
       this.start();
     }
     initializePage() {
-      (0, import_page.default)("demo", () => this.updateBug("demo"));
-      (0, import_page.default)("bug001", () => this.updateBug("bug001"));
+      (0, import_page.default)("/bugs/demo", () => this.updateBug("demo"));
+      (0, import_page.default)("/bugs/bug001", () => this.updateBug("bug001"));
       (0, import_page.default)("*", () => this.updateBug("demo"));
       (0, import_page.default)({ window });
       const prevEl = document.querySelector(".bugs__btn-prev");

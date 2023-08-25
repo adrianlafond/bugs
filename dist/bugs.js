@@ -27783,9 +27783,8 @@ ${e2}`);
       this.start();
     }
     initializePage() {
-      (0, import_page.default)("/bugs/demo", () => this.updateBug("demo"));
-      (0, import_page.default)("/bugs/bug001", () => this.updateBug("bug001"));
-      (0, import_page.default)("*", () => this.updateBug("demo"));
+      (0, import_page.default)("/bugs/:id", ({ params }) => this.updateBug(params.id));
+      (0, import_page.default)("*", () => this.updateBug("bug001"));
       (0, import_page.default)({ window });
       const prevEl = document.querySelector(".bugs__btn-prev");
       const nextEl = document.querySelector(".bugs__btn-next");
@@ -27801,7 +27800,7 @@ ${e2}`);
       this.containerElement.addEventListener("dblclick", this.togglePlaying);
     }
     updateBug(bug) {
-      this.bug = bug;
+      this.bug = bug in bugsMap ? bug : "bug001";
       this.restart();
     }
     restart() {

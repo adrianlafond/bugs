@@ -37,9 +37,8 @@ class DemoApp {
   }
 
   private initializePage (): void {
-    page('/bugs/demo', () => this.updateBug('demo'))
-    page('/bugs/bug001', () => this.updateBug('bug001'))
-    page('*', () => this.updateBug('demo'))
+    page('/bugs/:id', ({ params }) => this.updateBug(params.id))
+    page('*', () => this.updateBug('bug001'))
 
     page({ window }) // <- avoids "Uncaught TypeError: window2 is undefined"
     const prevEl = document.querySelector('.bugs__btn-prev')
@@ -85,7 +84,7 @@ class DemoApp {
   }
 
   private updateBug (bug: Bug): void {
-    this.bug = bug
+    this.bug = bug in bugsMap ? bug : 'bug001'
     this.restart()
   }
 

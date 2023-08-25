@@ -48,7 +48,6 @@ class DemoApp {
     })
     page(':id', ({ params }) => this.updateBug(params.id))
     page('*', () => this.updateBug('bug001'))
-    page('*', console.log)
     const prevEl = document.querySelector('.bugs__btn-prev')
     const nextEl = document.querySelector('.bugs__btn-next')
     if (prevEl) {

@@ -27795,7 +27795,6 @@ ${e2}`);
       });
       (0, import_page.default)(":id", ({ params }) => this.updateBug(params.id));
       (0, import_page.default)("*", () => this.updateBug("bug001"));
-      (0, import_page.default)("*", console.log);
       const prevEl = document.querySelector(".bugs__btn-prev");
       const nextEl = document.querySelector(".bugs__btn-next");
       if (prevEl) {

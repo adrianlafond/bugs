@@ -37,9 +37,9 @@ class DemoApp {
   }
 
   private initializePage (): void {
-    page('/bugs/demo', () => this.updateBug('demo'))
-    page('/bugs/bug001', () => this.updateBug('bug001'))
-    page('/*', () => this.updateBug('demo'))
+    page('demo', () => this.updateBug('demo'))
+    page('bug001', () => this.updateBug('bug001'))
+    page('*', () => this.updateBug('demo'))
 
     page({ window }) // <- avoids "Uncaught TypeError: window2 is undefined"
     const prevEl = document.querySelector('.bugs__btn-prev')
@@ -59,7 +59,7 @@ class DemoApp {
       if (index < 0) {
         index = this.bugs.length - 1
       }
-      page(`/bugs/${this.bugs[index]}`)
+      page(`${this.bugs[index]}`)
     }
   }
 
@@ -70,7 +70,7 @@ class DemoApp {
       if (index >= this.bugs.length) {
         index = 0
       }
-      page(`/bugs/${this.bugs[index]}`)
+      page(`${this.bugs[index]}`)
     }
   }
 

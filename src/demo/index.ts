@@ -37,10 +37,18 @@ class DemoApp {
   }
 
   private initializePage (): void {
-    page('/bugs/:id', ({ params }) => this.updateBug(params.id))
+    if (window.location.hash.startsWith('#!')) {
+      this.updateBug(window.location.hash.substring(2) as Bug)
+    } else {
+      this.updateBug('bug001')
+    }
+    page({
+      hashbang: true,
+      window, // <- avoids "Uncaught TypeError: window2 is undefined"
+    })
+    page(':id', ({ params }) => this.updateBug(params.id))
     page('*', () => this.updateBug('bug001'))
-
-    page({ window }) // <- avoids "Uncaught TypeError: window2 is undefined"
+    page('*', console.log)
     const prevEl = document.querySelector('.bugs__btn-prev')
     const nextEl = document.querySelector('.bugs__btn-next')
     if (prevEl) {
@@ -58,7 +66,7 @@ class DemoApp {
       if (index < 0) {
         index = this.bugs.length - 1
       }
-      page(`/bugs/${this.bugs[index]}`)
+      page(`#!${this.bugs[index]}`)
     }
   }
 
@@ -69,7 +77,7 @@ class DemoApp {
       if (index >= this.bugs.length) {
         index = 0
       }
-      page(`/bugs/${this.bugs[index]}`)
+      page(`#!${this.bugs[index]}`)
     }
   }
 

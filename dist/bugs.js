@@ -27754,7 +27754,7 @@ ${e2}`);
           if (index < 0) {
             index = this.bugs.length - 1;
           }
-          (0, import_page.default)(`/bugs/${this.bugs[index]}`);
+          (0, import_page.default)(`#!${this.bugs[index]}`);
         }
       };
       this.handleNextClick = () => {
@@ -27764,7 +27764,7 @@ ${e2}`);
           if (index >= this.bugs.length) {
             index = 0;
           }
-          (0, import_page.default)(`/bugs/${this.bugs[index]}`);
+          (0, import_page.default)(`#!${this.bugs[index]}`);
         }
       };
       this.togglePlaying = () => {
@@ -27783,9 +27783,19 @@ ${e2}`);
       this.start();
     }
     initializePage() {
-      (0, import_page.default)("/bugs/:id", ({ params }) => this.updateBug(params.id));
+      if (window.location.hash.startsWith("#!")) {
+        this.updateBug(window.location.hash.substring(2));
+      } else {
+        this.updateBug("bug001");
+      }
+      (0, import_page.default)({
+        hashbang: true,
+        window
+        // <- avoids "Uncaught TypeError: window2 is undefined"
+      });
+      (0, import_page.default)(":id", ({ params }) => this.updateBug(params.id));
       (0, import_page.default)("*", () => this.updateBug("bug001"));
-      (0, import_page.default)({ window });
+      (0, import_page.default)("*", console.log);
       const prevEl = document.querySelector(".bugs__btn-prev");
       const nextEl = document.querySelector(".bugs__btn-next");
       if (prevEl) {

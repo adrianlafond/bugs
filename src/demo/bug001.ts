@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js'
 import * as grid from './grid'
-import { Bug, BugRender, BugSide, Leg, SegmentData } from '../bug'
+import { Bug, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 
 
-export class Simple extends BaseDemo {
+export class Bug001 extends BaseDemo {
   protected readonly bug: Bug
 
   private readonly segmentsGfx = new PIXI.Graphics()
@@ -21,6 +21,35 @@ export class Simple extends BaseDemo {
         width: clientRect.width,
         height: clientRect.height
       } : undefined,
+      segments: [{
+        position: new Point(),
+        legs: {
+          left: [[
+            new Point(-5, 0),
+            new Point(-68, -55)
+          ], [
+            new Point(-5, 2),
+            new Point(-80, -2)
+          ], [
+            new Point(-5, 4),
+            new Point(-66, 58)
+          ]],
+          right: [[
+            new Point(5, 0),
+            new Point(68, -55)
+          ], [
+            new Point(5, 2),
+            new Point(80, -2)
+          ], [
+            new Point(5, 4),
+            new Point(66, 58)
+          ]]
+        },
+      }],
+      millisecondsPerStep: 600,
+      maxStepPx: 16,
+      maxDistractionPx: 72,
+      maxJigglePx: 0,
     })
 
     grid.render(this.app)
@@ -42,7 +71,7 @@ export class Simple extends BaseDemo {
     })
     this.bug.on('targetReached', this.handleTargetReached)
     this.clearGfx()
-    this.renderAllSegments(bug)
+    this.renderSegment(bug.segments[0], bug.activeSide)
   }
 
   changeTarget (point: Point): void {
@@ -66,28 +95,26 @@ export class Simple extends BaseDemo {
     this.legsGfx.removeChildren()
   }
 
-  private renderAllSegments (bug: BugRender): void {
-    for (let i = bug.segments.length - 1; i >= 0; i--) {
-      this.renderSegment(bug.segments[i], bug.activeSide, i)
-    }
-  }
-
-  private renderSegment (segment: SegmentData,  activeSide: BugSide, index: number): void {
-    const color = index == 0 ? 0xddeeff : 0xffff00
+  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
+    const color = 0xddeeff
 
     const gfx = new PIXI.Graphics()
     this.segmentsGfx.addChild(gfx)
 
     gfx.lineStyle({ width: 1, color })
-    gfx.drawCircle(0, 0, 9)
+    gfx.drawCircle(0, 0, 5)
+
+    gfx.lineStyle({ width: 0.5, color: 0x8899aa })
+    gfx.moveTo(-1, -4)
+    gfx.bezierCurveTo(-3, -40, -9, -50, -32, -60)
+    gfx.moveTo(1, -4)
+    gfx.bezierCurveTo(3, -40, 9, -50, 32, -60)
+
     gfx.lineStyle({ width: 0 })
 
     gfx.beginFill(color)
-    gfx.moveTo(0, -8)
-    gfx.lineTo(5, 8)
-    gfx.lineTo(0, 2)
-    gfx.lineTo(-5, 8)
-    gfx.lineTo(0, -8)
+    gfx.drawCircle(-3, -4, 2)
+    gfx.drawCircle(3, -4, 2)
     gfx.endFill()
 
     gfx.rotation = segment.position.radians
@@ -110,16 +137,18 @@ export class Simple extends BaseDemo {
     const gfx = new PIXI.Graphics()
     this.legsGfx.addChild(gfx)
 
-    gfx.lineStyle({ width: 1, color: 0xddeeff })
+    const color = isActive ? 0xaabbcc : 0x8899aa
+    gfx.lineStyle({ width: 1, color })
     gfx.moveTo(socket.x, socket.y)
     if (joint != null) {
       gfx.lineTo(joint.x, joint.y)
+      gfx.lineStyle({ width: 0 })
+      gfx.beginFill(color)
+      gfx.drawPolygon(joint.x - 1.5, joint.y, joint.x + 1.5, joint.y, claw.x, claw.y)
+      gfx.endFill()
+    } else {
+      gfx.lineTo(claw.x, claw.y)
+      gfx.lineStyle({ width: 0 })
     }
-    gfx.lineTo(claw.x, claw.y)
-    gfx.lineStyle({ width: 0 })
-
-    gfx.beginFill(0xddeeff)
-    gfx.drawCircle(claw.x, claw.y, isActive ? 2 : 1)
-    gfx.endFill()
   }
 }

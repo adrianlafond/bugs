@@ -1,18 +1,18 @@
 import * as PIXI from 'pixi.js'
 import page from 'page'
 import { BugDemo } from './bug-demo'
-import { Simple } from './simple'
+import { Bug001 } from './bug001'
 import { BaseDemo } from './base-demo'
 
 let instance: DemoApp
 
 type Bug =
   | 'demo'
-  | 'simple'
+  | 'bug001'
 
 const bugsMap = {
   demo: BugDemo,
-  simple: Simple,
+  bug001: Bug001,
 }
 
 class DemoApp {
@@ -20,7 +20,7 @@ class DemoApp {
   private readonly app: PIXI.Application<HTMLCanvasElement>
   private playing = false
   private bug: Bug = 'demo'
-  private bugs: Bug[] = ['demo', 'simple']
+  private bugs: Bug[] = ['demo', 'bug001']
   private liveBug: BaseDemo | null = null
 
   constructor (selector: string) {
@@ -38,7 +38,7 @@ class DemoApp {
 
   private initializePage (): void {
     page('/demo', () => this.updateBug('demo'))
-    page('/simple', () => this.updateBug('simple'))
+    page('/bug001', () => this.updateBug('bug001'))
     page('*', () => this.updateBug('demo'))
 
     page({ window }) // <- avoids "Uncaught TypeError: window2 is undefined"

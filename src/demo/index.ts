@@ -1,18 +1,21 @@
 import * as PIXI from 'pixi.js'
 import page from 'page'
 import { BugDemo } from './bug-demo'
-import { Bug001 } from './bug001'
 import { BaseDemo } from './base-demo'
+import { Bug001 } from './bug001'
+import { Bug002 } from './bug002'
 
 let instance: DemoApp
 
 type Bug =
   | 'demo'
   | 'bug001'
+  | 'bug002'
 
 const bugsMap = {
   demo: BugDemo,
   bug001: Bug001,
+  bug002: Bug002
 }
 
 class DemoApp {
@@ -20,7 +23,7 @@ class DemoApp {
   private readonly app: PIXI.Application<HTMLCanvasElement>
   private playing = false
   private bug: Bug = 'demo'
-  private bugs: Bug[] = ['demo', 'bug001']
+  private bugs: Bug[] = ['demo', 'bug001', 'bug002']
   private liveBug: BaseDemo | null = null
 
   constructor (selector: string) {

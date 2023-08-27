@@ -11,6 +11,9 @@ type Pattern = 'random' | 'horizontal' | 'vertical' | 'spiral'
 export class BaseDemo {
   private pattern: Pattern
 
+  protected targetColor = 0x888888
+  protected readonly targetGfx = new PIXI.Graphics()
+
   constructor (protected readonly app: PIXI.Application) {
     this.pattern = this.updatePattern()
     if (app.view.addEventListener) {
@@ -32,13 +35,27 @@ export class BaseDemo {
     }
   }
 
-  private handlePointerDown = (event: Event | PointerEvent) => {
+  protected readonly handleTargetReached = (): void => {
+    this.updateTargetPattern()
+  }
+
+  protected clearGfx () {
+    this.targetGfx.clear()
+  }
+
+  protected handlePointerDown = (event: Event | PointerEvent) => {
     if (this.app.view.getBoundingClientRect) {
       const viewRect = this.app.view.getBoundingClientRect()
       if ('clientX' in event && 'clientY' in event) {
         this.changeTarget(new Point(event.clientX - viewRect.x, event.clientY - viewRect.y))
       }
     }
+  }
+
+  protected renderTarget ({ x, y }: Point): void {
+    this.targetGfx.beginFill(this.targetColor)
+    this.targetGfx.drawCircle(x, y, 2)
+    this.targetGfx.endFill()
   }
 
   protected updateTargetPattern (): void {

@@ -14,6 +14,7 @@ export class Bug001 extends BaseDemo {
   constructor (app: PIXI.Application) {
     super(app)
     const clientRect = app.view.getBoundingClientRect ? app.view?.getBoundingClientRect() : null
+    this.targetColor = 0x8899aa
     this.bug = new Bug({
       stageRect: clientRect ? {
         x: 0,
@@ -54,6 +55,7 @@ export class Bug001 extends BaseDemo {
 
     grid.render(this.app)
 
+    this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
     this.app.stage.addChild(this.segmentsGfx)
     this.updateTargetPattern()
@@ -71,6 +73,7 @@ export class Bug001 extends BaseDemo {
     })
     this.bug.on('targetReached', this.handleTargetReached)
     this.clearGfx()
+    this.renderTarget(bug.target)
     this.renderSegment(bug.segments[0], bug.activeSide)
   }
 
@@ -84,11 +87,8 @@ export class Bug001 extends BaseDemo {
     this.clearGfx()
   }
 
-  private readonly handleTargetReached = (): void => {
-    this.updateTargetPattern()
-  }
-
-  private clearGfx () {
+  protected clearGfx () {
+    super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
     this.legsGfx.clear()

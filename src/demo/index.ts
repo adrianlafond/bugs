@@ -4,6 +4,7 @@ import { BugDemo } from './bug-demo'
 import { BaseDemo } from './base-demo'
 import { Bug001 } from './bug001'
 import { Bug002 } from './bug002'
+import { Bug003 } from './bug003'
 
 let instance: DemoApp
 
@@ -15,7 +16,8 @@ type Bug =
 const bugsMap = {
   demo: BugDemo,
   bug001: Bug001,
-  bug002: Bug002
+  bug002: Bug002,
+  bug003: Bug003,
 }
 
 class DemoApp {
@@ -23,7 +25,7 @@ class DemoApp {
   private readonly app: PIXI.Application<HTMLCanvasElement>
   private playing = false
   private bug: Bug = 'demo'
-  private bugs: Bug[] = ['demo', 'bug001', 'bug002']
+  private bugs: Bug[] = Object.keys(bugsMap) as Bug[]
   private liveBug: BaseDemo | null = null
 
   constructor (selector: string) {

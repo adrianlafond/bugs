@@ -8,7 +8,6 @@ import { BaseDemo } from './base-demo'
 export class BugDemo extends BaseDemo {
   protected readonly bug: Bug
 
-  private readonly targetGfx = new PIXI.Graphics()
   private readonly segmentsGfx = new PIXI.Graphics()
   private readonly legsGfx = new PIXI.Graphics()
 
@@ -129,25 +128,12 @@ export class BugDemo extends BaseDemo {
     this.clearGfx()
   }
 
-  private readonly handleTargetReached = (): void => {
-    this.updateTargetPattern()
-  }
-
-  private clearGfx () {
-    this.targetGfx.clear()
+  protected clearGfx () {
+    super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
     this.legsGfx.clear()
     this.legsGfx.removeChildren()
-  }
-
-  private renderTarget ({ x, y }: BugRender['target']): void {
-    const radius = 2
-    this.targetGfx.lineStyle({ width: 1, color: 0xffcc99 })
-    this.targetGfx.moveTo(x - radius, y - radius)
-    this.targetGfx.lineTo(x + radius, y + radius)
-    this.targetGfx.moveTo(x + radius, y - radius)
-    this.targetGfx.lineTo(x - radius, y + radius)
   }
 
   private renderAllSegments (bug: BugRender): void {

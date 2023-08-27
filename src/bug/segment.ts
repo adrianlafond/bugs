@@ -31,7 +31,6 @@ export class Segment {
   constructor(bugStartingPosition: Vector, options: BugOptionsSegment) {
     this.offsetPosition = options.position
     this.maxDistance = Point.distance(new Point(), this.offsetPosition)
-    this.stepTarget = new Point()
     this.position = this.calculateStartingVector(bugStartingPosition, options.position)
     this.legs = this.createLegs(options.legs)
   }

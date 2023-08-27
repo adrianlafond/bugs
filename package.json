@@ -7,7 +7,9 @@
     "test": "jest --coverage",
     "start": "npm run clean && concurrently npm:watch npm:serve",
     "clean": "shx rm -rf dist",
-    "build": "esbuild src/index.ts --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=dist/bugs.js",
+    "build": "npm run build:js && npm run build:css",
+    "build:js": "esbuild src/index.ts --bundle --minify --sourcemap --outfile=dist/bugs.min.js",
+    "build:css": "esbuild src/style/main.css --bundle --minify --outfile=dist/main.min.css",
     "watch": "esbuild src/index.ts --bundle --watch --sourcemap --outfile=dist/bugs.js",
     "serve": "live-server --no-browser --watch=./dist/ --entry-file=./index.html",
     "lint": "ts-standard --fix",
@@ -31,6 +33,7 @@
   "homepage": "https://github.com/adrianlafond/bugs#readme",
   "devDependencies": {
     "@types/jest": "^29.5.1",
+    "@types/page": "^1.11.6",
     "concurrently": "^8.0.1",
     "esbuild": "0.17.19",
     "gh-pages": "^5.0.0",
@@ -44,6 +47,7 @@
   "dependencies": {
     "@adrianlafond/geom": "^1.2.9",
     "easings.net": "^1.0.3",
+    "page": "^1.11.6",
     "pixi.js": "^7.2.4"
   },
   "ts-standard": {

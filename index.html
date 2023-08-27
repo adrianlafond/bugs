@@ -5,30 +5,15 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>bugs</title>
-  <style>
-    html, body {
-      height: 100%;
-    }
-    body {
-      background-color: black;
-    }
-    main {
-      display: flex;
-      height: 100%;
-      justify-content: center;
-    }
-    #canvas {
-      border-radius: 16px;
-      overflow: hidden;
-      align-self: center;
-      width: 360px;
-      height: 360px;
-    }
-  </style>
+  <link rel="stylesheet" href="dist/main.min.css" />
 </head>
 <body>
   <main>
-    <div id="canvas" />
+    <div class="bugs__content"></div>
+    <div class="bugs__navigation">
+      <button class="bugs__btn bugs__btn-prev" aria-label="previous">&#8678;</button>
+      <button class="bugs__btn bugs__btn-next" aria-label="next">&#8680;</button>
+    </div>
   </main>
 
   <script src="dist/bugs.js"></script>

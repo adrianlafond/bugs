@@ -28024,8 +28024,8 @@ ${e2}`);
   var DemoApp = class {
     constructor(selector) {
       this.playing = false;
-      this.bug = "demo";
-      this.bugs = Object.keys(bugsMap);
+      this.bugs = Object.keys(bugsMap).reverse();
+      this.bug = this.bugs[0];
       this.liveBug = null;
       this.handlePrevClick = () => {
         let index = this.bugs.findIndex((bug) => bug === this.bug);
@@ -28035,6 +28035,8 @@ ${e2}`);
             index = this.bugs.length - 1;
           }
           (0, import_page.default)(`#!${this.bugs[index]}`);
+        } else {
+          (0, import_page.default)(`#!${this.bugs[0]}`);
         }
       };
       this.handleNextClick = () => {
@@ -28045,6 +28047,8 @@ ${e2}`);
             index = 0;
           }
           (0, import_page.default)(`#!${this.bugs[index]}`);
+        } else {
+          (0, import_page.default)(`#!${this.bugs[0]}`);
         }
       };
       this.togglePlaying = () => {
@@ -28057,6 +28061,7 @@ ${e2}`);
       } else {
         throw new Error('Canvas element "#bugs-canvas" not found.');
       }
+      this.bugs = this.bugs.slice(0, this.bugs.length - 1);
       this.app = new Application({ width: 360, height: 360 });
       this.initializePage();
       this.appendToDom();
@@ -28066,7 +28071,7 @@ ${e2}`);
       if (window.location.hash.startsWith("#!")) {
         this.updateBug(window.location.hash.substring(2));
       } else {
-        this.updateBug("bug001");
+        this.updateBug(this.bugs[0]);
       }
       (0, import_page.default)({
         hashbang: true,
@@ -28074,7 +28079,7 @@ ${e2}`);
         // <- avoids "Uncaught TypeError: window2 is undefined"
       });
       (0, import_page.default)(":id", ({ params }) => this.updateBug(params.id));
-      (0, import_page.default)("*", () => this.updateBug("bug001"));
+      (0, import_page.default)("*", () => this.updateBug(this.bugs[0]));
       const prevEl = document.querySelector(".bugs__btn-prev");
       const nextEl = document.querySelector(".bugs__btn-next");
       if (prevEl) {
@@ -28089,7 +28094,7 @@ ${e2}`);
       this.containerElement.addEventListener("dblclick", this.togglePlaying);
     }
     updateBug(bug) {
-      this.bug = bug in bugsMap ? bug : "bug001";
+      this.bug = bug in bugsMap || bug === "demo" ? bug : this.bugs[0];
       this.restart();
     }
     restart() {

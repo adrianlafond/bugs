@@ -24,8 +24,8 @@ class DemoApp {
   private readonly containerElement: HTMLElement
   private readonly app: PIXI.Application<HTMLCanvasElement>
   private playing = false
-  private bug: Bug = 'demo'
-  private bugs: Bug[] = Object.keys(bugsMap) as Bug[]
+  private bugs: Bug[] = Object.keys(bugsMap).reverse() as Bug[]
+  private bug: Bug = this.bugs[0]
   private liveBug: BaseDemo | null = null
 
   constructor (selector: string) {
@@ -35,6 +35,7 @@ class DemoApp {
     } else {
       throw new Error('Canvas element "#bugs-canvas" not found.');
     }
+    this.bugs = this.bugs.slice(0, this.bugs.length - 1)
     this.app = new PIXI.Application({ width: 360, height: 360 })
     this.initializePage()
     this.appendToDom()
@@ -45,14 +46,14 @@ class DemoApp {
     if (window.location.hash.startsWith('#!')) {
       this.updateBug(window.location.hash.substring(2) as Bug)
     } else {
-      this.updateBug('bug001')
+      this.updateBug(this.bugs[0])
     }
     page({
       hashbang: true,
       window, // <- avoids "Uncaught TypeError: window2 is undefined"
     })
     page(':id', ({ params }) => this.updateBug(params.id))
-    page('*', () => this.updateBug('bug001'))
+    page('*', () => this.updateBug(this.bugs[0]))
     const prevEl = document.querySelector('.bugs__btn-prev')
     const nextEl = document.querySelector('.bugs__btn-next')
     if (prevEl) {
@@ -71,6 +72,8 @@ class DemoApp {
         index = this.bugs.length - 1
       }
       page(`#!${this.bugs[index]}`)
+    } else {
+      page(`#!${this.bugs[0]}`)
     }
   }
 
@@ -82,6 +85,8 @@ class DemoApp {
         index = 0
       }
       page(`#!${this.bugs[index]}`)
+    } else {
+      page(`#!${this.bugs[0]}`)
     }
   }
 
@@ -96,7 +101,7 @@ class DemoApp {
   }
 
   private updateBug (bug: Bug): void {
-    this.bug = bug in bugsMap ? bug : 'bug001'
+    this.bug = bug in bugsMap || bug === 'demo' ? bug : this.bugs[0]
     this.restart()
   }
 

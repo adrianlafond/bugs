@@ -53,7 +53,6 @@ class DemoApp {
       window, // <- avoids "Uncaught TypeError: window2 is undefined"
     })
     page(':id', ({ params }) => this.updateBug(params.id))
-    page('*', () => this.updateBug(this.bugs[0]))
     const prevEl = document.querySelector('.bugs__btn-prev')
     const nextEl = document.querySelector('.bugs__btn-next')
     if (prevEl) {

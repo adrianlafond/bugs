@@ -28079,7 +28079,6 @@ ${e2}`);
         // <- avoids "Uncaught TypeError: window2 is undefined"
       });
       (0, import_page.default)(":id", ({ params }) => this.updateBug(params.id));
-      (0, import_page.default)("*", () => this.updateBug(this.bugs[0]));
       const prevEl = document.querySelector(".bugs__btn-prev");
       const nextEl = document.querySelector(".bugs__btn-next");
       if (prevEl) {

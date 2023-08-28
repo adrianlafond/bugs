@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import * as grid from './grid'
+import * as grid from './background/grid'
 import { Bug, BugRender, BugSide, Leg, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'

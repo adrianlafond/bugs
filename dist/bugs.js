@@ -4079,10 +4079,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point15 = (
+      var Point16 = (
         /** @class */
         function() {
-          function Point16(x2, y2) {
+          function Point17(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -4092,39 +4092,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point16.prototype, "data", {
+          Object.defineProperty(Point17.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point16.prototype.clone = function() {
-            return new Point16(this.x, this.y);
+          Point17.prototype.clone = function() {
+            return new Point17(this.x, this.y);
           };
-          Point16.prototype.add = function(point) {
+          Point17.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point16.prototype.subtract = function(point) {
+          Point17.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point16.prototype.toString = function() {
+          Point17.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point16.distance = function(p1, p2) {
+          Point17.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point16.radians = function(p1, p2) {
+          Point17.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point16;
+          return Point17;
         }()
       );
-      exports.default = Point15;
+      exports.default = Point16;
     }
   });
 
@@ -4134,10 +4134,10 @@
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
       var point_1 = require_point();
-      var Vector9 = (
+      var Vector10 = (
         /** @class */
         function() {
-          function Vector10(x_point, y_point, radians2) {
+          function Vector11(x_point, y_point, radians2) {
             if (x_point === void 0) {
               x_point = 0;
             }
@@ -4156,14 +4156,14 @@
               this.model.radians = radians2;
             }
           }
-          Object.defineProperty(Vector10.prototype, "point", {
+          Object.defineProperty(Vector11.prototype, "point", {
             get: function() {
               return this.model.point.clone();
             },
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector10.prototype, "x", {
+          Object.defineProperty(Vector11.prototype, "x", {
             get: function() {
               return this.model.point.x;
             },
@@ -4173,7 +4173,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector10.prototype, "y", {
+          Object.defineProperty(Vector11.prototype, "y", {
             get: function() {
               return this.model.point.y;
             },
@@ -4183,7 +4183,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector10.prototype, "radians", {
+          Object.defineProperty(Vector11.prototype, "radians", {
             get: function() {
               return this.model.radians;
             },
@@ -4193,7 +4193,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector10.prototype, "data", {
+          Object.defineProperty(Vector11.prototype, "data", {
             get: function() {
               var _a = this, x2 = _a.x, y2 = _a.y, radians2 = _a.radians;
               return { x: x2, y: y2, radians: radians2 };
@@ -4201,16 +4201,16 @@
             enumerable: false,
             configurable: true
           });
-          Vector10.prototype.clone = function() {
-            return new Vector10(this.point, this.radians);
+          Vector11.prototype.clone = function() {
+            return new Vector11(this.point, this.radians);
           };
-          Vector10.prototype.toString = function() {
+          Vector11.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          return Vector10;
+          return Vector11;
         }()
       );
-      exports.default = Vector9;
+      exports.default = Vector10;
     }
   });
 
@@ -6684,14 +6684,14 @@ Deprecated since v${version}`);
 
   // node_modules/@pixi/core/lib/geometry/Attribute.mjs
   var Attribute = class {
-    constructor(buffer, size = 0, normalized = false, type = TYPES.FLOAT, stride, start2, instance3, divisor = 1) {
+    constructor(buffer, size = 0, normalized = false, type = TYPES.FLOAT, stride, start2, instance2, divisor = 1) {
       this.buffer = buffer;
       this.size = size;
       this.normalized = normalized;
       this.type = type;
       this.stride = stride;
       this.start = start2;
-      this.instance = instance3;
+      this.instance = instance2;
       this.divisor = divisor;
     }
     destroy() {
@@ -6760,7 +6760,7 @@ Deprecated since v${version}`);
       this.disposeRunner = new Runner("disposeGeometry");
       this.refCount = 0;
     }
-    addAttribute(id, buffer, size = 0, normalized = false, type, stride, start2, instance3 = false) {
+    addAttribute(id, buffer, size = 0, normalized = false, type, stride, start2, instance2 = false) {
       if (!buffer) {
         throw new Error("You must pass a buffer when creating an attribute");
       }
@@ -6782,8 +6782,8 @@ Deprecated since v${version}`);
         this.buffers.push(buffer);
         bufferIndex = this.buffers.length - 1;
       }
-      this.attributes[id] = new Attribute(bufferIndex, size, normalized, type, stride, start2, instance3);
-      this.instanced = this.instanced || instance3;
+      this.attributes[id] = new Attribute(bufferIndex, size, normalized, type, stride, start2, instance2);
+      this.instanced = this.instanced || instance2;
       return this;
     }
     getAttribute(id) {
@@ -26743,53 +26743,55 @@ ${e2}`);
   // src/demo/index.ts
   var import_page = __toESM(require_page());
 
-  // src/demo/grid.ts
-  var instance;
-  var LINE_COLOR = 1127253;
-  var Grid = class {
-    constructor(app) {
+  // src/demo/background/background.ts
+  var Background = class {
+    constructor(app, bgColor = 0) {
       this.app = app;
+      this.bgColor = bgColor;
       this.pointerDownHandler = () => void 0;
       this.handlePointerDown = (event) => {
         this.pointerDownHandler(event);
       };
     }
-    udpateApp(app) {
-      this.app = app;
-    }
-    render(px) {
+    render(app = this.app) {
       const background = new Graphics();
+      background.beginFill(this.bgColor);
+      background.drawRect(0, 0, this.app.view.width, this.app.view.height);
+      background.endFill();
       background.eventMode = "static";
       background.on("pointerdown", this.handlePointerDown);
-      background.beginFill(0);
-      background.drawRect(0, 0, this.app.view.width, this.app.view.height);
+      this.app = app;
       this.app.stage.addChild(background);
-      let n2 = px;
-      while (n2 < this.app.view.height) {
-        const line = new Graphics();
-        line.beginFill(LINE_COLOR);
-        line.drawRect(0, n2, this.app.view.width, 1);
-        this.app.stage.addChild(line);
-        n2 += px;
-      }
-      n2 = px;
-      while (n2 < this.app.view.width) {
-        const line = new Graphics();
-        line.beginFill(LINE_COLOR);
-        line.drawRect(n2, 0, 1, this.app.view.height);
-        this.app.stage.addChild(line);
-        n2 += px;
-      }
     }
     onPointerDown(handler) {
       this.pointerDownHandler = handler;
     }
   };
-  function render(app, px = 10) {
-    instance = instance != null ? instance : new Grid(app);
-    instance.udpateApp(app);
-    instance.render(px);
-  }
+
+  // src/demo/background/grid.ts
+  var LINE_COLOR = 1127253;
+  var BLOCK_SIZE = 10;
+  var Grid = class extends Background {
+    render(app) {
+      super.render(app);
+      let n2 = BLOCK_SIZE;
+      while (n2 < this.app.view.height) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(0, n2, this.app.view.width, 1);
+        this.app.stage.addChild(line);
+        n2 += BLOCK_SIZE;
+      }
+      n2 = BLOCK_SIZE;
+      while (n2 < this.app.view.width) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(n2, 0, 1, this.app.view.height);
+        this.app.stage.addChild(line);
+        n2 += BLOCK_SIZE;
+      }
+    }
+  };
 
   // src/bug/bug.ts
   var import_geom4 = __toESM(require_dist());
@@ -27524,7 +27526,7 @@ ${e2}`);
         millisecondsPerStep: 100,
         timingFunction: "easeOutSine"
       });
-      render(this.app);
+      (void 0)(this.app);
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
@@ -27654,7 +27656,8 @@ ${e2}`);
         maxDistractionPx: 72,
         maxJigglePx: 0
       });
-      render(this.app);
+      this.grid = new Grid(this.app);
+      this.grid.render();
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
@@ -27778,7 +27781,8 @@ ${e2}`);
         maxDistractionPx: 24,
         maxJigglePx: 1
       });
-      render(this.app);
+      this.grid = new Grid(this.app);
+      this.grid.render();
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
@@ -27910,7 +27914,8 @@ ${e2}`);
         maxDistractionPx: 24,
         maxJigglePx: 1
       });
-      render(this.app);
+      this.grid = new Grid(this.app);
+      this.grid.render();
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
@@ -28013,19 +28018,180 @@ ${e2}`);
     }
   };
 
+  // src/demo/bug004.ts
+  var import_geom14 = __toESM(require_dist());
+  var COLOR = 10040064;
+  var Bug004 = class extends BaseDemo {
+    constructor(app) {
+      var _a;
+      super(app);
+      this.segmentsGfx = new Graphics();
+      this.legsGfx = new Graphics();
+      const clientRect = app.view.getBoundingClientRect ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
+      this.targetColor = 6697728;
+      this.bug = new Bug({
+        stageRect: clientRect ? {
+          x: 0,
+          y: 0,
+          width: clientRect.width,
+          height: clientRect.height
+        } : void 0,
+        segments: [{
+          position: new import_geom14.Point(0, -12)
+        }, {
+          position: new import_geom14.Point(0, 10),
+          legs: {
+            left: [[
+              new import_geom14.Point(-7, -2),
+              new import_geom14.Point(-22, -29)
+            ], [
+              new import_geom14.Point(-7, 0),
+              new import_geom14.Point(-32, -12)
+            ], [
+              new import_geom14.Point(-7, 2),
+              new import_geom14.Point(-32, 2)
+            ], [
+              new import_geom14.Point(-7, 4),
+              new import_geom14.Point(-21, 18)
+            ]],
+            right: [[
+              new import_geom14.Point(7, -2),
+              new import_geom14.Point(22, -29)
+            ], [
+              new import_geom14.Point(7, 0),
+              new import_geom14.Point(32, -12)
+            ], [
+              new import_geom14.Point(7, 2),
+              new import_geom14.Point(32, 2)
+            ], [
+              new import_geom14.Point(7, 4),
+              new import_geom14.Point(21, 18)
+            ]]
+          }
+        }],
+        millisecondsPerStep: 250,
+        maxStepPx: 16,
+        maxDistractionPx: 24,
+        maxJigglePx: 1
+      });
+      this.background = new Background(this.app, 3342336);
+      this.background.render();
+      this.app.stage.addChild(this.targetGfx);
+      this.app.stage.addChild(this.legsGfx);
+      this.app.stage.addChild(this.segmentsGfx);
+      this.updateTargetPattern();
+    }
+    render(deltaMs = 0) {
+      const bug = this.bug.tick({
+        deltaMs,
+        stageRect: {
+          x: 5,
+          y: 5,
+          width: this.app.view.width - 5,
+          height: this.app.view.height - 5
+        }
+      });
+      this.bug.on("targetReached", this.handleTargetReached);
+      this.clearGfx();
+      this.renderTarget(bug.target);
+      this.renderAllSegments(bug);
+    }
+    changeTarget(point) {
+      super.changeTarget(point);
+      this.bug.updateTarget(point);
+    }
+    destroy() {
+      super.destroy();
+      this.clearGfx();
+    }
+    clearGfx() {
+      super.clearGfx();
+      this.segmentsGfx.clear();
+      this.segmentsGfx.removeChildren();
+      this.legsGfx.clear();
+      this.legsGfx.removeChildren();
+    }
+    renderAllSegments(bug) {
+      for (let i2 = bug.segments.length - 1; i2 >= 0; i2--) {
+        if (i2 === 0) {
+          this.renderHead(bug.segments[i2]);
+        } else {
+          this.renderSegment(bug.segments[i2], bug.activeSide);
+        }
+      }
+    }
+    renderHead(segment) {
+      const gfx = this.renderSegmentBase(segment);
+      gfx.beginFill(COLOR);
+      gfx.drawCircle(0, 0, 3);
+      gfx.endFill();
+      gfx.lineStyle({ width: 0.5, color: COLOR });
+      gfx.moveTo(-1, -4);
+      gfx.bezierCurveTo(0, -4, -1, -18, -9, -36);
+      gfx.moveTo(1, -4);
+      gfx.bezierCurveTo(0, -4, 1, -18, 9, -36);
+      gfx.lineStyle({ width: 0 });
+      gfx.beginFill(COLOR);
+      gfx.drawCircle(-3, -2, 3);
+      gfx.drawCircle(3, -2, 3);
+      gfx.endFill();
+    }
+    renderSegment(segment, activeSide) {
+      const gfx = this.renderSegmentBase(segment);
+      gfx.beginFill(COLOR);
+      gfx.drawCircle(0, 0, 9);
+      gfx.drawPolygon(-2, 9, 2, 9, 0, 24);
+      gfx.endFill();
+      this.renderSegmentLegs(segment, activeSide);
+    }
+    renderSegmentBase(segment) {
+      const gfx = new Graphics();
+      this.segmentsGfx.addChild(gfx);
+      gfx.rotation = segment.position.radians;
+      gfx.position.x = segment.position.x;
+      gfx.position.y = segment.position.y;
+      return gfx;
+    }
+    renderSegmentLegs(segment, activeSide) {
+      segment.legs.left.forEach((leg) => this.renderLeg(leg, activeSide === "left"));
+      segment.legs.right.forEach((leg) => this.renderLeg(leg, activeSide === "right"));
+    }
+    renderLeg(leg, _isActive) {
+      const socket = leg[0];
+      const joint = leg.length >= 2 ? leg[1] : null;
+      const claw = leg.length >= 2 ? leg[2] : leg[1];
+      const gfx = new Graphics();
+      this.legsGfx.addChild(gfx);
+      const color = COLOR;
+      gfx.lineStyle({ width: 1, color });
+      gfx.moveTo(socket.x, socket.y);
+      if (joint != null) {
+        gfx.lineTo(joint.x, joint.y);
+        gfx.lineStyle({ width: 0 });
+        gfx.beginFill(color);
+        gfx.drawPolygon(joint.x - 1.5, joint.y, joint.x + 1.5, joint.y, claw.x, claw.y);
+        gfx.endFill();
+      } else {
+        gfx.lineTo(claw.x, claw.y);
+        gfx.lineStyle({ width: 0 });
+      }
+    }
+  };
+
   // src/demo/index.ts
-  var instance2;
+  var instance;
   var bugsMap = {
     demo: BugDemo,
     bug001: Bug001,
     bug002: Bug002,
-    bug003: Bug003
+    bug003: Bug003,
+    bug004: Bug004
   };
   var DemoApp = class {
     constructor(selector) {
       this.playing = false;
-      this.bug = "demo";
-      this.bugs = Object.keys(bugsMap);
+      this.bugs = Object.keys(bugsMap).reverse();
+      this.bug = this.bugs[0];
       this.liveBug = null;
       this.handlePrevClick = () => {
         let index = this.bugs.findIndex((bug) => bug === this.bug);
@@ -28035,6 +28201,8 @@ ${e2}`);
             index = this.bugs.length - 1;
           }
           (0, import_page.default)(`#!${this.bugs[index]}`);
+        } else {
+          (0, import_page.default)(`#!${this.bugs[0]}`);
         }
       };
       this.handleNextClick = () => {
@@ -28045,6 +28213,8 @@ ${e2}`);
             index = 0;
           }
           (0, import_page.default)(`#!${this.bugs[index]}`);
+        } else {
+          (0, import_page.default)(`#!${this.bugs[0]}`);
         }
       };
       this.togglePlaying = () => {
@@ -28057,24 +28227,25 @@ ${e2}`);
       } else {
         throw new Error('Canvas element "#bugs-canvas" not found.');
       }
+      this.bugs = this.bugs.slice(0, this.bugs.length - 1);
       this.app = new Application({ width: 360, height: 360 });
       this.initializePage();
       this.appendToDom();
       this.start();
     }
     initializePage() {
-      if (window.location.hash.startsWith("#!")) {
-        this.updateBug(window.location.hash.substring(2));
-      } else {
-        this.updateBug("bug001");
-      }
       (0, import_page.default)({
         hashbang: true,
         window
         // <- avoids "Uncaught TypeError: window2 is undefined"
       });
       (0, import_page.default)(":id", ({ params }) => this.updateBug(params.id));
-      (0, import_page.default)("*", () => this.updateBug("bug001"));
+      (0, import_page.default)("*", () => this.updateBug(this.bugs[0]));
+      if (window.location.hash.startsWith("#!")) {
+        this.updateBug(window.location.hash.substring(2));
+      } else {
+        this.updateBug(this.bugs[0]);
+      }
       const prevEl = document.querySelector(".bugs__btn-prev");
       const nextEl = document.querySelector(".bugs__btn-next");
       if (prevEl) {
@@ -28089,7 +28260,7 @@ ${e2}`);
       this.containerElement.addEventListener("dblclick", this.togglePlaying);
     }
     updateBug(bug) {
-      this.bug = bug in bugsMap ? bug : "bug001";
+      this.bug = bug in bugsMap || bug === "demo" ? bug : this.bugs[0];
       this.restart();
     }
     restart() {
@@ -28112,7 +28283,7 @@ ${e2}`);
     }
   };
   function start(selector) {
-    instance2 = instance2 != null ? instance2 : new DemoApp(selector);
+    instance = instance != null ? instance : new DemoApp(selector);
   }
 
   // src/index.ts

@@ -1,21 +1,22 @@
 import * as PIXI from 'pixi.js'
-import { Bug, BugSide, SegmentData } from '../bug'
+import { Background } from './background/background'
+import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
-import { Grid } from './background/grid'
 
+const COLOR = 0x993300
 
-export class Bug001 extends BaseDemo {
+export class Bug004 extends BaseDemo {
   protected readonly bug: Bug
 
+  private readonly background: Background
   private readonly segmentsGfx = new PIXI.Graphics()
   private readonly legsGfx = new PIXI.Graphics()
-  private readonly grid: Grid
 
   constructor (app: PIXI.Application) {
     super(app)
     const clientRect = app.view.getBoundingClientRect ? app.view?.getBoundingClientRect() : null
-    this.targetColor = 0x8899aa
+    this.targetColor = 0x663300
     this.bug = new Bug({
       stageRect: clientRect ? {
         x: 0,
@@ -24,38 +25,46 @@ export class Bug001 extends BaseDemo {
         height: clientRect.height
       } : undefined,
       segments: [{
-        position: new Point(),
+        position: new Point(0, -12)
+      }, {
+        position: new Point(0, 10),
         legs: {
           left: [[
-            new Point(-5, 0),
-            new Point(-68, -55)
+            new Point(-7, -2),
+            new Point(-22, -29)
           ], [
-            new Point(-5, 2),
-            new Point(-80, -2)
+            new Point(-7, 0),
+            new Point(-32, -12)
           ], [
-            new Point(-5, 4),
-            new Point(-66, 58)
+            new Point(-7, 2),
+            new Point(-32, 2)
+          ], [
+            new Point(-7, 4),
+            new Point(-21, 18)
           ]],
           right: [[
-            new Point(5, 0),
-            new Point(68, -55)
+            new Point(7, -2),
+            new Point(22, -29)
           ], [
-            new Point(5, 2),
-            new Point(80, -2)
+            new Point(7, 0),
+            new Point(32, -12)
           ], [
-            new Point(5, 4),
-            new Point(66, 58)
+            new Point(7, 2),
+            new Point(32, 2)
+          ], [
+            new Point(7, 4),
+            new Point(21, 18)
           ]]
         },
       }],
-      millisecondsPerStep: 600,
+      millisecondsPerStep: 250,
       maxStepPx: 16,
-      maxDistractionPx: 72,
-      maxJigglePx: 0,
+      maxDistractionPx: 24,
+      maxJigglePx: 1,
     })
 
-    this.grid = new Grid(this.app)
-    this.grid.render()
+    this.background = new Background(this.app, 0x330000)
+    this.background.render()
 
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
@@ -76,7 +85,7 @@ export class Bug001 extends BaseDemo {
     this.bug.on('targetReached', this.handleTargetReached)
     this.clearGfx()
     this.renderTarget(bug.target)
-    this.renderSegment(bug.segments[0], bug.activeSide)
+    this.renderAllSegments(bug)
   }
 
   changeTarget (point: Point): void {
@@ -97,33 +106,56 @@ export class Bug001 extends BaseDemo {
     this.legsGfx.removeChildren()
   }
 
-  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
-    const color = 0xddeeff
+  private renderAllSegments (bug: BugRender): void {
+    for (let i = bug.segments.length - 1; i >= 0; i--) {
+      if (i === 0) {
+        this.renderHead(bug.segments[i])
+      } else {
+        this.renderSegment(bug.segments[i], bug.activeSide)
+      }
+    }
+  }
 
-    const gfx = new PIXI.Graphics()
-    this.segmentsGfx.addChild(gfx)
+  private renderHead(segment: SegmentData) {
+    const gfx = this.renderSegmentBase(segment)
 
-    gfx.lineStyle({ width: 1, color })
-    gfx.drawCircle(0, 0, 5)
-
-    gfx.lineStyle({ width: 0.5, color: 0x8899aa })
-    gfx.moveTo(-1, -4)
-    gfx.bezierCurveTo(-3, -40, -9, -50, -32, -60)
-    gfx.moveTo(1, -4)
-    gfx.bezierCurveTo(3, -40, 9, -50, 32, -60)
-
-    gfx.lineStyle({ width: 0 })
-
-    gfx.beginFill(color)
-    gfx.drawCircle(-3, -4, 2)
-    gfx.drawCircle(3, -4, 2)
+    gfx.beginFill(COLOR)
+    gfx.drawCircle(0, 0, 3)
     gfx.endFill()
 
+    // antenae
+    gfx.lineStyle({ width: 0.5, color: COLOR })
+    gfx.moveTo(-1, -4)
+    gfx.bezierCurveTo(0, -4, -1, -18, -9, -36)
+    gfx.moveTo(1, -4)
+    gfx.bezierCurveTo(0, -4, 1, -18, 9, -36)
+    gfx.lineStyle({ width: 0 })
+
+    // eyes
+    gfx.beginFill(COLOR)
+    gfx.drawCircle(-3, -2, 3)
+    gfx.drawCircle(3, -2, 3)
+    gfx.endFill()
+  }
+
+  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
+    const gfx = this.renderSegmentBase(segment)
+
+    gfx.beginFill(COLOR)
+    gfx.drawCircle(0, 0, 9)
+    gfx.drawPolygon(-2, 9, 2, 9, 0, 24)
+    gfx.endFill()
+
+    this.renderSegmentLegs(segment, activeSide)
+  }
+
+  private renderSegmentBase(segment: SegmentData): PIXI.Graphics {
+    const gfx = new PIXI.Graphics()
+    this.segmentsGfx.addChild(gfx)
     gfx.rotation = segment.position.radians
     gfx.position.x = segment.position.x
     gfx.position.y = segment.position.y
-
-    this.renderSegmentLegs(segment, activeSide)
+    return gfx
   }
 
   private renderSegmentLegs (segment: SegmentData, activeSide: BugSide): void {
@@ -131,7 +163,7 @@ export class Bug001 extends BaseDemo {
     segment.legs.right.forEach(leg => this.renderLeg(leg, activeSide === 'right'))
   }
 
-  private renderLeg (leg: Vector[], isActive: boolean): void {
+  private renderLeg (leg: Vector[], _isActive: boolean): void {
     const socket = leg[0]
     const joint = leg.length >= 2 ? leg[1] : null
     const claw = leg.length >= 2 ? leg[2] : leg[1]
@@ -139,7 +171,7 @@ export class Bug001 extends BaseDemo {
     const gfx = new PIXI.Graphics()
     this.legsGfx.addChild(gfx)
 
-    const color = isActive ? 0xaabbcc : 0x8899aa
+    const color = COLOR
     gfx.lineStyle({ width: 1, color })
     gfx.moveTo(socket.x, socket.y)
     if (joint != null) {

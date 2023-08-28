@@ -5,20 +5,19 @@ import { BaseDemo } from './base-demo'
 import { Bug001 } from './bug001'
 import { Bug002 } from './bug002'
 import { Bug003 } from './bug003'
+import { Bug004 } from './bug004'
 
 let instance: DemoApp
-
-type Bug =
-  | 'demo'
-  | 'bug001'
-  | 'bug002'
 
 const bugsMap = {
   demo: BugDemo,
   bug001: Bug001,
   bug002: Bug002,
   bug003: Bug003,
+  bug004: Bug004,
 }
+
+type Bug = keyof typeof bugsMap
 
 class DemoApp {
   private readonly containerElement: HTMLElement
@@ -43,17 +42,19 @@ class DemoApp {
   }
 
   private initializePage (): void {
+    page({
+      hashbang: true,
+      window, // <- avoids "Uncaught TypeError: window2 is undefined"
+    })
+
+    page(':id', ({ params }) => this.updateBug(params.id))
+    page('*', () => this.updateBug(this.bugs[0]))
+
     if (window.location.hash.startsWith('#!')) {
       this.updateBug(window.location.hash.substring(2) as Bug)
     } else {
       this.updateBug(this.bugs[0])
     }
-    page({
-      hashbang: true,
-      window, // <- avoids "Uncaught TypeError: window2 is undefined"
-    })
-    page(':id', ({ params }) => this.updateBug(params.id))
-    page('*', () => this.updateBug(this.bugs[0]))
     const prevEl = document.querySelector('.bugs__btn-prev')
     const nextEl = document.querySelector('.bugs__btn-next')
     if (prevEl) {

@@ -4079,10 +4079,10 @@
     "node_modules/@adrianlafond/geom/dist/point.js"(exports) {
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
-      var Point16 = (
+      var Point17 = (
         /** @class */
         function() {
-          function Point17(x2, y2) {
+          function Point18(x2, y2) {
             if (x2 === void 0) {
               x2 = 0;
             }
@@ -4092,39 +4092,39 @@
             this.x = x2;
             this.y = y2;
           }
-          Object.defineProperty(Point17.prototype, "data", {
+          Object.defineProperty(Point18.prototype, "data", {
             get: function() {
               return { x: this.x, y: this.y };
             },
             enumerable: false,
             configurable: true
           });
-          Point17.prototype.clone = function() {
-            return new Point17(this.x, this.y);
+          Point18.prototype.clone = function() {
+            return new Point18(this.x, this.y);
           };
-          Point17.prototype.add = function(point) {
+          Point18.prototype.add = function(point) {
             this.x += point.x;
             this.y += point.y;
             return this;
           };
-          Point17.prototype.subtract = function(point) {
+          Point18.prototype.subtract = function(point) {
             this.x -= point.x;
             this.y -= point.y;
             return this;
           };
-          Point17.prototype.toString = function() {
+          Point18.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          Point17.distance = function(p1, p2) {
+          Point18.distance = function(p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
           };
-          Point17.radians = function(p1, p2) {
+          Point18.radians = function(p1, p2) {
             return Math.atan2(p2.y - p1.y, p2.x - p1.x);
           };
-          return Point17;
+          return Point18;
         }()
       );
-      exports.default = Point16;
+      exports.default = Point17;
     }
   });
 
@@ -4134,10 +4134,10 @@
       "use strict";
       Object.defineProperty(exports, "__esModule", { value: true });
       var point_1 = require_point();
-      var Vector10 = (
+      var Vector11 = (
         /** @class */
         function() {
-          function Vector11(x_point, y_point, radians2) {
+          function Vector12(x_point, y_point, radians2) {
             if (x_point === void 0) {
               x_point = 0;
             }
@@ -4156,14 +4156,14 @@
               this.model.radians = radians2;
             }
           }
-          Object.defineProperty(Vector11.prototype, "point", {
+          Object.defineProperty(Vector12.prototype, "point", {
             get: function() {
               return this.model.point.clone();
             },
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector11.prototype, "x", {
+          Object.defineProperty(Vector12.prototype, "x", {
             get: function() {
               return this.model.point.x;
             },
@@ -4173,7 +4173,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector11.prototype, "y", {
+          Object.defineProperty(Vector12.prototype, "y", {
             get: function() {
               return this.model.point.y;
             },
@@ -4183,7 +4183,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector11.prototype, "radians", {
+          Object.defineProperty(Vector12.prototype, "radians", {
             get: function() {
               return this.model.radians;
             },
@@ -4193,7 +4193,7 @@
             enumerable: false,
             configurable: true
           });
-          Object.defineProperty(Vector11.prototype, "data", {
+          Object.defineProperty(Vector12.prototype, "data", {
             get: function() {
               var _a = this, x2 = _a.x, y2 = _a.y, radians2 = _a.radians;
               return { x: x2, y: y2, radians: radians2 };
@@ -4201,16 +4201,16 @@
             enumerable: false,
             configurable: true
           });
-          Vector11.prototype.clone = function() {
-            return new Vector11(this.point, this.radians);
+          Vector12.prototype.clone = function() {
+            return new Vector12(this.point, this.radians);
           };
-          Vector11.prototype.toString = function() {
+          Vector12.prototype.toString = function() {
             return JSON.stringify(this.data);
           };
-          return Vector11;
+          return Vector12;
         }()
       );
-      exports.default = Vector10;
+      exports.default = Vector11;
     }
   });
 
@@ -28178,6 +28178,142 @@ ${e2}`);
     }
   };
 
+  // src/demo/bug005.ts
+  var import_geom15 = __toESM(require_dist());
+  var COLOR2 = 11188992;
+  var Bug005 = class extends BaseDemo {
+    constructor(app) {
+      var _a;
+      super(app);
+      this.segmentsGfx = new Graphics();
+      this.legsGfx = new Graphics();
+      const clientRect = app.view.getBoundingClientRect ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
+      this.targetColor = 10061824;
+      this.bug = new Bug({
+        stageRect: clientRect ? {
+          x: 0,
+          y: 0,
+          width: clientRect.width,
+          height: clientRect.height
+        } : void 0,
+        segments: [{
+          position: new import_geom15.Point(0, 30),
+          legs: {
+            left: [[
+              new import_geom15.Point(-7, -2),
+              new import_geom15.Point(-42, -49)
+            ], [
+              new import_geom15.Point(-7, 0),
+              new import_geom15.Point(-52, -18)
+            ], [
+              new import_geom15.Point(-7, 2),
+              new import_geom15.Point(-42, 18)
+            ], [
+              new import_geom15.Point(-7, 4),
+              new import_geom15.Point(-41, 48)
+            ]],
+            right: [[
+              new import_geom15.Point(7, -2),
+              new import_geom15.Point(42, -49)
+            ], [
+              new import_geom15.Point(7, 0),
+              new import_geom15.Point(52, -18)
+            ], [
+              new import_geom15.Point(7, 2),
+              new import_geom15.Point(42, 18)
+            ], [
+              new import_geom15.Point(7, 4),
+              new import_geom15.Point(41, 48)
+            ]]
+          }
+        }],
+        millisecondsPerStep: 1e3,
+        maxStepPx: 24,
+        maxDistractionPx: 18,
+        maxJigglePx: 1,
+        timingFunction: "easeOutBack"
+      });
+      this.background = new Background(this.app, 4469504);
+      this.background.render();
+      this.app.stage.addChild(this.targetGfx);
+      this.app.stage.addChild(this.legsGfx);
+      this.app.stage.addChild(this.segmentsGfx);
+      this.updateTargetPattern();
+    }
+    render(deltaMs = 0) {
+      const bug = this.bug.tick({
+        deltaMs,
+        stageRect: {
+          x: 5,
+          y: 5,
+          width: this.app.view.width - 5,
+          height: this.app.view.height - 5
+        }
+      });
+      this.bug.on("targetReached", this.handleTargetReached);
+      this.clearGfx();
+      this.renderTarget(bug.target);
+      this.renderSegment(bug.segments[0], bug.activeSide);
+    }
+    changeTarget(point) {
+      super.changeTarget(point);
+      this.bug.updateTarget(point);
+    }
+    destroy() {
+      super.destroy();
+      this.clearGfx();
+    }
+    clearGfx() {
+      super.clearGfx();
+      this.segmentsGfx.clear();
+      this.segmentsGfx.removeChildren();
+      this.legsGfx.clear();
+      this.legsGfx.removeChildren();
+    }
+    renderSegment(segment, activeSide) {
+      const gfx = this.renderSegmentBase(segment);
+      gfx.beginFill(COLOR2);
+      gfx.drawCircle(0, 0, 7);
+      gfx.drawPolygon(-2, 7, 2, 7, 0, 14);
+      gfx.drawPolygon(-1, -9, -5, -17, -3, -21);
+      gfx.drawPolygon(1, -9, 5, -17, 3, -21);
+      gfx.endFill();
+      gfx.lineStyle({ width: 1, color: COLOR2 });
+      gfx.drawCircle(-3, -7, 5);
+      gfx.drawCircle(3, -7, 5);
+      this.renderSegmentLegs(segment, activeSide);
+    }
+    renderSegmentBase(segment) {
+      const gfx = new Graphics();
+      this.segmentsGfx.addChild(gfx);
+      gfx.rotation = segment.position.radians;
+      gfx.position.x = segment.position.x;
+      gfx.position.y = segment.position.y;
+      return gfx;
+    }
+    renderSegmentLegs(segment, activeSide) {
+      segment.legs.left.forEach((leg) => this.renderLeg(leg, activeSide === "left"));
+      segment.legs.right.forEach((leg) => this.renderLeg(leg, activeSide === "right"));
+    }
+    renderLeg(leg, _isActive) {
+      const socket = leg[0];
+      const joint = leg.length >= 2 ? leg[1] : null;
+      const claw = leg.length >= 2 ? leg[2] : leg[1];
+      const gfx = new Graphics();
+      this.legsGfx.addChild(gfx);
+      const color = COLOR2;
+      gfx.lineStyle({ width: 0.5, color });
+      if (joint != null) {
+        gfx.beginFill(COLOR2);
+        gfx.drawPolygon(joint.x - 1, joint.y - 1, joint.x + 1, joint.y + 1, socket.x, socket.y);
+        gfx.endFill();
+        gfx.moveTo(joint.x, joint.y);
+      }
+      gfx.lineTo(claw.x, claw.y);
+      gfx.lineStyle({ width: 0 });
+    }
+  };
+
   // src/demo/index.ts
   var instance;
   var bugsMap = {
@@ -28185,7 +28321,8 @@ ${e2}`);
     bug001: Bug001,
     bug002: Bug002,
     bug003: Bug003,
-    bug004: Bug004
+    bug004: Bug004,
+    bug005: Bug005
   };
   var DemoApp = class {
     constructor(selector) {

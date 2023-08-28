@@ -1,5 +1,5 @@
-import { Point, Vector } from '@adrianlafond/geom';
-import { BugOptions } from './bug.types';
+import { Point, Vector } from '@adrianlafond/geom'
+import { BugOptions } from './bug.types'
 
 export type Defaults = Omit<Required<BugOptions>, 'stageRect'>
 
@@ -31,7 +31,7 @@ export const getDefaults = (): Defaults => ({
         new Point(9, 4),
         new Point(16, 8)
       ]]
-    },
+    }
   }],
   jointOffset: 0.25,
   repulsionPx: 0,

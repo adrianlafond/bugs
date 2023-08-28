@@ -1,6 +1,6 @@
-import { Point, Vector } from '@adrianlafond/geom';
-import { BugOptionsSegment, BugOptionsSegmentLegs } from './bug';
-import { Leg } from './leg';
+import { Point, Vector } from '@adrianlafond/geom'
+import { BugOptionsSegment, BugOptionsSegmentLegs } from './bug.types'
+import { Leg } from './leg'
 
 export interface Legs {
   left: Leg[]
@@ -28,7 +28,7 @@ export class Segment {
   // Map of segment's legs.
   legs: Legs
 
-  constructor(bugStartingPosition: Vector, options: BugOptionsSegment) {
+  constructor (bugStartingPosition: Vector, options: BugOptionsSegment) {
     this.offsetPosition = options.position
     this.maxDistance = Point.distance(new Point(), this.offsetPosition)
     this.position = this.calculateStartingVector(bugStartingPosition, options.position)
@@ -45,15 +45,15 @@ export class Segment {
     }
   }
 
-  private calculateStartingVector(bugStartingPosition: Vector, segmentPosition: Point): Vector {
+  private calculateStartingVector (bugStartingPosition: Vector, segmentPosition: Point): Vector {
     return new Vector(
       segmentPosition.x + bugStartingPosition.x,
       segmentPosition.y + bugStartingPosition.y,
-      bugStartingPosition.radians,
+      bugStartingPosition.radians
     )
   }
 
-  private createLegs(legsModel?: BugOptionsSegmentLegs): Legs {
+  private createLegs (legsModel?: BugOptionsSegmentLegs): Legs {
     const legs: Legs = { left: [], right: [] }
     legsModel?.left.forEach((joints, index) => {
       joints.splice(1, 0, new Point(

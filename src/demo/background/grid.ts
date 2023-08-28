@@ -5,7 +5,7 @@ const LINE_COLOR = 0x113355
 const BLOCK_SIZE = 10
 
 export class Grid extends Background {
-  render (app?: PIXI.Application) {
+  render (app?: PIXI.Application): void {
     super.render(app)
     let n = BLOCK_SIZE
     while (n < this.app.view.height) {

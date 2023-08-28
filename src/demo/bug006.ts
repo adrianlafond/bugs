@@ -1,20 +1,22 @@
 import * as PIXI from 'pixi.js'
-import { Grid } from './background/grid'
+import { Background } from './background/background'
 import { Bug, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 
-export class Bug002 extends BaseDemo {
+const COLOR = 0x779900
+
+export class Bug006 extends BaseDemo {
   protected readonly bug: Bug
 
-  private readonly grid: Grid
+  private readonly background: Background
   private readonly segmentsGfx = new PIXI.Graphics()
   private readonly legsGfx = new PIXI.Graphics()
 
   constructor (app: PIXI.Application) {
     super(app)
     const clientRect = (app.view.getBoundingClientRect != null) ? app.view?.getBoundingClientRect() : null
-    this.targetColor = 0x8899aa
+    this.targetColor = 0x889900
     this.bug = new Bug({
       stageRect: (clientRect != null)
         ? {
@@ -25,32 +27,44 @@ export class Bug002 extends BaseDemo {
           }
         : undefined,
       segments: [{
-        position: new Point(),
+        position: new Point(0, 30),
         legs: {
           left: [[
-            new Point(-5, 2),
-            new Point(-80, -2)
+            new Point(-7, -2),
+            new Point(-28, -28)
+          ], [
+            new Point(-7, 0),
+            new Point(-36, -10)
+          ], [
+            new Point(-7, 2),
+            new Point(-32, 10)
+          ], [
+            new Point(-7, 4),
+            new Point(-22, 24)
           ]],
           right: [[
-            new Point(5, 0),
-            new Point(18, -25)
+            new Point(7, -2),
+            new Point(28, -28)
           ], [
-            new Point(5, 2),
-            new Point(28, -2)
+            new Point(7, 0),
+            new Point(36, -10)
           ], [
-            new Point(5, 4),
-            new Point(16, 28)
+            new Point(7, 2),
+            new Point(32, 10)
+          ], [
+            new Point(7, 4),
+            new Point(22, 24)
           ]]
         }
       }],
-      millisecondsPerStep: 400,
+      millisecondsPerStep: 120,
       maxStepPx: 16,
-      maxDistractionPx: 24,
+      maxDistractionPx: 0,
       maxJigglePx: 1
     })
 
-    this.grid = new Grid(this.app)
-    this.grid.render()
+    this.background = new Background(this.app, 0x223300)
+    this.background.render()
 
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
@@ -93,34 +107,31 @@ export class Bug002 extends BaseDemo {
   }
 
   private renderSegment (segment: SegmentData, activeSide: BugSide): void {
-    const color = 0xddeeff
+    const gfx = this.renderSegmentBase(segment)
 
-    const gfx = new PIXI.Graphics()
-    this.segmentsGfx.addChild(gfx)
-
-    gfx.lineStyle({ width: 1, color })
-    gfx.drawCircle(0, 0, 5)
-
-    // antenae
-    gfx.lineStyle({ width: 0.5, color: 0x8899aa })
-    gfx.moveTo(-1, -4)
-    gfx.bezierCurveTo(-3, -24, -18, -42, -48, -48)
-    gfx.moveTo(1, -4)
-    gfx.bezierCurveTo(3, -40, 9, -60, 32, -90)
-
-    gfx.lineStyle({ width: 0 })
-
-    // eyes
-    gfx.beginFill(color)
-    gfx.drawCircle(-4, -5, 3)
-    gfx.drawCircle(3, -4, 2)
+    // body, tail, mandibles
+    gfx.beginFill(COLOR)
+    gfx.drawCircle(0, 0, 7)
+    gfx.drawPolygon(-2, 7, 2, 7, 0, 14)
+    gfx.drawPolygon(-1, -9, -5, -13, -3, -17)
+    gfx.drawPolygon(1, -9, 5, -13, 3, -17)
     gfx.endFill()
 
+    // eyes
+    gfx.lineStyle({ width: 1, color: COLOR })
+    gfx.drawCircle(-3, -7, 5)
+    gfx.drawCircle(3, -7, 5)
+
+    this.renderSegmentLegs(segment, activeSide)
+  }
+
+  private renderSegmentBase (segment: SegmentData): PIXI.Graphics {
+    const gfx = new PIXI.Graphics()
+    this.segmentsGfx.addChild(gfx)
     gfx.rotation = segment.position.radians
     gfx.position.x = segment.position.x
     gfx.position.y = segment.position.y
-
-    this.renderSegmentLegs(segment, activeSide)
+    return gfx
   }
 
   private renderSegmentLegs (segment: SegmentData, activeSide: BugSide): void {
@@ -128,7 +139,7 @@ export class Bug002 extends BaseDemo {
     segment.legs.right.forEach(leg => this.renderLeg(leg, activeSide === 'right'))
   }
 
-  private renderLeg (leg: Vector[], isActive: boolean): void {
+  private renderLeg (leg: Vector[], _isActive: boolean): void {
     const socket = leg[0]
     const joint = leg.length >= 2 ? leg[1] : null
     const claw = leg.length >= 2 ? leg[2] : leg[1]
@@ -136,18 +147,15 @@ export class Bug002 extends BaseDemo {
     const gfx = new PIXI.Graphics()
     this.legsGfx.addChild(gfx)
 
-    const color = isActive ? 0xaabbcc : 0x8899aa
+    const color = COLOR
     gfx.lineStyle({ width: 1, color })
-    gfx.moveTo(socket.x, socket.y)
     if (joint != null) {
-      gfx.lineTo(joint.x, joint.y)
-      gfx.lineStyle({ width: 0 })
-      gfx.beginFill(color)
-      gfx.drawPolygon(joint.x - 1.5, joint.y, joint.x + 1.5, joint.y, claw.x, claw.y)
+      gfx.beginFill(COLOR)
+      gfx.drawPolygon(joint.x, joint.y, joint.x + 2, joint.y + 2, socket.x, socket.y)
       gfx.endFill()
-    } else {
-      gfx.lineTo(claw.x, claw.y)
-      gfx.lineStyle({ width: 0 })
+      gfx.moveTo(joint.x, joint.y)
     }
+    gfx.lineTo(claw.x, claw.y)
+    gfx.lineStyle({ width: 0 })
   }
 }

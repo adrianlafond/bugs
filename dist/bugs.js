@@ -27568,7 +27568,7 @@ ${e2}`);
       }
     }
     renderSegment(segment, activeSide, index) {
-      const color = index == 0 ? 14544639 : 16776960;
+      const color = index === 0 ? 14544639 : 16776960;
       const gfx = new Graphics();
       this.segmentsGfx.addChild(gfx);
       gfx.lineStyle({ width: 1, color });

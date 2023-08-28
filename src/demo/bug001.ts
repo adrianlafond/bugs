@@ -90,7 +90,7 @@ export class Bug001 extends BaseDemo {
     this.clearGfx()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()

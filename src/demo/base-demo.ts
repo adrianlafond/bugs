@@ -39,11 +39,11 @@ export class BaseDemo {
     this.updateTargetPattern()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     this.targetGfx.clear()
   }
 
-  protected handlePointerDown = (event: Event | PointerEvent) => {
+  protected handlePointerDown = (event: Event | PointerEvent): void => {
     if (this.app.view.getBoundingClientRect != null) {
       const viewRect = this.app.view.getBoundingClientRect()
       if ('clientX' in event && 'clientY' in event) {

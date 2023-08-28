@@ -92,7 +92,7 @@ export class Bug003 extends BaseDemo {
     this.clearGfx()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
@@ -110,7 +110,7 @@ export class Bug003 extends BaseDemo {
     }
   }
 
-  private renderHead (segment: SegmentData) {
+  private renderHead (segment: SegmentData): void {
     const color = 0xddeeff
     const gfx = this.renderSegmentBase(segment)
 

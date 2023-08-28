@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 import * as grid from './background/grid'
-import { Bug, BugRender, BugSide, Leg, SegmentData } from '../bug'
+import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 
@@ -127,7 +127,7 @@ export class BugDemo extends BaseDemo {
     this.clearGfx()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
@@ -142,7 +142,7 @@ export class BugDemo extends BaseDemo {
   }
 
   private renderSegment (segment: SegmentData, activeSide: BugSide, index: number): void {
-    const color = index == 0 ? 0xddeeff : 0xffff00
+    const color = index === 0 ? 0xddeeff : 0xffff00
 
     const gfx = new PIXI.Graphics()
     this.segmentsGfx.addChild(gfx)

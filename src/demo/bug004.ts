@@ -100,7 +100,7 @@ export class Bug004 extends BaseDemo {
     this.clearGfx()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
@@ -118,7 +118,7 @@ export class Bug004 extends BaseDemo {
     }
   }
 
-  private renderHead (segment: SegmentData) {
+  private renderHead (segment: SegmentData): void {
     const gfx = this.renderSegmentBase(segment)
 
     gfx.beginFill(COLOR)

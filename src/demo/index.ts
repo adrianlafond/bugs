@@ -7,6 +7,7 @@ import { Bug002 } from './bug002'
 import { Bug003 } from './bug003'
 import { Bug004 } from './bug004'
 import { Bug005 } from './bug005'
+import { Bug006 } from './bug006'
 
 let instance: DemoApp
 
@@ -17,6 +18,7 @@ const bugsMap = {
   bug003: Bug003,
   bug004: Bug004,
   bug005: Bug005,
+  bug006: Bug006
 }
 
 type Bug = keyof typeof bugsMap
@@ -25,7 +27,7 @@ class DemoApp {
   private readonly containerElement: HTMLElement
   private readonly app: PIXI.Application<HTMLCanvasElement>
   private playing = false
-  private bugs: Bug[] = Object.keys(bugsMap).reverse() as Bug[]
+  private readonly bugs: Bug[] = Object.keys(bugsMap).reverse() as Bug[]
   private bug: Bug = this.bugs[0]
   private liveBug: BaseDemo | null = null
 
@@ -34,7 +36,7 @@ class DemoApp {
     if (element instanceof HTMLElement) {
       this.containerElement = element
     } else {
-      throw new Error('Canvas element "#bugs-canvas" not found.');
+      throw new Error('Canvas element "#bugs-canvas" not found.')
     }
     this.bugs = this.bugs.slice(0, this.bugs.length - 1)
     this.app = new PIXI.Application({ width: 360, height: 360 })
@@ -46,7 +48,7 @@ class DemoApp {
   private initializePage (): void {
     page({
       hashbang: true,
-      window, // <- avoids "Uncaught TypeError: window2 is undefined"
+      window // <- avoids "Uncaught TypeError: window2 is undefined"
     })
 
     page(':id', ({ params }) => this.updateBug(params.id))
@@ -59,10 +61,10 @@ class DemoApp {
     }
     const prevEl = document.querySelector('.bugs__btn-prev')
     const nextEl = document.querySelector('.bugs__btn-next')
-    if (prevEl) {
+    if (prevEl != null) {
       prevEl.addEventListener('click', this.handlePrevClick)
     }
-    if (nextEl) {
+    if (nextEl != null) {
       nextEl.addEventListener('click', this.handleNextClick)
     }
   }
@@ -109,7 +111,7 @@ class DemoApp {
   }
 
   private restart (): void {
-    if (this.liveBug) {
+    if (this.liveBug != null) {
       this.liveBug.destroy()
     }
     this.liveBug = new bugsMap[this.bug](this.app)
@@ -122,7 +124,7 @@ class DemoApp {
 
   start (): void {
     this.app.ticker.add(() => {
-      if (this.liveBug) {
+      if (this.liveBug != null) {
         this.liveBug.render(this.app.ticker.deltaMS)
       }
     })

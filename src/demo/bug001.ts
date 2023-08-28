@@ -4,7 +4,6 @@ import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 import { Grid } from './background/grid'
 
-
 export class Bug001 extends BaseDemo {
   protected readonly bug: Bug
 
@@ -14,15 +13,17 @@ export class Bug001 extends BaseDemo {
 
   constructor (app: PIXI.Application) {
     super(app)
-    const clientRect = app.view.getBoundingClientRect ? app.view?.getBoundingClientRect() : null
+    const clientRect = (app.view.getBoundingClientRect != null) ? app.view?.getBoundingClientRect() : null
     this.targetColor = 0x8899aa
     this.bug = new Bug({
-      stageRect: clientRect ? {
-        x: 0,
-        y: 0,
-        width: clientRect.width,
-        height: clientRect.height
-      } : undefined,
+      stageRect: (clientRect != null)
+        ? {
+            x: 0,
+            y: 0,
+            width: clientRect.width,
+            height: clientRect.height
+          }
+        : undefined,
       segments: [{
         position: new Point(),
         legs: {
@@ -46,12 +47,12 @@ export class Bug001 extends BaseDemo {
             new Point(5, 4),
             new Point(66, 58)
           ]]
-        },
+        }
       }],
       millisecondsPerStep: 600,
       maxStepPx: 16,
       maxDistractionPx: 72,
-      maxJigglePx: 0,
+      maxJigglePx: 0
     })
 
     this.grid = new Grid(this.app)
@@ -97,7 +98,7 @@ export class Bug001 extends BaseDemo {
     this.legsGfx.removeChildren()
   }
 
-  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
+  private renderSegment (segment: SegmentData, activeSide: BugSide): void {
     const color = 0xddeeff
 
     const gfx = new PIXI.Graphics()

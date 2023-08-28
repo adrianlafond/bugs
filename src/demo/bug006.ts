@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js'
 import { Background } from './background/background'
-import { Bug, BugRender, BugSide, SegmentData } from '../bug'
+import { Bug, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 
-const COLOR = 0x993300
+const COLOR = 0x779900
 
-export class Bug004 extends BaseDemo {
+export class Bug006 extends BaseDemo {
   protected readonly bug: Bug
 
   private readonly background: Background
@@ -16,7 +16,7 @@ export class Bug004 extends BaseDemo {
   constructor (app: PIXI.Application) {
     super(app)
     const clientRect = (app.view.getBoundingClientRect != null) ? app.view?.getBoundingClientRect() : null
-    this.targetColor = 0x663300
+    this.targetColor = 0x889900
     this.bug = new Bug({
       stageRect: (clientRect != null)
         ? {
@@ -27,45 +27,43 @@ export class Bug004 extends BaseDemo {
           }
         : undefined,
       segments: [{
-        position: new Point(0, -12)
-      }, {
-        position: new Point(0, 10),
+        position: new Point(0, 30),
         legs: {
           left: [[
             new Point(-7, -2),
-            new Point(-22, -29)
+            new Point(-28, -28)
           ], [
             new Point(-7, 0),
-            new Point(-32, -12)
+            new Point(-36, -10)
           ], [
             new Point(-7, 2),
-            new Point(-32, 2)
+            new Point(-32, 10)
           ], [
             new Point(-7, 4),
-            new Point(-21, 18)
+            new Point(-22, 24)
           ]],
           right: [[
             new Point(7, -2),
-            new Point(22, -29)
+            new Point(28, -28)
           ], [
             new Point(7, 0),
-            new Point(32, -12)
+            new Point(36, -10)
           ], [
             new Point(7, 2),
-            new Point(32, 2)
+            new Point(32, 10)
           ], [
             new Point(7, 4),
-            new Point(21, 18)
+            new Point(22, 24)
           ]]
         }
       }],
-      millisecondsPerStep: 250,
+      millisecondsPerStep: 120,
       maxStepPx: 16,
-      maxDistractionPx: 24,
+      maxDistractionPx: 0,
       maxJigglePx: 1
     })
 
-    this.background = new Background(this.app, 0x330000)
+    this.background = new Background(this.app, 0x223300)
     this.background.render()
 
     this.app.stage.addChild(this.targetGfx)
@@ -87,7 +85,7 @@ export class Bug004 extends BaseDemo {
     this.bug.on('targetReached', this.handleTargetReached)
     this.clearGfx()
     this.renderTarget(bug.target)
-    this.renderAllSegments(bug)
+    this.renderSegment(bug.segments[0], bug.activeSide)
   }
 
   changeTarget (point: Point): void {
@@ -108,45 +106,21 @@ export class Bug004 extends BaseDemo {
     this.legsGfx.removeChildren()
   }
 
-  private renderAllSegments (bug: BugRender): void {
-    for (let i = bug.segments.length - 1; i >= 0; i--) {
-      if (i === 0) {
-        this.renderHead(bug.segments[i])
-      } else {
-        this.renderSegment(bug.segments[i], bug.activeSide)
-      }
-    }
-  }
-
-  private renderHead (segment: SegmentData) {
-    const gfx = this.renderSegmentBase(segment)
-
-    gfx.beginFill(COLOR)
-    gfx.drawCircle(0, 0, 3)
-    gfx.endFill()
-
-    // antenae
-    gfx.lineStyle({ width: 0.5, color: COLOR })
-    gfx.moveTo(-1, -4)
-    gfx.bezierCurveTo(0, -4, -1, -18, -9, -36)
-    gfx.moveTo(1, -4)
-    gfx.bezierCurveTo(0, -4, 1, -18, 9, -36)
-    gfx.lineStyle({ width: 0 })
-
-    // eyes
-    gfx.beginFill(COLOR)
-    gfx.drawCircle(-3, -2, 3)
-    gfx.drawCircle(3, -2, 3)
-    gfx.endFill()
-  }
-
   private renderSegment (segment: SegmentData, activeSide: BugSide): void {
     const gfx = this.renderSegmentBase(segment)
 
+    // body, tail, mandibles
     gfx.beginFill(COLOR)
-    gfx.drawCircle(0, 0, 9)
-    gfx.drawPolygon(-2, 9, 2, 9, 0, 24)
+    gfx.drawCircle(0, 0, 7)
+    gfx.drawPolygon(-2, 7, 2, 7, 0, 14)
+    gfx.drawPolygon(-1, -9, -5, -13, -3, -17)
+    gfx.drawPolygon(1, -9, 5, -13, 3, -17)
     gfx.endFill()
+
+    // eyes
+    gfx.lineStyle({ width: 1, color: COLOR })
+    gfx.drawCircle(-3, -7, 5)
+    gfx.drawCircle(3, -7, 5)
 
     this.renderSegmentLegs(segment, activeSide)
   }
@@ -175,16 +149,13 @@ export class Bug004 extends BaseDemo {
 
     const color = COLOR
     gfx.lineStyle({ width: 1, color })
-    gfx.moveTo(socket.x, socket.y)
     if (joint != null) {
-      gfx.lineTo(joint.x, joint.y)
-      gfx.lineStyle({ width: 0 })
-      gfx.beginFill(color)
-      gfx.drawPolygon(joint.x - 1.5, joint.y, joint.x + 1.5, joint.y, claw.x, claw.y)
+      gfx.beginFill(COLOR)
+      gfx.drawPolygon(joint.x, joint.y, joint.x + 2, joint.y + 2, socket.x, socket.y)
       gfx.endFill()
-    } else {
-      gfx.lineTo(claw.x, claw.y)
-      gfx.lineStyle({ width: 0 })
+      gfx.moveTo(joint.x, joint.y)
     }
+    gfx.lineTo(claw.x, claw.y)
+    gfx.lineStyle({ width: 0 })
   }
 }

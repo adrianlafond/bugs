@@ -107,7 +107,7 @@ export class Bug {
     }
   }
 
-  private getSegmentsData(): SegmentData[] {
+  private getSegmentsData (): SegmentData[] {
     return this.segments.map(segment => segment.data)
   }
 
@@ -116,18 +116,18 @@ export class Bug {
    * offset by a BugOptions['position'] vector for the starting coordinates, and
    * returns it.
    */
-  private createSegments(
+  private createSegments (
     defaults: Defaults,
     positionOption?: BugOptions['position'],
     segmentOptions?: BugOptions['segments'],
-    stageRect?: BugOptions['stageRect'],
+    stageRect?: BugOptions['stageRect']
   ): Segment[] {
     const position = positionOption ?? new Vector(
-      stageRect ? stageRect.x + Math.random() * stageRect.width : 0,
-      stageRect ? stageRect.y + Math.random() * stageRect.height : 0,
-      Math.random() * Math.PI * 2,
+      (stageRect != null) ? stageRect.x + Math.random() * stageRect.width : 0,
+      (stageRect != null) ? stageRect.y + Math.random() * stageRect.height : 0,
+      Math.random() * Math.PI * 2
     )
-    const segments = segmentOptions || defaults.segments
+    const segments = (segmentOptions != null) || defaults.segments
     return segments.map(segment => new Segment(position, segment))
   }
 
@@ -260,7 +260,7 @@ export class Bug {
     const ideal: Vector = new Vector(
       leadPosition.x + Math.cos(offsetRadians) * segment.maxDistance,
       leadPosition.y + Math.sin(offsetRadians) * segment.maxDistance,
-      leadPosition.radians,
+      leadPosition.radians
     )
 
     // 2 calculate max progress within ideal path
@@ -271,10 +271,10 @@ export class Bug {
     const dy = segment.position.y + Math.sin(dampedRadians) * dampedDistance
 
     const leadRadians = Math.atan2(dy - leadPosition.y, dx - leadPosition.x)
-    segment.position.x = leadPosition.x + Math.cos(leadRadians) * segment.maxDistance
-      + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
-    segment.position.y = leadPosition.y + Math.sin(leadRadians) * segment.maxDistance
-      + Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
+    segment.position.x = leadPosition.x + Math.cos(leadRadians) * segment.maxDistance +
+      Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
+    segment.position.y = leadPosition.y + Math.sin(leadRadians) * segment.maxDistance +
+      Math.random() * this.maxJigglePx - this.maxJigglePx * 0.5
 
     segment.position.radians = Math.atan2(
       leadPosition.y - segment.position.y,
@@ -284,7 +284,7 @@ export class Bug {
   }
 
   private updateLegsPerSegment (segment: Segment, currentSegment: SegmentData, stageRect?: StageRect): void {
-    (['left', 'right'] as Array<BugSide>).forEach(side => {
+    (['left', 'right'] as BugSide[]).forEach(side => {
       segment.legs[side].forEach((leg, legIndex) => {
         this.updateLeg(segment.position, leg, currentSegment.legs[side][legIndex], leg.socketIndex, stageRect)
         if (side === this.activeSide) {

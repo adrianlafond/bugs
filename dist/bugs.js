@@ -28363,10 +28363,10 @@ ${e2}`);
             ]]
           }
         }],
-        millisecondsPerStep: 120,
+        millisecondsPerStep: 150,
         maxStepPx: 16,
-        maxDistractionPx: 0,
-        maxJigglePx: 1
+        maxDistractionPx: 24,
+        maxJigglePx: 0
       });
       this.background = new Background(this.app, 2241280);
       this.background.render();

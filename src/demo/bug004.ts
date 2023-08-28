@@ -1,16 +1,16 @@
 import * as PIXI from 'pixi.js'
-import { Bug, BugSide, SegmentData } from '../bug'
+import { Background } from './background/background'
+import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
-import { Grid } from './background/grid'
 
 
-export class Bug001 extends BaseDemo {
+export class Bug004 extends BaseDemo {
   protected readonly bug: Bug
 
+  private readonly background: Background
   private readonly segmentsGfx = new PIXI.Graphics()
   private readonly legsGfx = new PIXI.Graphics()
-  private readonly grid: Grid
 
   constructor (app: PIXI.Application) {
     super(app)
@@ -24,38 +24,40 @@ export class Bug001 extends BaseDemo {
         height: clientRect.height
       } : undefined,
       segments: [{
-        position: new Point(),
+        position: new Point(0, -12)
+      }, {
+        position: new Point(0, 10),
         legs: {
           left: [[
             new Point(-5, 0),
-            new Point(-68, -55)
+            new Point(-22, -29)
           ], [
             new Point(-5, 2),
-            new Point(-80, -2)
+            new Point(-28, -2)
           ], [
             new Point(-5, 4),
-            new Point(-66, 58)
+            new Point(-21, 18)
           ]],
           right: [[
             new Point(5, 0),
-            new Point(68, -55)
+            new Point(22, -29)
           ], [
             new Point(5, 2),
-            new Point(80, -2)
+            new Point(28, -2)
           ], [
             new Point(5, 4),
-            new Point(66, 58)
+            new Point(21, 18)
           ]]
         },
       }],
-      millisecondsPerStep: 600,
-      maxStepPx: 16,
-      maxDistractionPx: 72,
-      maxJigglePx: 0,
+      millisecondsPerStep: 150,
+      maxStepPx: 12,
+      maxDistractionPx: 24,
+      maxJigglePx: 1,
     })
 
-    this.grid = new Grid(this.app)
-    this.grid.render()
+    this.background = new Background(this.app, 0x990000)
+    this.background.render()
 
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
@@ -76,7 +78,7 @@ export class Bug001 extends BaseDemo {
     this.bug.on('targetReached', this.handleTargetReached)
     this.clearGfx()
     this.renderTarget(bug.target)
-    this.renderSegment(bug.segments[0], bug.activeSide)
+    this.renderAllSegments(bug)
   }
 
   changeTarget (point: Point): void {
@@ -97,33 +99,56 @@ export class Bug001 extends BaseDemo {
     this.legsGfx.removeChildren()
   }
 
-  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
+  private renderAllSegments (bug: BugRender): void {
+    for (let i = bug.segments.length - 1; i >= 0; i--) {
+      if (i === 0) {
+        this.renderHead(bug.segments[i])
+      } else {
+        this.renderSegment(bug.segments[i], bug.activeSide)
+      }
+    }
+  }
+
+  private renderHead(segment: SegmentData) {
     const color = 0xddeeff
-
-    const gfx = new PIXI.Graphics()
-    this.segmentsGfx.addChild(gfx)
-
-    gfx.lineStyle({ width: 1, color })
-    gfx.drawCircle(0, 0, 5)
-
-    gfx.lineStyle({ width: 0.5, color: 0x8899aa })
-    gfx.moveTo(-1, -4)
-    gfx.bezierCurveTo(-3, -40, -9, -50, -32, -60)
-    gfx.moveTo(1, -4)
-    gfx.bezierCurveTo(3, -40, 9, -50, 32, -60)
-
-    gfx.lineStyle({ width: 0 })
+    const gfx = this.renderSegmentBase(segment)
 
     gfx.beginFill(color)
-    gfx.drawCircle(-3, -4, 2)
-    gfx.drawCircle(3, -4, 2)
+    gfx.drawCircle(0, 0, 3)
     gfx.endFill()
 
+    // antenae
+    gfx.lineStyle({ width: 0.5, color: 0x8899aa })
+    gfx.moveTo(-1, -4)
+    gfx.bezierCurveTo(0, -4, -1, -18, -9, -36)
+    gfx.moveTo(1, -4)
+    gfx.bezierCurveTo(0, -4, 1, -18, 9, -36)
+
+    // eyes
+    gfx.lineStyle({ width: 1, color })
+    gfx.drawCircle(-4, -5, 3)
+    gfx.drawCircle(4, -5, 3)
+  }
+
+  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
+    const color = 0xddeeff
+    const gfx = this.renderSegmentBase(segment)
+
+    gfx.beginFill(color)
+    gfx.drawCircle(0, 0, 7)
+    gfx.drawPolygon(-2, 5, 2, 5, 0, 18)
+    gfx.endFill()
+
+    this.renderSegmentLegs(segment, activeSide)
+  }
+
+  private renderSegmentBase(segment: SegmentData): PIXI.Graphics {
+    const gfx = new PIXI.Graphics()
+    this.segmentsGfx.addChild(gfx)
     gfx.rotation = segment.position.radians
     gfx.position.x = segment.position.x
     gfx.position.y = segment.position.y
-
-    this.renderSegmentLegs(segment, activeSide)
+    return gfx
   }
 
   private renderSegmentLegs (segment: SegmentData, activeSide: BugSide): void {

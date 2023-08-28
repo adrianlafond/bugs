@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import * as grid from './grid'
+import { Grid } from './background/grid'
 import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
@@ -8,6 +8,7 @@ import { BaseDemo } from './base-demo'
 export class Bug003 extends BaseDemo {
   protected readonly bug: Bug
 
+  private readonly grid: Grid
   private readonly segmentsGfx = new PIXI.Graphics()
   private readonly legsGfx = new PIXI.Graphics()
 
@@ -55,7 +56,8 @@ export class Bug003 extends BaseDemo {
       maxJigglePx: 1,
     })
 
-    grid.render(this.app)
+    this.grid = new Grid(this.app)
+    this.grid.render()
 
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)

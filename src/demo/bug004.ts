@@ -4,6 +4,7 @@ import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 
+const COLOR = 0x993300
 
 export class Bug004 extends BaseDemo {
   protected readonly bug: Bug
@@ -15,7 +16,7 @@ export class Bug004 extends BaseDemo {
   constructor (app: PIXI.Application) {
     super(app)
     const clientRect = app.view.getBoundingClientRect ? app.view?.getBoundingClientRect() : null
-    this.targetColor = 0x8899aa
+    this.targetColor = 0x663300
     this.bug = new Bug({
       stageRect: clientRect ? {
         x: 0,
@@ -29,34 +30,40 @@ export class Bug004 extends BaseDemo {
         position: new Point(0, 10),
         legs: {
           left: [[
-            new Point(-5, 0),
+            new Point(-7, -2),
             new Point(-22, -29)
           ], [
-            new Point(-5, 2),
-            new Point(-28, -2)
+            new Point(-7, 0),
+            new Point(-32, -12)
           ], [
-            new Point(-5, 4),
+            new Point(-7, 2),
+            new Point(-32, 2)
+          ], [
+            new Point(-7, 4),
             new Point(-21, 18)
           ]],
           right: [[
-            new Point(5, 0),
+            new Point(7, -2),
             new Point(22, -29)
           ], [
-            new Point(5, 2),
-            new Point(28, -2)
+            new Point(7, 0),
+            new Point(32, -12)
           ], [
-            new Point(5, 4),
+            new Point(7, 2),
+            new Point(32, 2)
+          ], [
+            new Point(7, 4),
             new Point(21, 18)
           ]]
         },
       }],
-      millisecondsPerStep: 150,
-      maxStepPx: 12,
+      millisecondsPerStep: 250,
+      maxStepPx: 16,
       maxDistractionPx: 24,
       maxJigglePx: 1,
     })
 
-    this.background = new Background(this.app, 0x990000)
+    this.background = new Background(this.app, 0x330000)
     this.background.render()
 
     this.app.stage.addChild(this.targetGfx)
@@ -110,33 +117,33 @@ export class Bug004 extends BaseDemo {
   }
 
   private renderHead(segment: SegmentData) {
-    const color = 0xddeeff
     const gfx = this.renderSegmentBase(segment)
 
-    gfx.beginFill(color)
+    gfx.beginFill(COLOR)
     gfx.drawCircle(0, 0, 3)
     gfx.endFill()
 
     // antenae
-    gfx.lineStyle({ width: 0.5, color: 0x8899aa })
+    gfx.lineStyle({ width: 0.5, color: COLOR })
     gfx.moveTo(-1, -4)
     gfx.bezierCurveTo(0, -4, -1, -18, -9, -36)
     gfx.moveTo(1, -4)
     gfx.bezierCurveTo(0, -4, 1, -18, 9, -36)
+    gfx.lineStyle({ width: 0 })
 
     // eyes
-    gfx.lineStyle({ width: 1, color })
-    gfx.drawCircle(-4, -5, 3)
-    gfx.drawCircle(4, -5, 3)
+    gfx.beginFill(COLOR)
+    gfx.drawCircle(-3, -2, 3)
+    gfx.drawCircle(3, -2, 3)
+    gfx.endFill()
   }
 
   private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
-    const color = 0xddeeff
     const gfx = this.renderSegmentBase(segment)
 
-    gfx.beginFill(color)
-    gfx.drawCircle(0, 0, 7)
-    gfx.drawPolygon(-2, 5, 2, 5, 0, 18)
+    gfx.beginFill(COLOR)
+    gfx.drawCircle(0, 0, 9)
+    gfx.drawPolygon(-2, 9, 2, 9, 0, 24)
     gfx.endFill()
 
     this.renderSegmentLegs(segment, activeSide)
@@ -156,7 +163,7 @@ export class Bug004 extends BaseDemo {
     segment.legs.right.forEach(leg => this.renderLeg(leg, activeSide === 'right'))
   }
 
-  private renderLeg (leg: Vector[], isActive: boolean): void {
+  private renderLeg (leg: Vector[], _isActive: boolean): void {
     const socket = leg[0]
     const joint = leg.length >= 2 ? leg[1] : null
     const claw = leg.length >= 2 ? leg[2] : leg[1]
@@ -164,7 +171,7 @@ export class Bug004 extends BaseDemo {
     const gfx = new PIXI.Graphics()
     this.legsGfx.addChild(gfx)
 
-    const color = isActive ? 0xaabbcc : 0x8899aa
+    const color = COLOR
     gfx.lineStyle({ width: 1, color })
     gfx.moveTo(socket.x, socket.y)
     if (joint != null) {

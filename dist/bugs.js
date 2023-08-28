@@ -28020,6 +28020,7 @@ ${e2}`);
 
   // src/demo/bug004.ts
   var import_geom14 = __toESM(require_dist());
+  var COLOR = 10040064;
   var Bug004 = class extends BaseDemo {
     constructor(app) {
       var _a;
@@ -28027,7 +28028,7 @@ ${e2}`);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
       const clientRect = app.view.getBoundingClientRect ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
-      this.targetColor = 8952234;
+      this.targetColor = 6697728;
       this.bug = new Bug({
         stageRect: clientRect ? {
           x: 0,
@@ -28041,33 +28042,39 @@ ${e2}`);
           position: new import_geom14.Point(0, 10),
           legs: {
             left: [[
-              new import_geom14.Point(-5, 0),
+              new import_geom14.Point(-7, -2),
               new import_geom14.Point(-22, -29)
             ], [
-              new import_geom14.Point(-5, 2),
-              new import_geom14.Point(-28, -2)
+              new import_geom14.Point(-7, 0),
+              new import_geom14.Point(-32, -12)
             ], [
-              new import_geom14.Point(-5, 4),
+              new import_geom14.Point(-7, 2),
+              new import_geom14.Point(-32, 2)
+            ], [
+              new import_geom14.Point(-7, 4),
               new import_geom14.Point(-21, 18)
             ]],
             right: [[
-              new import_geom14.Point(5, 0),
+              new import_geom14.Point(7, -2),
               new import_geom14.Point(22, -29)
             ], [
-              new import_geom14.Point(5, 2),
-              new import_geom14.Point(28, -2)
+              new import_geom14.Point(7, 0),
+              new import_geom14.Point(32, -12)
             ], [
-              new import_geom14.Point(5, 4),
+              new import_geom14.Point(7, 2),
+              new import_geom14.Point(32, 2)
+            ], [
+              new import_geom14.Point(7, 4),
               new import_geom14.Point(21, 18)
             ]]
           }
         }],
-        millisecondsPerStep: 150,
-        maxStepPx: 12,
+        millisecondsPerStep: 250,
+        maxStepPx: 16,
         maxDistractionPx: 24,
         maxJigglePx: 1
       });
-      this.background = new Background(this.app, 10027008);
+      this.background = new Background(this.app, 3342336);
       this.background.render();
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
@@ -28114,26 +28121,26 @@ ${e2}`);
       }
     }
     renderHead(segment) {
-      const color = 14544639;
       const gfx = this.renderSegmentBase(segment);
-      gfx.beginFill(color);
+      gfx.beginFill(COLOR);
       gfx.drawCircle(0, 0, 3);
       gfx.endFill();
-      gfx.lineStyle({ width: 0.5, color: 8952234 });
+      gfx.lineStyle({ width: 0.5, color: COLOR });
       gfx.moveTo(-1, -4);
       gfx.bezierCurveTo(0, -4, -1, -18, -9, -36);
       gfx.moveTo(1, -4);
       gfx.bezierCurveTo(0, -4, 1, -18, 9, -36);
-      gfx.lineStyle({ width: 1, color });
-      gfx.drawCircle(-4, -5, 3);
-      gfx.drawCircle(4, -5, 3);
+      gfx.lineStyle({ width: 0 });
+      gfx.beginFill(COLOR);
+      gfx.drawCircle(-3, -2, 3);
+      gfx.drawCircle(3, -2, 3);
+      gfx.endFill();
     }
     renderSegment(segment, activeSide) {
-      const color = 14544639;
       const gfx = this.renderSegmentBase(segment);
-      gfx.beginFill(color);
-      gfx.drawCircle(0, 0, 7);
-      gfx.drawPolygon(-2, 5, 2, 5, 0, 18);
+      gfx.beginFill(COLOR);
+      gfx.drawCircle(0, 0, 9);
+      gfx.drawPolygon(-2, 9, 2, 9, 0, 24);
       gfx.endFill();
       this.renderSegmentLegs(segment, activeSide);
     }
@@ -28149,13 +28156,13 @@ ${e2}`);
       segment.legs.left.forEach((leg) => this.renderLeg(leg, activeSide === "left"));
       segment.legs.right.forEach((leg) => this.renderLeg(leg, activeSide === "right"));
     }
-    renderLeg(leg, isActive) {
+    renderLeg(leg, _isActive) {
       const socket = leg[0];
       const joint = leg.length >= 2 ? leg[1] : null;
       const claw = leg.length >= 2 ? leg[2] : leg[1];
       const gfx = new Graphics();
       this.legsGfx.addChild(gfx);
-      const color = isActive ? 11189196 : 8952234;
+      const color = COLOR;
       gfx.lineStyle({ width: 1, color });
       gfx.moveTo(socket.x, socket.y);
       if (joint != null) {
@@ -28227,11 +28234,6 @@ ${e2}`);
       this.start();
     }
     initializePage() {
-      if (window.location.hash.startsWith("#!")) {
-        this.updateBug(window.location.hash.substring(2));
-      } else {
-        this.updateBug(this.bugs[0]);
-      }
       (0, import_page.default)({
         hashbang: true,
         window
@@ -28239,6 +28241,11 @@ ${e2}`);
       });
       (0, import_page.default)(":id", ({ params }) => this.updateBug(params.id));
       (0, import_page.default)("*", () => this.updateBug(this.bugs[0]));
+      if (window.location.hash.startsWith("#!")) {
+        this.updateBug(window.location.hash.substring(2));
+      } else {
+        this.updateBug(this.bugs[0]);
+      }
       const prevEl = document.querySelector(".bugs__btn-prev");
       const nextEl = document.querySelector(".bugs__btn-next");
       if (prevEl) {

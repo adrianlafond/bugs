@@ -1,9 +1,8 @@
 import * as PIXI from 'pixi.js'
 import * as grid from './background/grid'
-import { Bug, BugRender, BugSide, Leg, SegmentData } from '../bug'
+import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
-
 
 export class BugDemo extends BaseDemo {
   protected readonly bug: Bug
@@ -37,7 +36,7 @@ export class BugDemo extends BaseDemo {
             new Point(9, 4),
             new Point(16, 8)
           ]]
-        },
+        }
       }, {
         position: new Point(0, 20),
         legs: {
@@ -49,7 +48,7 @@ export class BugDemo extends BaseDemo {
             new Point(9, 2),
             new Point(20, -2)
           ]]
-        },
+        }
       }, {
         position: new Point(0, 20),
         legs: {
@@ -91,7 +90,7 @@ export class BugDemo extends BaseDemo {
       maxJigglePx: 3,
       maxStepPx: 10,
       millisecondsPerStep: 100,
-      timingFunction: 'easeOutSine',
+      timingFunction: 'easeOutSine'
     })
 
     grid.render(this.app)
@@ -128,7 +127,7 @@ export class BugDemo extends BaseDemo {
     this.clearGfx()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
@@ -142,8 +141,8 @@ export class BugDemo extends BaseDemo {
     }
   }
 
-  private renderSegment (segment: SegmentData,  activeSide: BugSide, index: number): void {
-    const color = index == 0 ? 0xddeeff : 0xffff00
+  private renderSegment (segment: SegmentData, activeSide: BugSide, index: number): void {
+    const color = index === 0 ? 0xddeeff : 0xffff00
 
     const gfx = new PIXI.Graphics()
     this.segmentsGfx.addChild(gfx)

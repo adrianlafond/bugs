@@ -16,7 +16,7 @@ export class BaseDemo {
 
   constructor (protected readonly app: PIXI.Application) {
     this.pattern = this.updatePattern()
-    if (app.view.addEventListener) {
+    if (app.view.addEventListener != null) {
       app.view.addEventListener('pointerdown', this.handlePointerDown)
     }
   }
@@ -30,7 +30,7 @@ export class BaseDemo {
   }
 
   destroy (): void {
-    if (this.app.view.removeEventListener) {
+    if (this.app.view.removeEventListener != null) {
       this.app.view.removeEventListener('pointerdown', this.handlePointerDown)
     }
   }
@@ -39,12 +39,12 @@ export class BaseDemo {
     this.updateTargetPattern()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     this.targetGfx.clear()
   }
 
-  protected handlePointerDown = (event: Event | PointerEvent) => {
-    if (this.app.view.getBoundingClientRect) {
+  protected handlePointerDown = (event: Event | PointerEvent): void => {
+    if (this.app.view.getBoundingClientRect != null) {
       const viewRect = this.app.view.getBoundingClientRect()
       if ('clientX' in event && 'clientY' in event) {
         this.changeTarget(new Point(event.clientX - viewRect.x, event.clientY - viewRect.y))

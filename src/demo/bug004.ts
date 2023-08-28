@@ -15,15 +15,17 @@ export class Bug004 extends BaseDemo {
 
   constructor (app: PIXI.Application) {
     super(app)
-    const clientRect = app.view.getBoundingClientRect ? app.view?.getBoundingClientRect() : null
+    const clientRect = (app.view.getBoundingClientRect != null) ? app.view?.getBoundingClientRect() : null
     this.targetColor = 0x663300
     this.bug = new Bug({
-      stageRect: clientRect ? {
-        x: 0,
-        y: 0,
-        width: clientRect.width,
-        height: clientRect.height
-      } : undefined,
+      stageRect: (clientRect != null)
+        ? {
+            x: 0,
+            y: 0,
+            width: clientRect.width,
+            height: clientRect.height
+          }
+        : undefined,
       segments: [{
         position: new Point(0, -12)
       }, {
@@ -55,12 +57,12 @@ export class Bug004 extends BaseDemo {
             new Point(7, 4),
             new Point(21, 18)
           ]]
-        },
+        }
       }],
       millisecondsPerStep: 250,
       maxStepPx: 16,
       maxDistractionPx: 24,
-      maxJigglePx: 1,
+      maxJigglePx: 1
     })
 
     this.background = new Background(this.app, 0x330000)
@@ -98,7 +100,7 @@ export class Bug004 extends BaseDemo {
     this.clearGfx()
   }
 
-  protected clearGfx () {
+  protected clearGfx (): void {
     super.clearGfx()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
@@ -116,7 +118,7 @@ export class Bug004 extends BaseDemo {
     }
   }
 
-  private renderHead(segment: SegmentData) {
+  private renderHead (segment: SegmentData): void {
     const gfx = this.renderSegmentBase(segment)
 
     gfx.beginFill(COLOR)
@@ -138,7 +140,7 @@ export class Bug004 extends BaseDemo {
     gfx.endFill()
   }
 
-  private renderSegment (segment: SegmentData,  activeSide: BugSide): void {
+  private renderSegment (segment: SegmentData, activeSide: BugSide): void {
     const gfx = this.renderSegmentBase(segment)
 
     gfx.beginFill(COLOR)
@@ -149,7 +151,7 @@ export class Bug004 extends BaseDemo {
     this.renderSegmentLegs(segment, activeSide)
   }
 
-  private renderSegmentBase(segment: SegmentData): PIXI.Graphics {
+  private renderSegmentBase (segment: SegmentData): PIXI.Graphics {
     const gfx = new PIXI.Graphics()
     this.segmentsGfx.addChild(gfx)
     gfx.rotation = segment.position.radians

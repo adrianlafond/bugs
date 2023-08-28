@@ -27124,7 +27124,7 @@ ${e2}`);
         stageRect != null ? stageRect.y + Math.random() * stageRect.height : 0,
         Math.random() * Math.PI * 2
       );
-      const segments = segmentOptions != null || defaults.segments;
+      const segments = segmentOptions != null ? segmentOptions : defaults.segments;
       return segments.map((segment) => new Segment(position, segment));
     }
     updateBug({

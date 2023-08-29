@@ -28686,7 +28686,7 @@ ${e2}`);
         }],
         millisecondsPerStep: 180,
         maxStepPx: 16,
-        maxDistractionPx: 24,
+        maxDistractionPx: 12,
         maxJigglePx: 2
       });
       this.background = new Background(this.app, BG_COLOR2);

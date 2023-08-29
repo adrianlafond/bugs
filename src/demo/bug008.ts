@@ -87,7 +87,7 @@ export class Bug008 extends BaseDemo {
       }],
       millisecondsPerStep: 180,
       maxStepPx: 16,
-      maxDistractionPx: 24,
+      maxDistractionPx: 12,
       maxJigglePx: 2
     })
 

@@ -46,17 +46,14 @@ export class Bug009 extends BaseDemo {
 
   constructor (app: PIXI.Application) {
     super(app)
-    const clientRect = (app.view.getBoundingClientRect != null) ? app.view?.getBoundingClientRect() : null
     this.targetColor = TARGET_COLOR
     this.bug = new Bug({
-      stageRect: (clientRect != null)
-        ? {
-            x: 0,
-            y: 0,
-            width: clientRect.width,
-            height: clientRect.height
-          }
-        : undefined,
+      stageRect: {
+        x: 0,
+        y: 0,
+        width: app.view.width,
+        height: app.view.height
+      },
       segments: [{
         position: new Point(0, 0)
       }, {
@@ -140,7 +137,7 @@ export class Bug009 extends BaseDemo {
     }
   }
 
-  private renderHead (gfx: PIXI.Graphics, segment: SegmentData): void {
+  private renderHead (gfx: PIXI.Graphics): void {
     gfx.lineStyle({ width: 1, color: COLOR })
     gfx.drawCircle(0, -2, 5)
 
@@ -161,7 +158,7 @@ export class Bug009 extends BaseDemo {
     const gfx = this.renderSegmentBase(segment)
     gfx.lineStyle({ width: 1, color: COLOR })
     if (index === 0) {
-      this.renderHead(gfx, segment)
+      this.renderHead(gfx)
     } else if (index < 6) {
       gfx.drawEllipse(0, 0, segmentRadius[index], segmentRadius[index] * 1.5)
       this.renderSegmentLegs(segment, activeSide)

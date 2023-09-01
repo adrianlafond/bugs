@@ -45,7 +45,7 @@ class DemoApp {
       throw new Error('Canvas element "#bugs-canvas" not found.')
     }
     this.bugs = this.bugs.slice(0, this.bugs.length - 1)
-    this.app = new PIXI.Application({ width: 360, height: 360 })
+    this.app = new PIXI.Application({ width: 360, height: 480 })
     this.initializePage()
     this.appendToDom()
     this.start()

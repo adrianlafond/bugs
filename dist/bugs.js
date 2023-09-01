@@ -26743,56 +26743,6 @@ ${e2}`);
   // src/demo/index.ts
   var import_page = __toESM(require_page());
 
-  // src/demo/background/background.ts
-  var Background = class {
-    constructor(app, bgColor = 0) {
-      this.app = app;
-      this.bgColor = bgColor;
-      this.pointerDownHandler = () => void 0;
-      this.handlePointerDown = (event) => {
-        this.pointerDownHandler(event);
-      };
-    }
-    render(app = this.app) {
-      const background = new Graphics();
-      background.beginFill(this.bgColor);
-      background.drawRect(0, 0, this.app.view.width, this.app.view.height);
-      background.endFill();
-      background.eventMode = "static";
-      background.on("pointerdown", this.handlePointerDown);
-      this.app = app;
-      this.app.stage.addChild(background);
-    }
-    onPointerDown(handler) {
-      this.pointerDownHandler = handler;
-    }
-  };
-
-  // src/demo/background/grid.ts
-  var LINE_COLOR = 1127253;
-  var BLOCK_SIZE = 10;
-  var Grid = class extends Background {
-    render(app) {
-      super.render(app);
-      let n2 = BLOCK_SIZE;
-      while (n2 < this.app.view.height) {
-        const line = new Graphics();
-        line.beginFill(LINE_COLOR);
-        line.drawRect(0, n2, this.app.view.width, 1);
-        this.app.stage.addChild(line);
-        n2 += BLOCK_SIZE;
-      }
-      n2 = BLOCK_SIZE;
-      while (n2 < this.app.view.width) {
-        const line = new Graphics();
-        line.beginFill(LINE_COLOR);
-        line.drawRect(n2, 0, 1, this.app.view.height);
-        this.app.stage.addChild(line);
-        n2 += BLOCK_SIZE;
-      }
-    }
-  };
-
   // src/bug/bug.ts
   var import_geom4 = __toESM(require_dist());
 
@@ -27040,7 +26990,7 @@ ${e2}`);
   // src/bug/bug.ts
   var Bug = class {
     constructor(options) {
-      this.stepProgress = 0;
+      this.stepProgress = 1;
       this.stepMs = 0;
       this.stepTarget = new import_geom4.Vector();
       this.listeners = {
@@ -27440,6 +27390,56 @@ ${e2}`);
     }
   };
 
+  // src/demo/background/background.ts
+  var Background = class {
+    constructor(app, bgColor = 0) {
+      this.app = app;
+      this.bgColor = bgColor;
+      this.pointerDownHandler = () => void 0;
+      this.handlePointerDown = (event) => {
+        this.pointerDownHandler(event);
+      };
+    }
+    render(app = this.app) {
+      const background = new Graphics();
+      background.beginFill(this.bgColor);
+      background.drawRect(0, 0, this.app.view.width, this.app.view.height);
+      background.endFill();
+      background.eventMode = "static";
+      background.on("pointerdown", this.handlePointerDown);
+      this.app = app;
+      this.app.stage.addChild(background);
+    }
+    onPointerDown(handler) {
+      this.pointerDownHandler = handler;
+    }
+  };
+
+  // src/demo/background/grid.ts
+  var LINE_COLOR = 1127253;
+  var BLOCK_SIZE = 10;
+  var Grid = class extends Background {
+    render(app) {
+      super.render(app);
+      let n2 = BLOCK_SIZE;
+      while (n2 < this.app.view.height) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(0, n2, this.app.view.width, 1);
+        this.app.stage.addChild(line);
+        n2 += BLOCK_SIZE;
+      }
+      n2 = BLOCK_SIZE;
+      while (n2 < this.app.view.width) {
+        const line = new Graphics();
+        line.beginFill(LINE_COLOR);
+        line.drawRect(n2, 0, 1, this.app.view.height);
+        this.app.stage.addChild(line);
+        n2 += BLOCK_SIZE;
+      }
+    }
+  };
+
   // src/demo/bug-demo.ts
   var BugDemo = class extends BaseDemo {
     constructor(app) {
@@ -27526,7 +27526,8 @@ ${e2}`);
         millisecondsPerStep: 100,
         timingFunction: "easeOutSine"
       });
-      (void 0)(this.app);
+      this.grid = new Grid(this.app);
+      this.grid.render();
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
@@ -27613,19 +27614,17 @@ ${e2}`);
   var import_geom11 = __toESM(require_dist());
   var Bug001 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = 8952234;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom11.Point(),
           legs: {
@@ -27744,19 +27743,17 @@ ${e2}`);
   var import_geom12 = __toESM(require_dist());
   var Bug002 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = 8952234;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom12.Point(),
           legs: {
@@ -27869,19 +27866,17 @@ ${e2}`);
   var import_geom13 = __toESM(require_dist());
   var Bug003 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = 8952234;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom13.Point(0, -12)
         }, {
@@ -28023,19 +28018,17 @@ ${e2}`);
   var COLOR = 10040064;
   var Bug004 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = 6697728;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom14.Point(0, -12)
         }, {
@@ -28183,19 +28176,17 @@ ${e2}`);
   var COLOR2 = 11188992;
   var Bug005 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = 10061824;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom15.Point(0, 30),
           legs: {
@@ -28319,19 +28310,17 @@ ${e2}`);
   var COLOR3 = 7837952;
   var Bug006 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = 8952064;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom16.Point(0, 30),
           legs: {
@@ -28456,19 +28445,17 @@ ${e2}`);
   var COLOR4 = 2648184;
   var Bug007 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = TARGET_COLOR;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom17.Point(0, 0)
         }, {
@@ -28643,19 +28630,17 @@ ${e2}`);
   }
   var Bug008 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = TARGET_COLOR2;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom18.Point(0, 0)
         }, {
@@ -28835,19 +28820,17 @@ ${e2}`);
   }
   var Bug009 = class extends BaseDemo {
     constructor(app) {
-      var _a;
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
-      const clientRect = app.view.getBoundingClientRect != null ? (_a = app.view) == null ? void 0 : _a.getBoundingClientRect() : null;
       this.targetColor = TARGET_COLOR3;
       this.bug = new Bug({
-        stageRect: clientRect != null ? {
+        stageRect: {
           x: 0,
           y: 0,
-          width: clientRect.width,
-          height: clientRect.height
-        } : void 0,
+          width: app.view.width,
+          height: app.view.height
+        },
         segments: [{
           position: new import_geom19.Point(0, 0)
         }, {
@@ -28923,7 +28906,7 @@ ${e2}`);
         this.renderSegment(bug.segments[i2], bug.activeSide, i2);
       }
     }
-    renderHead(gfx, segment) {
+    renderHead(gfx) {
       gfx.lineStyle({ width: 1, color: COLOR6 });
       gfx.drawCircle(0, -2, 5);
       gfx.lineStyle({ width: 0.5, color: COLOR6 });
@@ -28939,7 +28922,7 @@ ${e2}`);
       const gfx = this.renderSegmentBase(segment);
       gfx.lineStyle({ width: 1, color: COLOR6 });
       if (index === 0) {
-        this.renderHead(gfx, segment);
+        this.renderHead(gfx);
       } else if (index < 6) {
         gfx.drawEllipse(0, 0, segmentRadius2[index], segmentRadius2[index] * 1.5);
         this.renderSegmentLegs(segment, activeSide);
@@ -29046,7 +29029,7 @@ ${e2}`);
         throw new Error('Canvas element "#bugs-canvas" not found.');
       }
       this.bugs = this.bugs.slice(0, this.bugs.length - 1);
-      this.app = new Application({ width: 360, height: 360 });
+      this.app = new Application({ width: 360, height: 480 });
       this.initializePage();
       this.appendToDom();
       this.start();

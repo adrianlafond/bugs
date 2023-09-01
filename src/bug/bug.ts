@@ -8,7 +8,7 @@ import { Defaults, getDefaults } from './bug.defaults'
 export class Bug {
   private activeSide: Required<BugOptions>['activeSide']
 
-  private stepProgress = 0
+  private stepProgress = 1
   private stepMs = 0
   private readonly millisecondsPerStep: number
   private readonly maxStepPx: number

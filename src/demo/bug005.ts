@@ -15,17 +15,14 @@ export class Bug005 extends BaseDemo {
 
   constructor (app: PIXI.Application) {
     super(app)
-    const clientRect = (app.view.getBoundingClientRect != null) ? app.view?.getBoundingClientRect() : null
     this.targetColor = 0x998800
     this.bug = new Bug({
-      stageRect: (clientRect != null)
-        ? {
-            x: 0,
-            y: 0,
-            width: clientRect.width,
-            height: clientRect.height
-          }
-        : undefined,
+      stageRect: {
+        x: 0,
+        y: 0,
+        width: app.view.width,
+        height: app.view.height
+      },
       segments: [{
         position: new Point(0, 30),
         legs: {

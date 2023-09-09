@@ -27245,7 +27245,7 @@ ${e2}`);
   var calculateSpiralPattern = (maxRadius) => {
     let complete = false;
     if (radius >= maxRadius) {
-      radius = 0;
+      radius = 50;
       radians = 0;
       direction *= -1;
       complete = true;
@@ -29933,9 +29933,9 @@ ${e2}`);
 
   // src/demo/bug015.ts
   var import_geom25 = __toESM(require_dist());
-  var COLOR12 = 9453568;
+  var COLOR12 = 1069232;
   var BG_COLOR9 = 16680960;
-  var TARGET_COLOR9 = 12607488;
+  var TARGET_COLOR9 = 12632064;
   var Bug015 = class extends BaseDemo {
     constructor(app) {
       super(app);

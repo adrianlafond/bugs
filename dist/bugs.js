@@ -27245,7 +27245,7 @@ ${e2}`);
   var calculateSpiralPattern = (maxRadius) => {
     let complete = false;
     if (radius >= maxRadius) {
-      radius = 0;
+      radius = 50;
       radians = 0;
       direction *= -1;
       complete = true;
@@ -27385,6 +27385,7 @@ ${e2}`);
     }
     updatePattern() {
       const index = Math.floor(Math.random() * 4);
+      return this.pattern = "spiral";
       const patterns = ["random", "horizontal", "vertical", "spiral"];
       return this.pattern = patterns[index];
     }

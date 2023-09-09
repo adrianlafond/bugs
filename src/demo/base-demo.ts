@@ -90,6 +90,7 @@ export class BaseDemo {
 
   private updatePattern (): Pattern {
     const index = Math.floor(Math.random() * 4)
+    return (this.pattern = 'spiral')
     const patterns: Pattern[] = ['random', 'horizontal', 'vertical', 'spiral']
     return (this.pattern = patterns[index])
   }

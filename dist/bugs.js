@@ -27385,7 +27385,6 @@ ${e2}`);
     }
     updatePattern() {
       const index = Math.floor(Math.random() * 4);
-      return this.pattern = "spiral";
       const patterns = ["random", "horizontal", "vertical", "spiral"];
       return this.pattern = patterns[index];
     }
@@ -29934,9 +29933,9 @@ ${e2}`);
 
   // src/demo/bug015.ts
   var import_geom25 = __toESM(require_dist());
-  var COLOR12 = 9453568;
+  var COLOR12 = 1069232;
   var BG_COLOR9 = 16680960;
-  var TARGET_COLOR9 = 12607488;
+  var TARGET_COLOR9 = 12632064;
   var Bug015 = class extends BaseDemo {
     constructor(app) {
       super(app);

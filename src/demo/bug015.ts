@@ -4,9 +4,9 @@ import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 
-const COLOR =  0x904000
+const COLOR = 0x1050b0
 const BG_COLOR = 0xfe8800
-const TARGET_COLOR = 0xc06000
+const TARGET_COLOR = 0xc0c000
 
 export class Bug015 extends BaseDemo {
   protected readonly bug: Bug

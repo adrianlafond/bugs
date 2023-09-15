@@ -18,6 +18,7 @@ import { Bug013 } from './bug013'
 import { Bug014 } from './bug014'
 import { Bug015 } from './bug015'
 import { Bug016 } from './bug016'
+import { Bug017 } from './bug017'
 
 let instance: DemoApp
 
@@ -39,6 +40,7 @@ const bugsMap = {
   bug014: Bug014,
   bug015: Bug015,
   bug016: Bug016,
+  bug017: Bug017,
 }
 
 type Bug = keyof typeof bugsMap

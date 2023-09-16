@@ -1,6 +1,6 @@
 {
   "name": "@adrianlafond/bugs",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "2D bug/insect/creature engine",
   "main": "./dist/bug.js",
   "scripts": {

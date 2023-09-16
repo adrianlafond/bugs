@@ -48,9 +48,9 @@ export class Bug017 extends BaseDemo {
       },
       segments: getSegments(),
       millisecondsPerStep: 120,
-      maxStepPx: 16,
-      maxDistractionPx: 36,
-      maxJigglePx: 2,
+      maxStepPx: 12,
+      maxDistractionPx: 12,
+      maxJigglePx: 1,
     })
 
     this.background = new Background(this.app, BG_COLOR)
@@ -97,8 +97,9 @@ export class Bug017 extends BaseDemo {
   }
 
   private renderAllSegments (bug: BugRender): void {
-    bug.segments.forEach((segment, index) => {
-      if (index === 0) {
+    // draw in reverse so the head is layered on top
+    bug.segments.reverse().forEach((segment, index) => {
+      if (index === bug.segments.length - 1) {
         this.renderHead(segment, bug.activeSide);
       } else {
         this.renderBodySegment(segment, bug.activeSide);

@@ -30331,9 +30331,9 @@ ${e2}`);
         },
         segments: getSegments(),
         millisecondsPerStep: 120,
-        maxStepPx: 16,
-        maxDistractionPx: 36,
-        maxJigglePx: 2
+        maxStepPx: 12,
+        maxDistractionPx: 12,
+        maxJigglePx: 1
       });
       this.background = new Background(this.app, BG_COLOR11);
       this.background.render();
@@ -30373,8 +30373,8 @@ ${e2}`);
       this.legsGfx.removeChildren();
     }
     renderAllSegments(bug) {
-      bug.segments.forEach((segment, index) => {
-        if (index === 0) {
+      bug.segments.reverse().forEach((segment, index) => {
+        if (index === bug.segments.length - 1) {
           this.renderHead(segment, bug.activeSide);
         } else {
           this.renderBodySegment(segment, bug.activeSide);

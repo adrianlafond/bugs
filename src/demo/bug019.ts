@@ -4,9 +4,10 @@ import { Bug, BugRender, BugSide, SegmentData } from '../bug'
 import { Point, Vector } from '@adrianlafond/geom'
 import { BaseDemo } from './base-demo'
 
-const COLOR = 0x0000ff
-const BG_COLOR = 0x99ccff
+const COLOR = 0xffff00
+const BG_COLOR = 0x0000ff
 const TARGET_COLOR = 0x6699cc
+const PRINT_COLOR = 0xffffff
 
 export class Bug019 extends BaseDemo {
   protected readonly bug: Bug
@@ -14,11 +15,20 @@ export class Bug019 extends BaseDemo {
   private readonly background: Background
   private readonly segmentsGfx = new PIXI.Graphics()
   private readonly legsGfx = new PIXI.Graphics()
+  private readonly printsGfx = new PIXI.Graphics()
+
+  private prints: {
+    x: number
+    y: number
+  }[] = []
+
+  private currentActiveSide: BugSide = 'left';
 
   constructor (app: PIXI.Application) {
     super(app)
     this.targetColor = TARGET_COLOR
     this.bug = new Bug({
+      activeSide: 'left',
       stageRect: {
         x: 0,
         y: 0,
@@ -65,6 +75,7 @@ export class Bug019 extends BaseDemo {
     this.background = new Background(this.app, BG_COLOR)
     this.background.render()
 
+    this.app.stage.addChild(this.printsGfx)
     this.app.stage.addChild(this.targetGfx)
     this.app.stage.addChild(this.legsGfx)
     this.app.stage.addChild(this.segmentsGfx)
@@ -82,7 +93,9 @@ export class Bug019 extends BaseDemo {
       }
     })
     this.bug.on('targetReached', this.handleTargetReached)
+    this.trackPrints(bug)
     this.clearGfx()
+    this.renderPrints()
     this.renderTarget(bug.target)
     this.renderAllSegments(bug)
   }
@@ -97,12 +110,35 @@ export class Bug019 extends BaseDemo {
     this.clearGfx()
   }
 
+  protected trackPrints (bug: BugRender): void {
+    if (this.currentActiveSide !== bug.activeSide) {
+      this.currentActiveSide = bug.activeSide
+      this.prints = this.prints.slice(0, 50)
+      bug.segments.forEach(segment => {
+        segment.legs[this.currentActiveSide === 'left' ? 'right' : 'left'].forEach(leg => {
+          this.prints.unshift(leg[leg.length - 1])
+        })
+      })
+    }
+  }
+
   protected clearGfx (): void {
     super.clearGfx()
+    this.printsGfx.clear()
+    this.printsGfx.removeChildren()
     this.segmentsGfx.clear()
     this.segmentsGfx.removeChildren()
     this.legsGfx.clear()
     this.legsGfx.removeChildren()
+  }
+
+  private renderPrints (): void {
+    const gfx = new PIXI.Graphics()
+    gfx.lineStyle({ width: 1, color: PRINT_COLOR })
+    this.printsGfx.addChild(gfx)
+    this.prints.forEach(print => {
+      gfx.drawCircle(print.x, print.y, 1)
+    })
   }
 
   private renderAllSegments (bug: BugRender): void {
@@ -164,7 +200,7 @@ export class Bug019 extends BaseDemo {
     segment.legs.right.forEach(leg => this.renderLeg(leg, activeSide === 'right'))
   }
 
-  private renderLeg (leg: Vector[], _isActive: boolean): void {
+  private renderLeg (leg: Vector[], isActive: boolean): void {
     const socket = leg[0]
     const joint = leg.length >= 2 ? leg[1] : null
     const claw = leg.length >= 2 ? leg[2] : leg[1]

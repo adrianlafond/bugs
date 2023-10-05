@@ -30621,16 +30621,21 @@ ${e2}`);
 
   // src/demo/bug019.ts
   var import_geom29 = __toESM(require_dist());
-  var COLOR16 = 255;
-  var BG_COLOR13 = 10079487;
+  var COLOR16 = 16776960;
+  var BG_COLOR13 = 255;
   var TARGET_COLOR13 = 6724044;
+  var PRINT_COLOR = 16777215;
   var Bug019 = class extends BaseDemo {
     constructor(app) {
       super(app);
       this.segmentsGfx = new Graphics();
       this.legsGfx = new Graphics();
+      this.printsGfx = new Graphics();
+      this.prints = [];
+      this.currentActiveSide = "left";
       this.targetColor = TARGET_COLOR13;
       this.bug = new Bug({
+        activeSide: "left",
         stageRect: {
           x: 0,
           y: 0,
@@ -30675,6 +30680,7 @@ ${e2}`);
       });
       this.background = new Background(this.app, BG_COLOR13);
       this.background.render();
+      this.app.stage.addChild(this.printsGfx);
       this.app.stage.addChild(this.targetGfx);
       this.app.stage.addChild(this.legsGfx);
       this.app.stage.addChild(this.segmentsGfx);
@@ -30691,7 +30697,9 @@ ${e2}`);
         }
       });
       this.bug.on("targetReached", this.handleTargetReached);
+      this.trackPrints(bug);
       this.clearGfx();
+      this.renderPrints();
       this.renderTarget(bug.target);
       this.renderAllSegments(bug);
     }
@@ -30703,12 +30711,33 @@ ${e2}`);
       super.destroy();
       this.clearGfx();
     }
+    trackPrints(bug) {
+      if (this.currentActiveSide !== bug.activeSide) {
+        this.currentActiveSide = bug.activeSide;
+        this.prints = this.prints.slice(0, 50);
+        bug.segments.forEach((segment) => {
+          segment.legs[this.currentActiveSide === "left" ? "right" : "left"].forEach((leg) => {
+            this.prints.unshift(leg[leg.length - 1]);
+          });
+        });
+      }
+    }
     clearGfx() {
       super.clearGfx();
+      this.printsGfx.clear();
+      this.printsGfx.removeChildren();
       this.segmentsGfx.clear();
       this.segmentsGfx.removeChildren();
       this.legsGfx.clear();
       this.legsGfx.removeChildren();
+    }
+    renderPrints() {
+      const gfx = new Graphics();
+      gfx.lineStyle({ width: 1, color: PRINT_COLOR });
+      this.printsGfx.addChild(gfx);
+      this.prints.forEach((print) => {
+        gfx.drawCircle(print.x, print.y, 1);
+      });
     }
     renderAllSegments(bug) {
       this.renderHead(bug.segments[0]);
@@ -30760,7 +30789,7 @@ ${e2}`);
       segment.legs.left.forEach((leg) => this.renderLeg(leg, activeSide === "left"));
       segment.legs.right.forEach((leg) => this.renderLeg(leg, activeSide === "right"));
     }
-    renderLeg(leg, _isActive) {
+    renderLeg(leg, isActive) {
       const socket = leg[0];
       const joint = leg.length >= 2 ? leg[1] : null;
       const claw = leg.length >= 2 ? leg[2] : leg[1];

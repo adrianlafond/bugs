@@ -30621,10 +30621,10 @@ ${e2}`);
 
   // src/demo/bug019.ts
   var import_geom29 = __toESM(require_dist());
-  var COLOR16 = 16776960;
-  var BG_COLOR13 = 255;
-  var TARGET_COLOR13 = 6724044;
-  var PRINT_COLOR = 16777215;
+  var COLOR16 = 12255453;
+  var BG_COLOR13 = 2228360;
+  var TARGET_COLOR13 = 6684876;
+  var PRINT_COLOR = 16777113;
   var Bug019 = class extends BaseDemo {
     constructor(app) {
       super(app);
